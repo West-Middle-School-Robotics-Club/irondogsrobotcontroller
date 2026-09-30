@@ -25,6 +25,11 @@ public class Drivetrain {
     public static final String BACK_LEFT_DRIVE_NAME   = "backLeftDrive";
     public static final String BACK_RIGHT_DRIVE_NAME  = "backRightDrive";
 
+    // Our toggle for issue #11 comparison test for Wednesday:
+    // false = RUN_WITHOUT_ENCODER (power = % of battery voltage, proposed decision 008)
+    // true  = RUN_USING_ENCODER (speed control using motor encoders)
+    public static final boolean USE_ENCODER_SPEED_CONTROL = false;
+
     private final DcMotor frontLeftDrive;
     private final DcMotor frontRightDrive;
     private final DcMotor backLeftDrive;
@@ -43,11 +48,14 @@ public class Drivetrain {
         frontRightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
         backRightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
 
+        DcMotor.RunMode runMode = USE_ENCODER_SPEED_CONTROL
+                ? DcMotor.RunMode.RUN_USING_ENCODER
+                : DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+
         for (DcMotor motor : new DcMotor[] {frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive}) {
             // BRAKE makes the robot stop quickly when the sticks are released.
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            // Power = % of battery voltage. Proposed in decision 008; the team decides in issue #11.
-            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motor.setMode(runMode);
         }
     }
 
@@ -89,6 +97,7 @@ public class Drivetrain {
 
     /** Show this subsystem's status on the Driver Station. */
     public void addTelemetry(Telemetry telemetry) {
+        telemetry.addData("Drive mode", USE_ENCODER_SPEED_CONTROL ? "RUN_USING_ENCODER" : "RUN_WITHOUT_ENCODER");
         telemetry.addData("Drivetrain front L/R", "%.2f  %.2f", frontLeftDrive.getPower(), frontRightDrive.getPower());
         telemetry.addData("Drivetrain back  L/R", "%.2f  %.2f", backLeftDrive.getPower(), backRightDrive.getPower());
     }
