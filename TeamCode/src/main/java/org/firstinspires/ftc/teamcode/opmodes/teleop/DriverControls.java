@@ -20,19 +20,41 @@ public class DriverControls {
     // slower than they drive forward.
     public static final double STRAFE_CORRECTION = 1.1;
 
-    /** Read the driver's sticks and drive the robot. Call this once per loop. */
-    public static void drive(Drivetrain drivetrain, Gamepad gamepad) {
+    // Small deadzone so the robot doesn't creep when sticks are released.
+    public static final double DEADZONE = 0.05;
+
+    // Slow mode reduces drive power for precise lining up.
+    public static final double SLOW_MODE_SCALE = 0.4;
+
+    /**
+     * Read the driver's sticks and drive the robot. Call this once per loop.
+     *
+     * @return true if slow mode is active, false otherwise.
+     */
+    public static boolean drive(Drivetrain drivetrain, Gamepad gamepad) {
         // The gamepad sticks don't match our direction convention (decision 007),
         // so we flip them HERE, and only here:
         //   stick pushed forward = negative Y   -> flip to get +forward
         //   stick pushed right   = positive X   -> flip to get +left
         //   right stick right    = positive X   -> flip to get +turn (counter-clockwise)
-        double forward = -gamepad.left_stick_y;
-        double left    = -gamepad.left_stick_x * STRAFE_CORRECTION;
-        double turn    = -gamepad.right_stick_x;
+        double forward = applyDeadzone(-gamepad.left_stick_y);
+        double left    = applyDeadzone(-gamepad.left_stick_x) * STRAFE_CORRECTION;
+        double turn    = applyDeadzone(-gamepad.right_stick_x);
 
-        // TODO(#3): add slow mode here, so every TeleOp gets it.
+        // Slow mode for precise alignment (holding left or right bumper)
+        boolean slowMode = gamepad.left_bumper || gamepad.right_bumper;
+        if (slowMode) {
+            forward *= SLOW_MODE_SCALE;
+            left    *= SLOW_MODE_SCALE;
+            turn    *= SLOW_MODE_SCALE;
+        }
 
         drivetrain.drive(forward, left, turn);
+        return slowMode;
+    }
+
+    /** Apply deadzone threshold to stick input. */
+    private static double applyDeadzone(double input) {
+        return Math.abs(input) < DEADZONE ? 0.0 : input;
     }
 }

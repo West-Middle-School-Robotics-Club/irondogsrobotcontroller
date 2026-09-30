@@ -22,3 +22,8 @@ Test-only brake code lives in `opmodes/test/TestDriveMotors.java`, not in Drivet
 The line that switches Pinpoint Test back to BRAKE at the end is commented out on purpose until the #17 experiment is done.
 Started engineering portfolio notes in `TeamCode/docs/portfolio/`: a template, an index, and the first two entries (direction convention, brake mode experiment).
 
+9/29-9/30:
+Added `opmodes/teleop/MainTeleOp.java` and updated `DriverControls.java` (issue #3).
+DriverControls now includes slow mode (hold left or right bumper for precise movement) and stick deadzone filtering (0.05 threshold) to prevent creep.
+MainTeleOp drives using DriverControls and displays drivetrain telemetry along with slow mode status.
+
