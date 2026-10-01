@@ -20,10 +20,10 @@ public class Drivetrain {
 
     // Config names. These must match the Driver Station robot configuration EXACTLY.
     // If you change one here, update TeamCode/docs/hardware-config.md too.
-    public static final String FRONT_LEFT_DRIVE_NAME  = "frontLeftDrive";
-    public static final String FRONT_RIGHT_DRIVE_NAME = "frontRightDrive";
-    public static final String BACK_LEFT_DRIVE_NAME   = "backLeftDrive";
-    public static final String BACK_RIGHT_DRIVE_NAME  = "backRightDrive";
+    public static final String FRONT_LEFT_DRIVE_NAME  = "frontLeftDrive";  //1
+    public static final String FRONT_RIGHT_DRIVE_NAME = "frontRightDrive"; //3
+    public static final String BACK_LEFT_DRIVE_NAME   = "backLeftDrive"; //2
+    public static final String BACK_RIGHT_DRIVE_NAME  = "backRightDrive"; //4
 
     // Our toggle for issue #11 comparison test for Wednesday:
     // false = RUN_WITHOUT_ENCODER (power = % of battery voltage, proposed decision 008)
