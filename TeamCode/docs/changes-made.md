@@ -27,3 +27,7 @@ Added `opmodes/teleop/MainTeleOp.java` and updated `DriverControls.java` (issue 
 DriverControls now includes slow mode (hold left or right bumper for precise movement) and stick deadzone filtering (0.05 threshold) to prevent creep.
 MainTeleOp drives using DriverControls and displays drivetrain telemetry along with slow mode status.
 
+10/1:
+Odometry: changed `POD_TYPE` from swingarm to 4-bar pods (issue #6). The 48 in push test read about 73 in,
+which is exactly the 1.5x error you get from the wrong pod type (4-bar pods have 32 mm wheels, swingarm 48 mm).
+
