@@ -23,11 +23,11 @@ public class Odometry {
     // Config name (decision 009). Must match the Driver Station robot configuration.
     public static final String PINPOINT_NAME = "pinpoint";
 
-    // TODO(#6) Step 0: we believe we have SWINGARM pods. Confirm by looking at the robot.
-    // The other option is goBILDA_4_BAR_POD.
-    // If this is wrong, the 48 in test will read way off (about 32 in or 72 in).
+    // Our pods are 4-BAR pods (32 mm wheels). Found in the #6 test on 9/30: with this set to
+    // SWINGARM (48 mm wheels), a 48 in push read about 73 in. 4-bar pods make 1.5x as many
+    // encoder ticks per inch, so the wrong setting over-reads by 1.5x (48 x 1.5 = 72).
     public static final GoBildaPinpointDriver.GoBildaOdometryPods POD_TYPE =
-            GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD;
+            GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD;
 
     // TODO(#6) Step 1: measure from the robot's center, in millimeters.
     // X pod offset: how far SIDEWAYS the X (forward) pod is.   Left of center = +, right = -
