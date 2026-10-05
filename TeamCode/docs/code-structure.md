@@ -20,6 +20,7 @@ teamcode/
     ├── auto/
     └── test/               ← test and tuning OpModes (the "Tests" group on the Driver Station)
         ├── BrakeModeCheck.java
+        ├── EncoderModeToggle.java ← drive and switch encoder mode with Y (#11)
         ├── PinpointTest.java
         └── TestDriveMotors.java ← test-only helper; never used by real robot code
 ```
