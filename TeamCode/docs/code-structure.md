@@ -2,7 +2,7 @@
 
 Everything our team makes lives in `TeamCode/` (decisions 001 and 010):
 - **Code:** `TeamCode/src/main/java/org/firstinspires/ftc/teamcode/`
-- **Docs:** `TeamCode/docs/` (this file, `decisions.md`, `hardware-config.md`, `changes-made.md`, and `portfolio/`)
+- **Docs:** `TeamCode/docs/` (this file, `decisions.md`, `hardware-config.md`, `changes-made.md`, `portfolio/`, and `game/`: the BIOBUZZ rules summary)
 We use **structured subsystems** (decision 006).
 
 ```
