@@ -14,6 +14,7 @@ without reading 173 pages. Every fact has a **section and page number** so you c
 | [field.md](field.md) | 9 Arena | Field layout, zones, HIVE/CELLS, FLOWERS, AprilTags, scoring elements, **our field coordinate system** |
 | [scoring.md](scoring.md) | 10 Game Details | Match timing, setup and staging, scoring rules, **point values**, ranking points, penalty values |
 | [rules.md](rules.md) | 11 Game Rules | The rules that matter most to us, with what each means for our robot and code |
+| [diagrams/](diagrams/README.md) | — | **Printable field template and alliance planning sheet** (PDF/SVG/PNG), generated from our field coordinates |
 
 ## Version
 | Section | Version summarized | Date summarized |
