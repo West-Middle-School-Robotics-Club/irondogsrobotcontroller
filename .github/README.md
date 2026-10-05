@@ -14,3 +14,4 @@ Jonathan Rakozy, Matt Becker, & Nadinne Motta
 - [Code Structure](../TeamCode/docs/code-structure.md)
 - [Hardware Config](../TeamCode/docs/hardware-config.md)
 - [Engineering Portfolio Notes](../TeamCode/docs/portfolio/README.md)
+- [BIOBUZZ Game Reference](../TeamCode/docs/game/README.md): field, scoring and rules summaries

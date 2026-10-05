@@ -104,3 +104,11 @@ Options: Keep root `docs/`, rename it (e.g. `WMSTeamDocs/`), or move it to `Team
 Decision: **`TeamCode/docs/`.** One simple rule: everything our team makes is in `TeamCode/`. No confusion with FIRST's `doc/` folder, FIRST never adds files there, and the build ignores it (Gradle only compiles `TeamCode/src/`). Restoring FIRST's `README.md` for the same reason is tracked in #12.
 Who: Team
 
+## 011 – Field coordinate system for autonomous  (2026-10-05)
+Status: Accepted
+Issue: #22
+Context: Autonomous needs field positions (start spots, LOADING ZONE, paths) for both alliances. The BIOBUZZ field is a **180° rotation** between Red and Blue, not a mirror image (Competition Manual Section 9).
+Options: A corner origin, or a center origin. Mirroring Blue from Red, or rotating it.
+Decision: **Origin at the center of the field. +X toward the far wall (away from the audience), +Y toward the red wall, heading counter-clockwise (0° = facing +X).** This matches the manual's tile names (A–F, 1–6, seen from the audience) and our robot direction convention (decision 007). **Blue positions are Red's rotated 180°: (x, y, heading) → (−x, −y, heading + 180°)**, so we tune Red's numbers once. Details and tile-center coordinates are in `TeamCode/docs/game/field.md`.
+Who: Team
+
