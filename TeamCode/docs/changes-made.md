@@ -37,4 +37,5 @@ Added decision 011: field coordinate system for autonomous (center origin, +X fa
 
 10/6:
 Added the "Encoder Mode Toggle" test OpMode (`opmodes/test/`, issue #11): drives like Main TeleOp, and Y switches the drive motors between WITH and WITHOUT encoder speed control, so the two modes can be compared without rebuilding. Y on gamepad 2 also switches, for a blind driver test. The real setting is still `USE_ENCODER_SPEED_CONTROL` in Drivetrain.
+Decisions 012–014: Pedro Pathing (trial) for Advanced Auton; TeleOp and Basic Auton drive with our Drivetrain while Pedro drives in Advanced Auton; Basic Auton stays Pedro-free as a hedge. Pedro install and tuning is issue #25.
 
