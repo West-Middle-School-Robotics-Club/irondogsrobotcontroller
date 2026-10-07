@@ -27,6 +27,10 @@ If a name doesn't match, the OpMode crashes on INIT with an error like `Unable t
 | `frontRightDrive` | Motor | Control Hub / motor __ | FORWARD | |
 | `backRightDrive`  | Motor | Control Hub / motor __ | FORWARD | |
 
+⚠️ **Set the correct motor type** for each drive motor in the Driver Station config (the exact goBILDA model / gear ratio, not a generic type).
+In encoder speed control mode (`RUN_USING_ENCODER`, decision 008), the SDK uses the configured motor type to know the motor's top speed.
+A wrong type can make the robot much slower. Drive motor model / ratio: ______
+
 ## IMU
 
 | Config name | Device type | Hub / Port | Notes |

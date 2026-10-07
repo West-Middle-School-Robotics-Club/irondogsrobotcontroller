@@ -70,19 +70,26 @@ Options: Match the gamepad sticks everywhere, or match the Pinpoint everywhere.
 Decision: **Match the Pinpoint**: +X forward, +Y left, +heading counter-clockwise. This is also what Road Runner, Pedro Pathing and FTC field coordinates use, so outside code and examples agree with ours. `Drivetrain.drive(forward, left, turn)` uses it, and `opmodes/teleop/DriverControls.java` is the only place that flips the gamepad stick values (every TeleOp calls it). See the "Directions" section of `TeamCode/docs/code-structure.md`.
 Who: Team
 
-## 008 – Drive motors run without encoder speed control  (2026-09-24)
-Status: **Proposed**. Not final until the team decides in #11
-Issue: #11
-Context: Our drive motors have encoders. In `RUN_USING_ENCODER` mode the hub holds each wheel at a set speed, which means the same speed on a low battery and straighter driving. But it needs all four encoder cables working (a loose one can make a wheel spin at full speed), and it lowers top speed slightly.
-Options: `RUN_WITHOUT_ENCODER` (power = % of battery voltage) or `RUN_USING_ENCODER` (power = % of max speed).
-Decision (proposed): **`RUN_WITHOUT_ENCODER`**, for now:
-- **Reliable:** nothing depends on encoder cables, so a loose one can't make a wheel go wild mid-match.
-- **Full speed and direct feel:** all motor power goes to the wheels, and drivers already practice with this mode (`manualDriver`).
-- **Precision comes from the Pinpoint** (decision 005), which corrects for battery level and wheel differences in autonomous.
-- **Road Runner and Pedro Pathing normally expect this mode** (#8).
+## 008 – Drive motor encoder mode  (2026-09-24, updated 2026-10-07)
+Status: **Open**. The team is still discussing this in #11
+Issue: #11, #25
+Context: Our drive motors have encoders, and the hub can run them in two modes:
+- `RUN_WITHOUT_ENCODER`: power = % of battery voltage. Full top speed. Speed drops as the battery drains, and wheels can run at slightly different speeds
+- `RUN_USING_ENCODER`: power = % of max speed; the hub uses the encoders to hold that speed. More consistent (battery level, wheel to wheel). Needs all four encoder cables working (a loose one can make a wheel spin at full speed)
 
-The trade-off is that speed drops as the battery drains and the robot may pull slightly to one side; in TeleOp the driver corrects for that. Revisit after the on-robot comparison in #11 and after #8 is decided.
-Who: Team (proposed; to be confirmed)
+**Test (2026-10-07, "Encoder Mode Toggle", #11):** the team drove in both modes and **didn't notice a big difference**.
+
+**Findings (2026-10-07):**
+- **Top speed:** in `RUN_USING_ENCODER`, full stick = **85%** of the motor's rated top speed (the FTC SDK's default "achievable max" for a motor type). Easy to miss in a casual test
+- **Motor type matters:** `RUN_USING_ENCODER` uses the **motor type set in the Driver Station config** to know what "full speed" is. A wrong type (e.g. the generic "GoBILDA 5202/3/4 series", which the SDK treats as a 60 RPM, 99.5:1 motor) can make the robot much slower. See `hardware-config.md`
+- **Pedro Pathing never sets the encoder mode** (`com.pedropathing:revhub:3.0.1`, `Mecanum.java`): it uses whatever mode the motors are already in. The SDK starts motors in `RUN_WITHOUT_ENCODER` at power-up, and the mode carries over between OpModes. So **Advanced Auton must set the chosen mode itself** before starting Pedro, and Pedro must be **tuned in that same mode** (#25)
+
+Options:
+- **`RUN_WITHOUT_ENCODER`**: full top speed and direct feel, nothing depends on encoder cables, and what path libraries usually expect
+- **`RUN_USING_ENCODER`**: team is leaning this way. Lower top speed is fine on a **crowded game floor**, and **consistency** (same speed at any battery level, wheels matched) is appealing for both drivers and autonomous
+
+Decision: **not made yet.** Current code: `USE_ENCODER_SPEED_CONTROL = false` in `Drivetrain.java` (`RUN_WITHOUT_ENCODER`). Whichever mode we choose, use it **everywhere** (TeleOp, Basic Auton, Advanced Auton/Pedro) so the robot behaves the same in every mode.
+Who: Team (open)
 
 ## 009 – Hardware naming rules  (2026-09-25)
 Status: Accepted
