@@ -55,9 +55,16 @@ A wrong type can make the robot much slower. Drive motor model / ratio: ______
 |---|---|---|---|
 | ___ | ___ | ___ | Waiting on build team |
 
-## Camera (`subsystems/Camera.java`, issue #7, decision 015)
+## Camera (`subsystems/Camera.java`, issue #7, decisions 015, 016)
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| `limelight` | Limelight 3A | Control Hub / USB | Record mounting position here |
-| `cameraServo` | Servo | ___ / servo port ___ | Tilts the camera. Positions are in `Camera.java` (find them with "Camera Test") |
+| `limelight` | Limelight 3A | Control Hub / USB | Mounted on the turret, fixed tilt angle: ___° up |
+
+## Turret (`subsystems/Turret.java`, issue #7, decision 016)
+
+| Config name | Device type | Hub / Port | Notes |
+|---|---|---|---|
+| `turretServo` | Servo | ___ / servo port ___ | Positional servo (180° or 270°: ___) |
+| `turretEncoder` | Analog Input | ___ / analog port ___ | ELC Encoder V2, **analog** output. ⚠️ Check the cable's pin order matches the hub's analog port before plugging in |
+| `turretLimitSwitch` | Digital Device | ___ / digital port ___ | REV Magnetic Limit Switch. Digital ports have 2 channels (n, n+1): if it never changes, try the other channel number |

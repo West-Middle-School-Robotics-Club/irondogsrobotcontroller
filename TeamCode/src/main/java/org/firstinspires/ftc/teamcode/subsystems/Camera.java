@@ -4,7 +4,6 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -12,72 +11,51 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Camera subsystem: the Limelight 3A camera and the servo that aims it (issue #7, decision 015).
+ * Camera subsystem: the Limelight 3A (issue #7, decisions 015 and 016).
  *
- * The camera and its servo are ONE subsystem, because aiming the camera only matters for what the camera sees.
+ * The camera is mounted ON THE TURRET at a fixed up/down angle, so it turns with the turret.
+ * "The tag is 5 degrees left" means "turn the turret 5 degrees left" (see Turret.turnBy()).
  *
- * BIOBUZZ AprilTags are on the BOTTOMS of the CELLS, facing down, so the camera must tilt UP to see them.
+ * BIOBUZZ AprilTags are on the BOTTOMS of the CELLS, facing down, so the camera is tilted up.
  *
  * Setup before this works:
- *   1. Add the Limelight and the servo to the Driver Station config with the names below.
+ *   1. Add the Limelight to the Driver Station config as "limelight".
  *   2. Set up an AprilTag pipeline in the Limelight's web page, in the slot set by APRILTAG_PIPELINE.
- *   3. Find the servo positions with the "Camera Test" OpMode, then fill in the TODO(#7) constants.
  */
 public class Camera {
 
-    // Config names (decision 009). Must match the Driver Station robot configuration.
+    // Config name (decision 009). Must match the Driver Station robot configuration.
     public static final String LIMELIGHT_NAME = "limelight";
-    public static final String CAMERA_SERVO_NAME = "cameraServo";
 
     // TODO(#7): which Limelight pipeline slot (0-9) has our AprilTag pipeline.
     public static final int APRILTAG_PIPELINE = 0;
 
-    // TODO(#7): find these with the "Camera Test" OpMode. Servo positions go from 0.0 to 1.0.
-    public static final double LOOK_FORWARD_POSITION = 0.5;
-    public static final double LOOK_UP_POSITION = 0.5;
-
     private final Limelight3A limelight;
-    private final Servo cameraServo;
-
-    // The last position we sent to the servo. NaN until the first command.
-    private double servoPosition = Double.NaN;
 
     public Camera(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, LIMELIGHT_NAME);
-        cameraServo = hardwareMap.get(Servo.class, CAMERA_SERVO_NAME);
 
         limelight.pipelineSwitch(APRILTAG_PIPELINE);
         // Start reading results. Nothing moves, so this is OK during INIT.
         limelight.start();
-
-        // We do NOT move the servo here. INIT must not move anything (game rule G304.H).
-        // Call lookForward() or lookUp() after START.
-    }
-
-    /** Point the camera straight ahead. Call after START, never during INIT. */
-    public void lookForward() {
-        setServoPosition(LOOK_FORWARD_POSITION);
-    }
-
-    /** Tilt the camera up to see the AprilTags under the CELLS. Call after START, never during INIT. */
-    public void lookUp() {
-        setServoPosition(LOOK_UP_POSITION);
-    }
-
-    /** Move the camera servo to a position from 0.0 to 1.0. Prefer lookForward() / lookUp() in real code. */
-    public void setServoPosition(double position) {
-        servoPosition = Math.max(0.0, Math.min(1.0, position));
-        cameraServo.setPosition(servoPosition);
-    }
-
-    /** The last position we sent to the servo (NaN if we haven't moved it yet). */
-    public double getServoPosition() {
-        return servoPosition;
     }
 
     /** True if the Limelight sees at least one AprilTag right now. */
     public boolean seesAprilTag() {
-        return !getVisibleTagIds().isEmpty();
+        LLResult result = limelight.getLatestResult();
+        return result != null && result.isValid() && !result.getFiducialResults().isEmpty();
+    }
+
+    /**
+     * How many degrees LEFT of the camera's center the AprilTag is (+ = left, - = right, decision 007).
+     * Returns NaN if no tag is seen. The Limelight itself uses + = right, so we flip the sign here.
+     * TODO(#7): when we know which tag to aim at, pick that tag ID instead of the Limelight's main target.
+     */
+    public double getTargetDegreesLeft() {
+        if (!seesAprilTag()) {
+            return Double.NaN;
+        }
+        return -limelight.getLatestResult().getTx();
     }
 
     /** The ID numbers of every AprilTag the Limelight sees right now (BIOBUZZ uses IDs 30-45). */
@@ -100,7 +78,8 @@ public class Camera {
     /** Show this subsystem's status on the Driver Station. */
     public void addTelemetry(Telemetry telemetry) {
         telemetry.addData("Camera connected", limelight.isConnected());
-        telemetry.addData("Camera servo", Double.isNaN(servoPosition) ? "not moved yet" : String.format("%.2f", servoPosition));
         telemetry.addData("AprilTags seen", getVisibleTagIds());
+        double left = getTargetDegreesLeft();
+        telemetry.addData("Target (°)  +left", Double.isNaN(left) ? "none" : String.format("%.1f", left));
     }
 }
