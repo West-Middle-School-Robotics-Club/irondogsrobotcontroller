@@ -112,3 +112,27 @@ Options: A corner origin, or a center origin. Mirroring Blue from Red, or rotati
 Decision: **Origin at the center of the field. +X toward the far wall (away from the audience), +Y toward the red wall, heading counter-clockwise (0° = facing +X).** This matches the manual's tile names (A–F, 1–6, seen from the audience) and our robot direction convention (decision 007). **Blue positions are Red's rotated 180°: (x, y, heading) → (−x, −y, heading + 180°)**, so we tune Red's numbers once. Details and tile-center coordinates are in `TeamCode/docs/game/field.md`.
 Who: Team
 
+## 012 – Pedro Pathing for Advanced Auton  (2026-10-06)
+Status: Accepted (**trial**). Confirm or change after tuning in #25
+Issue: #8, #25
+Context: Autonomous that scores more than LEAVE + PARK needs smooth, accurate paths. Both popular path-following libraries work with our mecanum drivetrain (decision 004) and goBILDA Pinpoint (decision 005).
+Options: Road Runner, Pedro Pathing.
+Decision: **Try Pedro Pathing first.** The team chose it after the #8 research. Because it's a trial, we revisit this if installing or tuning it goes badly. Its libraries are added in `TeamCode/build.gradle`, not FIRST's root Gradle files (decision 001).
+Who: Team
+
+## 013 – Who controls the drive wheels  (2026-10-06)
+Status: Accepted
+Issue: #8, #25
+Context: Pedro Pathing's `Follower` sets the drive motor powers itself while following a path. We already have `Drivetrain` + `DriverControls` for TeleOp. Two pieces of code controlling the same motors at once would be confusing.
+Options: Our `Drivetrain` wraps Pedro, or Pedro controls the wheels in its own OpModes.
+Decision: **Split by mode.** TeleOp and Basic Auton drive with our `Drivetrain`. Advanced Auton lets Pedro's `Follower` drive the wheels. **All other subsystems (Intake, Launcher, Odometry) are shared by every mode.** Pedro's setup **reads our constants** (motor names from `Drivetrain`, pod type/offsets/directions from `Odometry`), so every setting lives in one place.
+Who: Team
+
+## 014 – Two autonomous tiers: Basic Auton and Advanced Auton  (2026-10-06)
+Status: Accepted
+Issue: #22, #25
+Context: LEAVE + PARK in AUTO is worth 8 points per robot, and with our partner it earns the SWARM ranking point (Competition Manual Table 10-2). Setting up and tuning Pedro Pathing will take time.
+Options: Build all autonomous on Pedro, or keep a simple version without it.
+Decision: **Basic Auton** (#22) is LEAVE + PARK with our own simple driving code and **no Pedro**: a hedge so we always score the easy points. **Advanced Auton** (#25) uses Pedro to do more. If Advanced Auton becomes reliable enough, it may replace Basic Auton.
+Who: Team
+
