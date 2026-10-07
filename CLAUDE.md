@@ -17,7 +17,7 @@ Our team's fork of FIRST's FtcRobotController (SDK v12.0). Middle school team; c
 - **Directions** (007): +X forward, +Y left, +heading counter-clockwise. Only `opmodes/teleop/DriverControls.java` reads/flips gamepad sticks
 - **Field coordinates** (011): origin at field center, +X → far wall, +Y → red wall. Blue = Red rotated 180°
 - **Autonomous** (012–014): **Basic Auton** = LEAVE + PARK with our own `Drivetrain` (no Pedro, a hedge). **Advanced Auton** = Pedro Pathing (trial), where Pedro's `Follower` drives the wheels. TeleOp uses our `Drivetrain`. All other subsystems are shared; Pedro reads our constants
-- **Naming** (009): config name = variable name (`frontLeftDrive`); single devices `imu`, `pinpoint`, `limelight`. Limelight on a turret: `subsystems/Camera.java`, `subsystems/Turret.java` (015, 016). Turret angles: 0 = forward, + = left
+- **Naming** (009): config name = variable name (`frontLeftDrive`); single devices `imu`, `pinpoint`, `limelight`. Limelight on a turret: `subsystems/Camera.java`, `subsystems/Turret.java` (015–017). Turret angles: 0 = forward, + = left. `turretForwardSwitch` only indicates forward, it's not a stop
 - **Test code stays in `opmodes/test/`** (code-structure rule 8): real code never uses it, no test-only methods in subsystems
 - **INIT must not move anything** (game rule G304.H / G403)
 

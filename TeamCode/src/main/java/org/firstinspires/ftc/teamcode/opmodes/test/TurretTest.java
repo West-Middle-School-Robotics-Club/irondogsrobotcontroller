@@ -15,7 +15,10 @@ import org.firstinspires.ftc.teamcode.subsystems.Turret;
  *   X / B               turret.turnTo(+45) / turnTo(-45)  (left / right)
  *
  * The dpad moves the servo DIRECTLY by position, so you can calibrate before the constants are right.
- * It does NOT use the limit switch stop, so move slowly near the ends!
+ * It does NOT use the MAX_LEFT/RIGHT limits, so move slowly near the ends!
+ *
+ * Tip: the forward switch says YES when the turret faces forward. Use it to find SERVO_FORWARD_POSITION
+ * and ENCODER_FORWARD_DEGREES.
  */
 @TeleOp(name = "Turret Test", group = "Tests")
 public class TurretTest extends LinearOpMode {
@@ -56,8 +59,6 @@ public class TurretTest extends LinearOpMode {
             if (gamepad1.bWasPressed()) {
                 turret.turnTo(-45);
             }
-
-            turret.update();
 
             telemetry.addLine("dpad = move servo (bumper = big)   A = forward   X = 45° left   B = 45° right");
             telemetry.addLine();
