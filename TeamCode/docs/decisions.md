@@ -181,3 +181,16 @@ Decision:
 - Nothing physical stops the turret, so the software limits `MAX_LEFT_DEGREES` / `MAX_RIGHT_DEGREES` are the only protection against turning too far (into wires or the frame). Set them carefully
 - The light idea now means "turret is forward". Still to decide which light
 Who: Team
+
+## 018 – goBILDA RGB Indicator Light, one `Light` subsystem  (2026-10-07)
+Status: Accepted
+Issue: #7
+Context: We want a light that shows when the turret faces forward (017). We have a **goBILDA RGB Indicator Light**. It plugs into a **servo port**: the "servo position" picks the color.
+Options: Put the light inside `Turret`, or make it its own subsystem.
+Decision:
+- **Own subsystem: `subsystems/Light.java`**, config name **`indicatorLight`** (configured as a Servo). It only knows colors (`Light.Color.GREEN`, `RED`, `OFF`, ...). **The OpMode decides what each color means**, so the same light can show other things later (target locked, pollen loaded)
+- First use: **GREEN = turret facing forward** (in "Turret Test")
+- The light doesn't move anything, so it's **OK during INIT**: drivers can see the turret is forward while setting up for the match
+- Color positions come from goBILDA's color chart; check them with "Light Test"
+- Not in `Robot.java` yet (same reason as `Camera`/`Turret`/`Odometry`)
+Who: Team

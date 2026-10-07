@@ -100,7 +100,7 @@ public class Turret {
 
     /**
      * True when the turret is facing forward (the magnet is at the switch).
-     * TODO(#7): decide on a light to show this (hub LED, gamepad LED/rumble, or an add-on light).
+     * The OpMode can show this on the light: light.setColor(GREEN) (decision 018).
      */
     public boolean isFacingForward() {
         return turretForwardSwitch.getState() == FORWARD_SWITCH_TRIGGERED_STATE;

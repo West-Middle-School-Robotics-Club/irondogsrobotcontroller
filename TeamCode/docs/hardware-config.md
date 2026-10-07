@@ -68,3 +68,9 @@ A wrong type can make the robot much slower. Drive motor model / ratio: ______
 | `turretServo` | Servo | ___ / servo port ___ | Positional servo (180° or 270°: ___) |
 | `turretEncoder` | Analog Input | ___ / analog port ___ | ELC Encoder V2, **analog** output. ⚠️ Check the cable's pin order matches the hub's analog port before plugging in |
 | `turretForwardSwitch` | Digital Device | ___ / digital port ___ | REV Magnetic Limit Switch: triggers when the turret faces **forward** (indicator, not a stop, decision 017). Digital ports have 2 channels (n, n+1): if it never changes, try the other channel number |
+
+## Light (`subsystems/Light.java`, decision 018)
+
+| Config name | Device type | Hub / Port | Notes |
+|---|---|---|---|
+| `indicatorLight` | Servo | ___ / servo port ___ | goBILDA RGB Indicator Light. The "servo position" picks the color (see `Light.Color`) |
