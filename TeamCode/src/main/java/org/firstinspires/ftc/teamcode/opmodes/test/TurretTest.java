@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.subsystems.Light;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 
 /**
@@ -17,8 +18,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Turret;
  * The dpad moves the servo DIRECTLY by position, so you can calibrate before the constants are right.
  * It does NOT use the MAX_LEFT/RIGHT limits, so move slowly near the ends!
  *
- * Tip: the forward switch says YES when the turret faces forward. Use it to find SERVO_FORWARD_POSITION
- * and ENCODER_FORWARD_DEGREES.
+ * Tip: the forward switch says YES (and the light turns GREEN) when the turret faces forward.
+ * Use it to find SERVO_FORWARD_POSITION and ENCODER_FORWARD_DEGREES.
  */
 @TeleOp(name = "Turret Test", group = "Tests")
 public class TurretTest extends LinearOpMode {
@@ -26,12 +27,14 @@ public class TurretTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         Turret turret = new Turret(hardwareMap);
+        Light light = new Light(hardwareMap);
         // Test-only: the same servo, moved directly for calibration (code-structure rule 8).
         Servo turretServo = hardwareMap.get(Servo.class, Turret.SERVO_NAME);
         double servoPosition = Turret.SERVO_FORWARD_POSITION;
 
         // INIT: nothing moves until START (game rule G304.H). Readings work already.
         while (opModeInInit()) {
+            showForward(turret, light);
             telemetry.addLine("Press START. The turret will go to SERVO_FORWARD_POSITION.");
             addReadings(turret, servoPosition);
             telemetry.update();
@@ -60,11 +63,20 @@ public class TurretTest extends LinearOpMode {
                 turret.turnTo(-45);
             }
 
+            showForward(turret, light);
+
             telemetry.addLine("dpad = move servo (bumper = big)   A = forward   X = 45° left   B = 45° right");
             telemetry.addLine();
             addReadings(turret, servoPosition);
             telemetry.update();
         }
+
+        light.off();
+    }
+
+    /** GREEN when the turret faces forward, OFF otherwise. The light is OK during INIT: it doesn't move anything. */
+    private void showForward(Turret turret, Light light) {
+        light.setColor(turret.isFacingForward() ? Light.Color.GREEN : Light.Color.OFF);
     }
 
     private void addReadings(Turret turret, double servoPosition) {
