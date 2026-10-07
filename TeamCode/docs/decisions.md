@@ -84,11 +84,17 @@ Context: Our drive motors have encoders, and the hub can run them in two modes:
 - **Motor type matters:** `RUN_USING_ENCODER` uses the **motor type set in the Driver Station config** to know what "full speed" is. A wrong type (e.g. the generic "GoBILDA 5202/3/4 series", which the SDK treats as a 60 RPM, 99.5:1 motor) can make the robot much slower. See `hardware-config.md`
 - **Pedro Pathing never sets the encoder mode** (`com.pedropathing:revhub:3.0.1`, `Mecanum.java`): it uses whatever mode the motors are already in. The SDK starts motors in `RUN_WITHOUT_ENCODER` at power-up, and the mode carries over between OpModes. So **Advanced Auton must set the chosen mode itself** before starting Pedro, and Pedro must be **tuned in that same mode** (#25)
 
+**What the guides say (2026-10-07):**
+- **FTC Docs** ("Motor Modes and Encoders" tech tip): `RUN_WITHOUT_ENCODER` "more or less blindly" sets power as a % of battery. `RUN_USING_ENCODER` uses the hub's built-in speed control, so "it's VERY important to set the correct motor type" in the config. Matches our motor-type finding
+- **gm0** (Control Loops page): `RUN_USING_ENCODER` turns on the hub's built-in speed control. Encoders can be read in **any** mode. If you use **your own controller** (like Pedro's path follower), gm0 generally recommends `RUN_WITHOUT_ENCODER`. gm0 also says the built-in controller only updates about **20 times per second**
+- **FIRST's own mecanum sample** (`RobotTeleopMecanumFieldRelativeDrive.java`, in our repo) uses `RUN_USING_ENCODER` "to be more accurate"
+- So: encoder mode is a common choice for **TeleOp**. For **Pedro**, the guides lean toward `RUN_WITHOUT_ENCODER`, because Pedro already corrects speed itself and two controllers can fight
+
 Options:
 - **`RUN_WITHOUT_ENCODER`**: full top speed and direct feel, nothing depends on encoder cables, and what path libraries usually expect
 - **`RUN_USING_ENCODER`**: team is leaning this way. Lower top speed is fine on a **crowded game floor**, and **consistency** (same speed at any battery level, wheels matched) is appealing for both drivers and autonomous
 
-Decision: **not made yet.** Current code: `USE_ENCODER_SPEED_CONTROL = false` in `Drivetrain.java` (`RUN_WITHOUT_ENCODER`). Whichever mode we choose, use it **everywhere** (TeleOp, Basic Auton, Advanced Auton/Pedro) so the robot behaves the same in every mode.
+Decision: **not made yet.** Current code: `USE_ENCODER_SPEED_CONTROL = false` in `Drivetrain.java` (`RUN_WITHOUT_ENCODER`). Question left to discuss: **one mode everywhere** (TeleOp, Basic Auton, Advanced Auton/Pedro, so the robot always behaves the same), or **encoders for TeleOp and Basic Auton, without encoders for Pedro** (what the guides suggest for path followers)? Either way, every OpMode must set its mode on purpose, because the mode carries over between OpModes.
 Who: Team (open)
 
 ## 009 – Hardware naming rules  (2026-09-25)

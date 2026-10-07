@@ -41,4 +41,5 @@ Decisions 012–014: Pedro Pathing (trial) for Advanced Auton; TeleOp and Basic 
 
 10/7:
 Ran the encoder mode comparison (#11): no noticeable difference. Decision 008 is now **Open** (team leaning toward encoder speed control for consistency on a crowded field) and records new findings: 85% top-speed cap with encoders, the Driver Station motor type matters, and Pedro Pathing doesn't set the encoder mode itself.
+Added what FTC Docs, gm0 and FIRST's mecanum sample say about encoder modes to decision 008. New open question: one mode everywhere, or no encoders for Pedro only.
 
