@@ -39,3 +39,7 @@ Added decision 011: field coordinate system for autonomous (center origin, +X fa
 Added the "Encoder Mode Toggle" test OpMode (`opmodes/test/`, issue #11): drives like Main TeleOp, and Y switches the drive motors between WITH and WITHOUT encoder speed control, so the two modes can be compared without rebuilding. Y on gamepad 2 also switches, for a blind driver test. The real setting is still `USE_ENCODER_SPEED_CONTROL` in Drivetrain.
 Decisions 012–014: Pedro Pathing (trial) for Advanced Auton; TeleOp and Basic Auton drive with our Drivetrain while Pedro drives in Advanced Auton; Basic Auton stays Pedro-free as a hedge. Pedro install and tuning is issue #25.
 
+10/7:
+Ran the encoder mode comparison (#11): no noticeable difference. Decision 008 is now **Open** (team leaning toward encoder speed control for consistency on a crowded field) and records new findings: 85% top-speed cap with encoders, the Driver Station motor type matters, and Pedro Pathing doesn't set the encoder mode itself.
+Added what FTC Docs, gm0 and FIRST's mecanum sample say about encoder modes to decision 008. New open question: one mode everywhere, or no encoders for Pedro only.
+Added the `Camera` subsystem (Limelight 3A + `cameraServo`, decision 015, #7) and a "Camera Test" OpMode to find the servo positions. Not in `Robot.java` yet, so OpModes keep working until the camera is in the Driver Station config.

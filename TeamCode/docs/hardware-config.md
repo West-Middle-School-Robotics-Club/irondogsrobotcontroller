@@ -9,7 +9,7 @@ If a name doesn't match, the OpMode crashes on INIT with an error like `Unable t
 
 | Kind of hardware | Rule | Examples |
 |---|---|---|
-| **One-of-a-kind devices** | Use the standard name that the SDK samples, Road Runner and Pedro Pathing all use | `imu`, `pinpoint`, `webcam` |
+| **One-of-a-kind devices** | Use the standard name that the SDK samples, Road Runner and Pedro Pathing all use | `imu`, `pinpoint`, `limelight` |
 | **Drive motors** | `<position>Drive`: named by their job, since other mechanisms use motors too | `frontLeftDrive`, `frontRightDrive`, `backLeftDrive`, `backRightDrive` |
 | **Mechanisms** | camelCase, mechanism first, then the part | `intakeMotor`, `launcherMotor`, `launcherFeedServo`, `intakeColorSensor` |
 
@@ -26,6 +26,10 @@ If a name doesn't match, the OpMode crashes on INIT with an error like `Unable t
 | `backLeftDrive`   | Motor | Control Hub / motor __ | REVERSE | |
 | `frontRightDrive` | Motor | Control Hub / motor __ | FORWARD | |
 | `backRightDrive`  | Motor | Control Hub / motor __ | FORWARD | |
+
+⚠️ **Set the correct motor type** for each drive motor in the Driver Station config (the exact goBILDA model / gear ratio, not a generic type).
+In encoder speed control mode (`RUN_USING_ENCODER`, decision 008), the SDK uses the configured motor type to know the motor's top speed.
+A wrong type can make the robot much slower. Drive motor model / ratio: ______
 
 ## IMU
 
@@ -51,8 +55,9 @@ If a name doesn't match, the OpMode crashes on INIT with an error like `Unable t
 |---|---|---|---|
 | ___ | ___ | ___ | Waiting on build team |
 
-## Camera (issue #7)
+## Camera (`subsystems/Camera.java`, issue #7, decision 015)
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| `webcam` | Webcam | Control Hub / USB | Record mounting position here. Rename from the default `Webcam 1` |
+| `limelight` | Limelight 3A | Control Hub / USB | Record mounting position here |
+| `cameraServo` | Servo | ___ / servo port ___ | Tilts the camera. Positions are in `Camera.java` (find them with "Camera Test") |
