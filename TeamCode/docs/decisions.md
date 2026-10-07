@@ -149,3 +149,10 @@ Options: Build all autonomous on Pedro, or keep a simple version without it.
 Decision: **Basic Auton** (#22) is LEAVE + PARK with our own simple driving code and **no Pedro**: a hedge so we always score the easy points. **Advanced Auton** (#25) uses Pedro to do more. If Advanced Auton becomes reliable enough, it may replace Basic Auton.
 Who: Team
 
+## 015 – Camera: Limelight 3A on a servo, one `Camera` subsystem  (2026-10-07)
+Status: Accepted
+Issue: #7
+Context: The team is using a **Limelight 3A** camera, aimed by a **servo**. BIOBUZZ AprilTags are on the bottoms of the CELLS, facing down, so the camera must tilt up to see them. Decision 009 had planned a webcam named `webcam`.
+Options: Separate subsystems for the camera and the servo, or one subsystem for both.
+Decision: **One `Camera` subsystem** (`subsystems/Camera.java`) holds the Limelight and its servo, because aiming the camera only matters for what the camera sees. Config names: **`limelight`** (the name FIRST's Limelight sample uses; one-of-a-kind device rule from 009, replacing `webcam`) and **`cameraServo`** (mechanism, then part). The servo never moves during INIT (G304.H); code calls `lookForward()` / `lookUp()` after START. Like `Odometry`, it is **not in `Robot.java` yet**: once the Limelight and servo are in the Driver Station config and tested with "Camera Test", we add it.
+Who: Team

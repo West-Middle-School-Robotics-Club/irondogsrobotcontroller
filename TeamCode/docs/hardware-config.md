@@ -9,7 +9,7 @@ If a name doesn't match, the OpMode crashes on INIT with an error like `Unable t
 
 | Kind of hardware | Rule | Examples |
 |---|---|---|
-| **One-of-a-kind devices** | Use the standard name that the SDK samples, Road Runner and Pedro Pathing all use | `imu`, `pinpoint`, `webcam` |
+| **One-of-a-kind devices** | Use the standard name that the SDK samples, Road Runner and Pedro Pathing all use | `imu`, `pinpoint`, `limelight` |
 | **Drive motors** | `<position>Drive`: named by their job, since other mechanisms use motors too | `frontLeftDrive`, `frontRightDrive`, `backLeftDrive`, `backRightDrive` |
 | **Mechanisms** | camelCase, mechanism first, then the part | `intakeMotor`, `launcherMotor`, `launcherFeedServo`, `intakeColorSensor` |
 
@@ -55,8 +55,9 @@ A wrong type can make the robot much slower. Drive motor model / ratio: ______
 |---|---|---|---|
 | ___ | ___ | ___ | Waiting on build team |
 
-## Camera (issue #7)
+## Camera (`subsystems/Camera.java`, issue #7, decision 015)
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| `webcam` | Webcam | Control Hub / USB | Record mounting position here. Rename from the default `Webcam 1` |
+| `limelight` | Limelight 3A | Control Hub / USB | Record mounting position here |
+| `cameraServo` | Servo | ___ / servo port ___ | Tilts the camera. Positions are in `Camera.java` (find them with "Camera Test") |
