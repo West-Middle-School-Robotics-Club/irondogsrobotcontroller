@@ -61,10 +61,10 @@ A wrong type can make the robot much slower. Drive motor model / ratio: ______
 |---|---|---|---|
 | `limelight` | Limelight 3A | Control Hub / USB | Mounted on the turret, fixed tilt angle: ___° up |
 
-## Turret (`subsystems/Turret.java`, issue #7, decision 016)
+## Turret (`subsystems/Turret.java`, issue #7, decisions 016, 017)
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
 | `turretServo` | Servo | ___ / servo port ___ | Positional servo (180° or 270°: ___) |
 | `turretEncoder` | Analog Input | ___ / analog port ___ | ELC Encoder V2, **analog** output. ⚠️ Check the cable's pin order matches the hub's analog port before plugging in |
-| `turretLimitSwitch` | Digital Device | ___ / digital port ___ | REV Magnetic Limit Switch. Digital ports have 2 channels (n, n+1): if it never changes, try the other channel number |
+| `turretForwardSwitch` | Digital Device | ___ / digital port ___ | REV Magnetic Limit Switch: triggers when the turret faces **forward** (indicator, not a stop, decision 017). Digital ports have 2 channels (n, n+1): if it never changes, try the other channel number |

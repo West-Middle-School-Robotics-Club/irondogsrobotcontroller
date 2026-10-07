@@ -158,7 +158,7 @@ Decision: **One `Camera` subsystem** (`subsystems/Camera.java`) holds the Limeli
 Who: Team
 
 ## 016 – Turret: positional servo, ELC encoder, magnetic limit switch  (2026-10-07)
-Status: Accepted
+Status: Accepted. **The limit switch part is replaced by 017** (it's a forward indicator, not a stop)
 Issue: #7, #5
 Context: The launcher (flywheel) sits on a **turret** that turns left and right, like a tank turret. The **Limelight is mounted on the turret** at a **fixed** up/down angle, so it turns with the turret. AprilTag feedback from the camera aims the turret. Hardware: a **positional servo** turns it, an **ELC Encoder V2** on the servo measures it, and a **REV Magnetic Limit Switch** marks the edge of its travel.
 Options for the encoder (it has both outputs): **analog absolute** (0–3.3 V, one turn) into an analog port, or **quadrature** (4000 counts per turn) into a motor encoder port.
@@ -169,4 +169,15 @@ Decision:
 - **Limit switch = hard stop:** when tripped, the turret only moves back toward forward. Soft limits (`MAX_LEFT/RIGHT_DEGREES`) sit just inside the magnets
 - **A light when the switch trips:** decide later (options: the hub's own LED, the gamepad LED/rumble, or an add-on light). `Turret.update()` has the spot for it
 - Not in `Robot.java` yet (same reason as `Camera`/`Odometry`)
+Who: Team
+
+## 017 – The turret's magnetic switch is a "facing forward" indicator, not a stop  (2026-10-07)
+Status: Accepted
+Issue: #7
+Context: Decision 016 treated the REV Magnetic Limit Switch as a hard stop at the edge of the turret's travel. That was a misunderstanding: the magnet is placed so the switch triggers when the turret is **facing forward**.
+Decision:
+- Config name **`turretForwardSwitch`** (named by its job, 009), replacing `turretLimitSwitch`. `Turret.isFacingForward()` reads it; it never stops or moves the turret
+- Uses: checking and calibrating "forward" (`SERVO_FORWARD_POSITION`, `ENCODER_FORWARD_DEGREES`), and showing drivers when the turret is forward
+- Nothing physical stops the turret, so the software limits `MAX_LEFT_DEGREES` / `MAX_RIGHT_DEGREES` are the only protection against turning too far (into wires or the frame). Set them carefully
+- The light idea now means "turret is forward". Still to decide which light
 Who: Team

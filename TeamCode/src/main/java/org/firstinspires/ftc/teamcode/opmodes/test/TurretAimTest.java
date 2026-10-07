@@ -49,8 +49,6 @@ public class TurretAimTest extends LinearOpMode {
                 turret.turnForward();
             }
 
-            turret.update();
-
             telemetry.addLine("Hold RIGHT TRIGGER = aim     A = forward");
             telemetry.addLine();
             camera.addTelemetry(telemetry);
