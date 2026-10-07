@@ -9,11 +9,12 @@ We use **structured subsystems** (decision 006).
 teamcode/
 ├── Robot.java              ← holds every subsystem
 ├── subsystems/             ← one class per mechanism; the ONLY code that touches hardware
-│   ├── Camera.java         ← the Limelight and its servo. Not in Robot.java yet; see below
+│   ├── Camera.java         ← the Limelight. Not in Robot.java yet; see below
 │   ├── Drivetrain.java
 │   ├── Intake.java
 │   ├── Launcher.java
-│   └── Odometry.java       ← the Pinpoint (X, Y, heading). Not in Robot.java yet; see below
+│   ├── Odometry.java       ← the Pinpoint (X, Y, heading). Not in Robot.java yet; see below
+│   └── Turret.java         ← turns the launcher + camera left/right. Not in Robot.java yet; see below
 └── opmodes/                ← what shows up on the Driver Station
     ├── teleop/
     │   ├── DriverControls.java ← the ONLY code that turns gamepad sticks into drive commands
@@ -21,15 +22,17 @@ teamcode/
     ├── auto/
     └── test/               ← test and tuning OpModes (the "Tests" group on the Driver Station)
         ├── BrakeModeCheck.java
-        ├── CameraTest.java ← check the Limelight, find the camera servo positions (#7)
+        ├── CameraTest.java ← check the Limelight sees AprilTags (#7)
         ├── EncoderModeToggle.java ← drive and switch encoder mode with Y (#11)
         ├── PinpointTest.java
-        └── TestDriveMotors.java ← test-only helper; never used by real robot code
+        ├── TestDriveMotors.java ← test-only helper; never used by real robot code
+        ├── TurretAimTest.java ← the camera aims the turret (#7)
+        └── TurretTest.java ← calibrate the turret (#7)
 ```
 
-`Odometry` and `Camera` are created directly by the OpModes that need them, not by `Robot.java` yet. If a device
+`Odometry`, `Camera` and `Turret` are created directly by the OpModes that need them, not by `Robot.java` yet. If a device
 is missing from the Driver Station config, `new Robot(hardwareMap)` would crash **every** OpMode. Once the Pinpoint
-(issue #6) and the Limelight + camera servo (issue #7) are configured and tested on the robot, we'll add them
+(issue #6) and the Limelight + turret (issue #7) are configured and tested on the robot, we'll add them
 to `Robot.java` like the other subsystems.
 
 ## The rules

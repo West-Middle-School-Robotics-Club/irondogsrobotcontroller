@@ -150,9 +150,23 @@ Decision: **Basic Auton** (#22) is LEAVE + PARK with our own simple driving code
 Who: Team
 
 ## 015 – Camera: Limelight 3A on a servo, one `Camera` subsystem  (2026-10-07)
-Status: Accepted
+Status: **Replaced in part by 016** (the camera doesn't tilt; the servo turns the turret). The `limelight` name still stands
 Issue: #7
 Context: The team is using a **Limelight 3A** camera, aimed by a **servo**. BIOBUZZ AprilTags are on the bottoms of the CELLS, facing down, so the camera must tilt up to see them. Decision 009 had planned a webcam named `webcam`.
 Options: Separate subsystems for the camera and the servo, or one subsystem for both.
 Decision: **One `Camera` subsystem** (`subsystems/Camera.java`) holds the Limelight and its servo, because aiming the camera only matters for what the camera sees. Config names: **`limelight`** (the name FIRST's Limelight sample uses; one-of-a-kind device rule from 009, replacing `webcam`) and **`cameraServo`** (mechanism, then part). The servo never moves during INIT (G304.H); code calls `lookForward()` / `lookUp()` after START. Like `Odometry`, it is **not in `Robot.java` yet**: once the Limelight and servo are in the Driver Station config and tested with "Camera Test", we add it.
+Who: Team
+
+## 016 – Turret: positional servo, ELC encoder, magnetic limit switch  (2026-10-07)
+Status: Accepted
+Issue: #7, #5
+Context: The launcher (flywheel) sits on a **turret** that turns left and right, like a tank turret. The **Limelight is mounted on the turret** at a **fixed** up/down angle, so it turns with the turret. AprilTag feedback from the camera aims the turret. Hardware: a **positional servo** turns it, an **ELC Encoder V2** on the servo measures it, and a **REV Magnetic Limit Switch** marks the edge of its travel.
+Options for the encoder (it has both outputs): **analog absolute** (0–3.3 V, one turn) into an analog port, or **quadrature** (4000 counts per turn) into a motor encoder port.
+Decision:
+- **New `Turret` subsystem** (`subsystems/Turret.java`): `turretServo`, `turretEncoder`, `turretLimitSwitch`. `Camera` is now the Limelight only (no servo)
+- **Angles follow 007:** 0° = forward, + = left. The camera's `getTargetDegreesLeft()` feeds `turret.turnBy()`; because the camera rides on the turret, no extra math is needed
+- **Encoder on the analog port** for now: it knows the turret angle right at power-on (no homing), and the Control Hub's four encoder ports are likely taken by the drive motors. Quadrature is still an option if we need more precision
+- **Limit switch = hard stop:** when tripped, the turret only moves back toward forward. Soft limits (`MAX_LEFT/RIGHT_DEGREES`) sit just inside the magnets
+- **A light when the switch trips:** decide later (options: the hub's own LED, the gamepad LED/rumble, or an add-on light). `Turret.update()` has the spot for it
+- Not in `Robot.java` yet (same reason as `Camera`/`Odometry`)
 Who: Team
