@@ -28,7 +28,7 @@ teamcode/
         ├── LightTest.java ← check the light's colors
         ├── PinpointTest.java
         ├── TestDriveMotors.java ← test-only helper; never used by real robot code
-        └── TurretTest.java ← calibrate and home the turret (#31)
+        └── TurretTest.java ← turn the turret with the dpad, learn the ELC encoder, calibrate (#31)
 ```
 
 `Odometry`, `Camera`, `Turret` and `Light` are created directly by the OpModes that need them, not by `Robot.java` yet. If a device
