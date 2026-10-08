@@ -20,7 +20,7 @@ public class Light {
     public static final String LIGHT_NAME = "indicatorLight";
 
     /**
-     * Colors and their servo positions, from goBILDA's color chart (with the standard 500-2500 µs servo range).
+     * Colors and their servo positions, from goBILDA's color chart. Uses the FTC SDK's default servo signal range (600-2400 µs).
      * TODO(#31): check each color with the "Light Test" OpMode and fix any that look wrong.
      */
     public enum Color {

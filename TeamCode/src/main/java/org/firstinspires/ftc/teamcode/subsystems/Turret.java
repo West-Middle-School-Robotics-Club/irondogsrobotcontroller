@@ -3,7 +3,8 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.PwmControl;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -12,7 +13,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  * (issue #31, decisions 016, 017, 019).
  *
  * Hardware:
- *   turretServo          positional servo that turns the turret
+ *   turretServo          positional servo that turns the turret. For now (temporary): goBILDA 2000 Series
+ *                        Dual Mode Servo, 25-2 Torque (2000-0025-0002), in its default STANDARD (positional) mode,
+ *                        300 degrees of travel. Don't switch it to continuous mode.
  *   turretEncoder        ELC Encoder V2 on the servo. Use the connector marked "D" (digital = quadrature),
  *                        NOT "A" (analog). Plugged into an Expansion Hub MOTOR ENCODER port (decision 019).
  *                        It counts from 0 at power-on, so it must be HOMED.
@@ -35,11 +38,17 @@ public class Turret {
     public static final String ENCODER_NAME = "turretEncoder";
     public static final String FORWARD_SWITCH_NAME = "turretForwardSwitch";
 
+    // The servo's signal range in microseconds. The goBILDA 2000 servo needs 500-2500 to use all 300 degrees.
+    // (The FTC SDK's default is 600-2400, which would only give about 270 degrees.) Check this if we change servos.
+    public static final double SERVO_PWM_MIN_US = 500;
+    public static final double SERVO_PWM_MAX_US = 2500;
+
     // TODO(#31): the servo position (0.0 to 1.0) that points the turret straight forward.
     public static final double SERVO_FORWARD_POSITION = 0.5;
     // TODO(#31): how many turret degrees one full servo range (0.0 -> 1.0) turns.
-    // Example: a 270-degree servo turning the turret directly = 270. Make it NEGATIVE if a bigger servo position turns RIGHT.
-    public static final double TURRET_DEGREES_PER_SERVO_RANGE = 270.0;
+    // Our 300-degree servo turning the turret directly = 300. With gears, divide by the gear ratio.
+    // Make it NEGATIVE if a bigger servo position turns RIGHT.
+    public static final double TURRET_DEGREES_PER_SERVO_RANGE = 300.0;
 
     // ELC Encoder V2 data sheet: 4000 CPR (counts per revolution).
     // TODO(#31): check it: turn the encoder's hex exactly ONE full turn by hand. Raw counts should change by about 4000.
@@ -57,7 +66,7 @@ public class Turret {
     // TODO(#31): check with "Turret Test". REV's switch reads false when a magnet is near (active low).
     public static final boolean FORWARD_SWITCH_TRIGGERED_STATE = false;
 
-    private final Servo turretServo;
+    private final ServoImplEx turretServo;
     // Only used to READ the encoder port. We never give it power.
     private final DcMotorEx turretEncoder;
     private final DigitalChannel turretForwardSwitch;
@@ -70,7 +79,9 @@ public class Turret {
     private int homeCounts = 0;
 
     public Turret(HardwareMap hardwareMap) {
-        turretServo = hardwareMap.get(Servo.class, SERVO_NAME);
+        turretServo = hardwareMap.get(ServoImplEx.class, SERVO_NAME);
+        // Only sets the signal range; the servo doesn't move until the first turnTo().
+        turretServo.setPwmRange(new PwmControl.PwmRange(SERVO_PWM_MIN_US, SERVO_PWM_MAX_US));
         turretEncoder = hardwareMap.get(DcMotorEx.class, ENCODER_NAME);
         turretForwardSwitch = hardwareMap.get(DigitalChannel.class, FORWARD_SWITCH_NAME);
         turretForwardSwitch.setMode(DigitalChannel.Mode.INPUT);
