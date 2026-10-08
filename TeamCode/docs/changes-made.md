@@ -49,3 +49,4 @@ Added the `Light` subsystem for the goBILDA RGB Indicator Light (`indicatorLight
 
 10/8:
 Hardware review. The ELC encoder moves to its **quadrature** output on an **Expansion Hub motor-encoder port**, homed by the forward switch (decision 019). `Turret` now reads counts, homes in `update()`, and reports `isHomed()`. `Camera` is a skeleton (connection + tags seen), and the aiming code (`getTargetDegreesLeft()`, `turnBy()`, "Turret Aim Test") was removed until the camera design is done (#7). Limelight must use the USB 3.0 port. Basic Auton is drive-only (decision 020). Turret work moved to its own issue, #31.
+Read the ELC Encoder V2 data sheet: use its **"D"** connector (quadrature), 3.3–3.6 V and JST-PH 4-pin match the hub's encoder port, 4000 counts per revolution (confirms `ENCODER_COUNTS_PER_REV`). Added a one-turn check to #31.
