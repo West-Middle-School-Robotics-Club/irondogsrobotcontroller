@@ -13,8 +13,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  *
  * Hardware:
  *   turretServo          positional servo that turns the turret
- *   turretEncoder        ELC Encoder V2 on the servo, QUADRATURE output, plugged into an Expansion Hub
- *                        MOTOR ENCODER port (decision 019). It counts from 0 at power-on, so it must be HOMED.
+ *   turretEncoder        ELC Encoder V2 on the servo. Use the connector marked "D" (digital = quadrature),
+ *                        NOT "A" (analog). Plugged into an Expansion Hub MOTOR ENCODER port (decision 019).
+ *                        It counts from 0 at power-on, so it must be HOMED.
  *   turretForwardSwitch  REV Magnetic Limit Switch: tells us when the turret is facing FORWARD (decision 017).
  *                        It is only an indicator, NOT a stop. It is also our HOME sensor.
  *
@@ -40,7 +41,8 @@ public class Turret {
     // Example: a 270-degree servo turning the turret directly = 270. Make it NEGATIVE if a bigger servo position turns RIGHT.
     public static final double TURRET_DEGREES_PER_SERVO_RANGE = 270.0;
 
-    // TODO(#31): check against the ELC Encoder V2 docs: encoder counts for one full turn of the encoder.
+    // ELC Encoder V2 data sheet: 4000 CPR (counts per revolution).
+    // TODO(#31): check it: turn the encoder's hex exactly ONE full turn by hand. Raw counts should change by about 4000.
     public static final double ENCODER_COUNTS_PER_REV = 4000.0;
     // TODO(#31): encoder turns per turret turn (the gear ratio). 1.0 if they turn together.
     public static final double ENCODER_REVS_PER_TURRET_REV = 1.0;
