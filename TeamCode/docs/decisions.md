@@ -158,7 +158,7 @@ Decision: **One `Camera` subsystem** (`subsystems/Camera.java`) holds the Limeli
 Who: Team
 
 ## 016 – Turret: positional servo, ELC encoder, magnetic limit switch  (2026-10-07)
-Status: Accepted. **The limit switch part is replaced by 017** (it's a forward indicator, not a stop)
+Status: Accepted. **The limit switch part is replaced by 017** (it's a forward indicator, not a stop). **The encoder and camera-aiming parts are replaced by 019**
 Issue: #7, #5
 Context: The launcher (flywheel) sits on a **turret** that turns left and right, like a tank turret. The **Limelight is mounted on the turret** at a **fixed** up/down angle, so it turns with the turret. AprilTag feedback from the camera aims the turret. Hardware: a **positional servo** turns it, an **ELC Encoder V2** on the servo measures it, and a **REV Magnetic Limit Switch** marks the edge of its travel.
 Options for the encoder (it has both outputs): **analog absolute** (0–3.3 V, one turn) into an analog port, or **quadrature** (4000 counts per turn) into a motor encoder port.
@@ -193,4 +193,22 @@ Decision:
 - The light doesn't move anything, so it's **OK during INIT**: drivers can see the turret is forward while setting up for the match
 - Color positions come from goBILDA's color chart; check them with "Light Test"
 - Not in `Robot.java` yet (same reason as `Camera`/`Turret`/`Odometry`)
+Who: Team
+
+## 019 – Turret encoder on an Expansion Hub encoder port, homed by the forward switch; camera is a skeleton  (2026-10-08)
+Status: Accepted
+Issue: #31, #7
+Context: The team wants the ELC Encoder V2's **digital (quadrature)** output, not analog (016). Quadrature signals change thousands of times per turn. The hub's **digital ports** are only read when our code asks, so they would miss counts. FTC reads quadrature only on **motor encoder ports**, and we have an **Expansion Hub** with 4 more. Meanwhile, the other mentor is designing how the camera aims the turret.
+Decision:
+- **`turretEncoder` plugs into an Expansion Hub motor-encoder port.** In the config, that motor port is set up as a motor named `turretEncoder`, which we only read and never power
+- **Homing:** quadrature starts at 0 at power-on. The **forward switch (017) is the home sensor**: `Turret.update()` sets 0° the first time it triggers. Before a match, point the turret forward (the light turns green, 018) and it homes during INIT
+- **Camera is a skeleton** (start the Limelight, which tags it sees). **How to aim is not decided yet** (#7). We removed `getTargetDegreesLeft()`, `Turret.turnBy()` and "Turret Aim Test" so we don't guess. **Only the turret moves based on camera data**, never the whole robot
+- **The Limelight must use the Control Hub's USB 3.0 port**
+Who: Team
+
+## 020 – Basic Auton is drive-only  (2026-10-08)
+Status: Accepted
+Issue: #22, #25
+Context: Decision 014 made Basic Auton LEAVE + PARK. Issue #22 also planned a "Level 2" with launching the preloads.
+Decision: **Basic Auton only drives**, to earn the movement points (LEAVE + PARK, and the SWARM ranking point with our partner). **No camera, turret or launcher.** Anything using them goes in **Advanced Auton** (#25) or a later refactor.
 Who: Team

@@ -16,8 +16,8 @@ Our team's fork of FIRST's FtcRobotController (SDK v12.0). Middle school team; c
 - **Structured subsystems** (006): only `subsystems/` touch hardware; OpModes start with `new Robot(hardwareMap)`
 - **Directions** (007): +X forward, +Y left, +heading counter-clockwise. Only `opmodes/teleop/DriverControls.java` reads/flips gamepad sticks
 - **Field coordinates** (011): origin at field center, +X → far wall, +Y → red wall. Blue = Red rotated 180°
-- **Autonomous** (012–014): **Basic Auton** = LEAVE + PARK with our own `Drivetrain` (no Pedro, a hedge). **Advanced Auton** = Pedro Pathing (trial), where Pedro's `Follower` drives the wheels. TeleOp uses our `Drivetrain`. All other subsystems are shared; Pedro reads our constants
-- **Naming** (009): config name = variable name (`frontLeftDrive`); single devices `imu`, `pinpoint`, `limelight`. Limelight on a turret: `subsystems/Camera.java`, `subsystems/Turret.java` (015–017). Turret angles: 0 = forward, + = left. `turretForwardSwitch` only indicates forward, it's not a stop. `Light.java` (018) only knows colors; OpModes decide what they mean
+- **Autonomous** (012–014, 020): **Basic Auton** = LEAVE + PARK, **drive-only** (no Pedro, camera, turret or launcher; a hedge). **Advanced Auton** = Pedro Pathing (trial), where Pedro's `Follower` drives the wheels. TeleOp uses our `Drivetrain`. All other subsystems are shared; Pedro reads our constants
+- **Naming** (009): config name = variable name (`frontLeftDrive`); single devices `imu`, `pinpoint`, `limelight`. Limelight (USB 3.0 port) on a turret: `subsystems/Camera.java` (skeleton, #7; aiming not designed yet), `subsystems/Turret.java` (#31). Turret angles: 0 = forward, + = left. Only the turret moves on camera data. `turretForwardSwitch` is the turret's home sensor, not a stop; `turretEncoder` is quadrature on an Expansion Hub encoder port (019). `Light.java` (018) only knows colors; OpModes decide what they mean
 - **Test code stays in `opmodes/test/`** (code-structure rule 8): real code never uses it, no test-only methods in subsystems
 - **INIT must not move anything** (game rule G304.H / G403)
 

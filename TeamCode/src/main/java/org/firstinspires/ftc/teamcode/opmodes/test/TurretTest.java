@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Light;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 
 /**
- * TEST: calibrate the turret (issue #7). Follow the steps in issue #7 and record the numbers there.
+ * TEST: calibrate the turret. Follow the steps in issue #31 and record the numbers there.
  *
  * Controls (gamepad 1), all after START:
  *   dpad left / right   move the SERVO a little (+/- 0.01). Hold a bumper for big steps (0.05)
@@ -18,8 +18,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Turret;
  * The dpad moves the servo DIRECTLY by position, so you can calibrate before the constants are right.
  * It does NOT use the MAX_LEFT/RIGHT limits, so move slowly near the ends!
  *
- * Tip: the forward switch says YES (and the light turns GREEN) when the turret faces forward.
- * Use it to find SERVO_FORWARD_POSITION and ENCODER_FORWARD_DEGREES.
+ * The forward switch says YES (and the light turns GREEN) when the turret faces forward.
+ * The first time that happens, the encoder is HOMED: that spot becomes 0 degrees.
  */
 @TeleOp(name = "Turret Test", group = "Tests")
 public class TurretTest extends LinearOpMode {
@@ -32,8 +32,9 @@ public class TurretTest extends LinearOpMode {
         Servo turretServo = hardwareMap.get(Servo.class, Turret.SERVO_NAME);
         double servoPosition = Turret.SERVO_FORWARD_POSITION;
 
-        // INIT: nothing moves until START (game rule G304.H). Readings work already.
+        // INIT: nothing moves until START (game rule G304.H). Readings and homing work already.
         while (opModeInInit()) {
+            turret.update();
             showForward(turret, light);
             telemetry.addLine("Press START. The turret will go to SERVO_FORWARD_POSITION.");
             addReadings(turret, servoPosition);
@@ -43,6 +44,7 @@ public class TurretTest extends LinearOpMode {
         turretServo.setPosition(servoPosition);
 
         while (opModeIsActive()) {
+            turret.update();
             double step = (gamepad1.left_bumper || gamepad1.right_bumper) ? 0.05 : 0.01;
 
             if (gamepad1.dpadLeftWasPressed()) {
@@ -83,7 +85,6 @@ public class TurretTest extends LinearOpMode {
         turret.addTelemetry(telemetry);
         telemetry.addLine();
         telemetry.addData("Servo position (dpad)", "%.2f", servoPosition);
-        telemetry.addData("Encoder voltage", "%.3f V", turret.getEncoderVoltage());
-        telemetry.addData("Encoder degrees (0-360)", "%.1f", turret.getEncoderVoltage() / 3.3 * 360.0);
+        telemetry.addData("Encoder counts (raw)", turret.getEncoderCounts());
     }
 }
