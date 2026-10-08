@@ -28,13 +28,12 @@ teamcode/
         ├── LightTest.java ← check the light's colors
         ├── PinpointTest.java
         ├── TestDriveMotors.java ← test-only helper; never used by real robot code
-        ├── TurretAimTest.java ← the camera aims the turret (#7)
-        └── TurretTest.java ← calibrate the turret (#7)
+        └── TurretTest.java ← calibrate and home the turret (#31)
 ```
 
 `Odometry`, `Camera`, `Turret` and `Light` are created directly by the OpModes that need them, not by `Robot.java` yet. If a device
 is missing from the Driver Station config, `new Robot(hardwareMap)` would crash **every** OpMode. Once the Pinpoint
-(issue #6) and the Limelight, turret and light (issue #7) are configured and tested on the robot, we'll add them
+(issue #6) the Limelight (issue #7), and the turret and light (issue #31) are configured and tested on the robot, we'll add them
 to `Robot.java` like the other subsystems.
 
 ## The rules

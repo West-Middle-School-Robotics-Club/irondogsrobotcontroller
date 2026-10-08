@@ -31,6 +31,15 @@ If a name doesn't match, the OpMode crashes on INIT with an error like `Unable t
 In encoder speed control mode (`RUN_USING_ENCODER`, decision 008), the SDK uses the configured motor type to know the motor's top speed.
 A wrong type can make the robot much slower. Drive motor model / ratio: ______
 
+## Hubs
+
+| Hub | Notes |
+|---|---|
+| Control Hub | Drive motors (all 4 motor ports), Limelight (USB 3.0), Pinpoint (I2C) |
+| Expansion Hub | Flywheel and intake motors (#5, #4), `turretEncoder` (motor-encoder port, decision 019). Connected by: ___ (RS485 cable) |
+
+Each motor port has a matching **encoder port** with the same number. Ports on the Expansion Hub count from 0 again.
+
 ## IMU
 
 | Config name | Device type | Hub / Port | Notes |
@@ -59,17 +68,17 @@ A wrong type can make the robot much slower. Drive motor model / ratio: ______
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| `limelight` | Limelight 3A | Control Hub / USB | Mounted on the turret, fixed tilt angle: ___° up |
+| `limelight` | Limelight 3A | Control Hub / **USB 3.0 port** | ⚠️ **Must use the port labeled USB 3.0.** Mounted on the turret, fixed tilt angle: ___° up |
 
-## Turret (`subsystems/Turret.java`, issue #7, decisions 016, 017)
+## Turret (`subsystems/Turret.java`, issue #31, decisions 016, 017, 019)
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
 | `turretServo` | Servo | ___ / servo port ___ | Positional servo (180° or 270°: ___) |
-| `turretEncoder` | Analog Input | ___ / analog port ___ | ELC Encoder V2, **analog** output. ⚠️ Check the cable's pin order matches the hub's analog port before plugging in |
+| `turretEncoder` | Motor (encoder only, never powered) | **Expansion Hub** / motor-encoder port ___ | ELC Encoder V2, **quadrature** output (decision 019). Configure the motor port with this name; the code only reads its encoder. ⚠️ Check the cable's pin order and voltage match the hub's encoder port before plugging in |
 | `turretForwardSwitch` | Digital Device | ___ / digital port ___ | REV Magnetic Limit Switch: triggers when the turret faces **forward** (indicator, not a stop, decision 017). Digital ports have 2 channels (n, n+1): if it never changes, try the other channel number |
 
-## Light (`subsystems/Light.java`, decision 018)
+## Light (`subsystems/Light.java`, issue #31, decision 018)
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|

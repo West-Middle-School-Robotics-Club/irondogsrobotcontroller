@@ -21,7 +21,7 @@ public class Light {
 
     /**
      * Colors and their servo positions, from goBILDA's color chart (with the standard 500-2500 µs servo range).
-     * TODO(#7): check each color with the "Light Test" OpMode and fix any that look wrong.
+     * TODO(#31): check each color with the "Light Test" OpMode and fix any that look wrong.
      */
     public enum Color {
         OFF(0.0),
