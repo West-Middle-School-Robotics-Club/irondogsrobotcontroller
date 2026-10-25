@@ -55,7 +55,7 @@ public class Camera {
     public static final double CAMERA_MOUNT_TILT_DEGREES = 0.0; // <-- EDIT when the mount changes (e.g. 25.0)
 
     // Height of the camera LENS above the floor, in inches. TODO(#7): measure on the robot (placeholder).
-    public static final double CAMERA_HEIGHT_INCHES = 12.0;
+    public static final double CAMERA_HEIGHT_INCHES = 13.0;
 
     // Height of the AprilTag above the floor, in inches. The CELL pivot is ~44 in up (field.md 9.6);
     // the tag is on the CELL's bottom face. TODO(#7): measure on a real HIVE.

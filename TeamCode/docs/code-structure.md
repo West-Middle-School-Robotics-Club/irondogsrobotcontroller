@@ -32,6 +32,7 @@ teamcode/
         ├── PinpointTest.java
         ├── RedCameraTest.java ← camera as RED: only tags 30-37 are targets
         ├── TestDriveMotors.java ← test-only helper; never used by real robot code
+        ├── TestLauncher.java ← test whether the launcher flywheel motor spins (#5)
         ├── TurretServoRawTest.java ← the turret servo ALONE: joystick speed, no homing/limits (#31)
         └── TurretTest.java ← turn the (continuous) turret with the dpad, learn the ELC encoder, calibrate (#31)
 ```

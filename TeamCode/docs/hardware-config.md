@@ -68,7 +68,7 @@ Each motor port has a matching **encoder port** with the same number. Ports on t
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| ___ | ___ | ___ | Waiting on build team |
+| `launcherMotor` | Motor (DcMotorEx) | Expansion Hub / motor port ___ | **goBILDA 5203 Series Yellow Jacket Motor**. Configure as `goBILDA 5203 Series` in Driver Station |
 
 ## Camera (`subsystems/Camera.java`, issue #7, decisions 015, 016)
 
