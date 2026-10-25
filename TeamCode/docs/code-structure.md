@@ -7,6 +7,7 @@ We use **structured subsystems** (decision 006).
 
 ```
 teamcode/
+├── Alliance.java           ← RED or BLUE; the OpMode picks it (decision 022)
 ├── Robot.java              ← holds every subsystem
 ├── subsystems/             ← one class per mechanism; the ONLY code that touches hardware
 │   ├── Camera.java         ← the Limelight. Not in Robot.java yet; see below
@@ -22,11 +23,14 @@ teamcode/
     │   └── ExampleTeleOp.java
     ├── auto/
     └── test/               ← test and tuning OpModes (the "Tests" group on the Driver Station)
+        ├── AllianceCameraTest.java ← shared code for the red/blue camera tests (#7)
+        ├── BlueCameraTest.java ← camera as BLUE: only tags 38-45 are targets
         ├── BrakeModeCheck.java
         ├── CameraTest.java ← check the Limelight sees AprilTags (#7)
         ├── EncoderModeToggle.java ← drive and switch encoder mode with Y (#11)
         ├── LightTest.java ← check the light's colors
         ├── PinpointTest.java
+        ├── RedCameraTest.java ← camera as RED: only tags 30-37 are targets
         ├── TestDriveMotors.java ← test-only helper; never used by real robot code
         ├── TurretServoRawTest.java ← the turret servo ALONE: joystick speed, no homing/limits (#31)
         └── TurretTest.java ← turn the (continuous) turret with the dpad, learn the ELC encoder, calibrate (#31)

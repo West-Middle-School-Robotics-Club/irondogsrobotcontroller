@@ -10,14 +10,14 @@ public class HelloWorld extends OpMode {
 
     @Override
     public void init() {
-        telemetry.addData("Hello", "Irondogs"); //test comment
+        telemetry.addData("Hello", "Irondogs!"); //test comment
     }
 
     @Override
     public void loop() {
         /*
         1. this is our test loop
-        2. test 'hello irondogs, adding to repo.
+        2. test 'hello irondogs', adding to repo.
          */
     }
 }

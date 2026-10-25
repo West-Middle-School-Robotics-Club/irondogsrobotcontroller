@@ -189,7 +189,7 @@ Context: We want a light that shows when the turret faces forward (017). We have
 Options: Put the light inside `Turret`, or make it its own subsystem.
 Decision:
 - **Own subsystem: `subsystems/Light.java`**, config name **`indicatorLight`** (configured as a Servo). It only knows colors (`Light.Color.GREEN`, `RED`, `OFF`, ...). **The OpMode decides what each color means**, so the same light can show other things later (target locked, pollen loaded)
-- First use: **GREEN = turret facing forward** (in "Turret Test")
+- First use: **GREEN = turret facing forward** (in "Turret Test"). 10/25: **RED / BLUE = our alliance** during INIT and the match (in "Main TeleOp", decision 022)
 - The light doesn't move anything, so it's **OK during INIT**: drivers can see the turret is forward while setting up for the match
 - Color positions come from goBILDA's color chart; check them with "Light Test"
 - Not in `Robot.java` yet (same reason as `Camera`/`Turret`/`Odometry`)
@@ -223,4 +223,28 @@ Decision:
 - The code sends a **speed**, not a position. **Our code holds the angle** using the ELC encoder (019): `Turret.update()` runs every loop and uses **proportional control** (speed = `AIM_GAIN` × degrees from the target, up to `MAX_SPEED`)
 - **Homing is required:** `turnTo()` only works after the forward switch has triggered once. Before that, manual moves are slow (`NOT_HOMED_MAX_SPEED`)
 - **Safety:** after homing, nothing moves past `MAX_LEFT/RIGHT_DEGREES`. A **runaway stop** halts the turret if it moves away from its target (a sign that `SERVO_REVERSED` or `ENCODER_REVERSED` is wrong). Nothing moves until the first command (INIT rule)
+Who: Team
+
+## 022 – The OpMode picks our alliance; the camera only targets our alliance's tags  (2026-10-24)
+Status: Accepted
+Issue: #7
+Context: BIOBUZZ CELL AprilTags come in two colors: Red 30–37 and Blue 38–45. The camera saw all of them and the Limelight's "primary target" could be the other alliance's tag. In a match we only ever aim at our own color.
+Options: (a) Separate Limelight pipelines per alliance with an ID filter (needs Limelight web config, and someone must switch pipelines). (b) Filter in our code using the tag ID ranges we already have.
+Decision:
+- **(b) Filter in code.** New `Alliance` enum (`RED`, `BLUE`) in `teamcode/`. The **OpMode** tells the camera which alliance we are (`new Camera(hardwareMap, Alliance.RED)` or `camera.setAlliance(...)`). Subsystems never guess the alliance
+- `Camera` keeps **seeing** every tag (`getVisibleTagIds()`, telemetry "Other tags (ignored)") but **targets only our color**: `getTargetDegreesLeft()`, `getTargetDegreesUp()`, `getTargetArea()`, `getTargetTagId()`, `seesOurTag()`. If several of our tags are visible, the target is the one with the **biggest area** (closest)
+- **No alliance set = every BIOBUZZ tag counts** (plain "Camera Test" on the bench). Match OpModes must always set one
+- Test with **"Red Camera Test" / "Blue Camera Test"** (`opmodes/test/`, shared code in `AllianceCameraTest`)
+- Later: the same `Alliance` picks the autonomous start side (011)
+Who: Team
+
+## 023 – TeleOp drives in FLOAT, autonomous in BRAKE  (2026-10-25)
+Status: Accepted
+Issue: #17
+Context: The drive motors' zero-power behavior decides what happens when the sticks are released: **BRAKE** stops the robot quickly, **FLOAT** lets it coast. Students drive in TeleOp and smoother stops are easier to control; autonomous needs to stop exactly where it planned.
+Decision:
+- **`Drivetrain` defaults to BRAKE** (set in the constructor) and has **`setBrakeOnStop(true/false)`**. Every OpMode gets BRAKE unless it asks for FLOAT
+- **"Main TeleOp" calls `setBrakeOnStop(false)` → FLOAT.** Autonomous leaves the default → BRAKE
+- Because the constructor sets it every time an OpMode starts, the #17 question (does brake mode carry over between OpModes?) no longer matters for real code
+- Telemetry shows "Stop mode" so the driver can see which one is active
 Who: Team
