@@ -11,6 +11,9 @@ import org.firstinspires.ftc.teamcode.subsystems.Camera;
  * Nothing moves in this test. Hold an AprilTag (IDs 30-45) in front of the camera, or point the robot
  * at a CELL, and check that "AprilTags seen" shows the tag's ID.
  *
+ * No alliance is chosen here, so EVERY BIOBUZZ tag counts as a target. To check that the camera
+ * ignores the other alliance's color, use "Red Camera Test" or "Blue Camera Test" (decision 022).
+ *
  * "Camera connected" = false? Check it's in the Control Hub USB port labeled "USB 3.0".
  */
 @TeleOp(name = "Camera Test", group = "Tests")
