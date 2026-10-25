@@ -25,8 +25,8 @@ public class Light {
      */
     public enum Color {
         OFF(0.0),
-        RED(0.277),
-        ORANGE(0.333),
+        RED(0.282),
+        ORANGE(0.308),
         YELLOW(0.388),
         SAGE(0.444),
         GREEN(0.500),

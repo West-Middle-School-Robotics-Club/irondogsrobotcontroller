@@ -74,7 +74,7 @@ Each motor port has a matching **encoder port** with the same number. Ports on t
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| `limelight` | Limelight 3A | Control Hub / **USB 3.0 port** | ⚠️ **Must use the port labeled USB 3.0.** Mounted on turret, edit tilt angle constant `CAMERA_MOUNT_TILT_DEGREES` in `Camera.java` |
+| `limelight` | Limelight 3A | Control Hub / **USB 3.0 port** | ⚠️ **Must use the port labeled USB 3.0.** Mounted on turret. For distance math, measure and set in `Camera.java`: `CAMERA_MOUNT_TILT_DEGREES` (0 = faces forward; bench bot = 0), `CAMERA_HEIGHT_INCHES` (lens above floor, **not measured yet**), `TAG_HEIGHT_INCHES`. Limelight pipeline marker size = **3.25 in (82.55 mm)** |
 
 ## Turret (`subsystems/Turret.java`, issue #31, decisions 016, 017, 019, 021)
 

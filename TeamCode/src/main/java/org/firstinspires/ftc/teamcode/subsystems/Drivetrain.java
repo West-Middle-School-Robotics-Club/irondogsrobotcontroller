@@ -28,12 +28,14 @@ public class Drivetrain {
     // Our toggle for issue #11 comparison test for Wednesday:
     // false = RUN_WITHOUT_ENCODER (power = % of battery voltage, proposed decision 008)
     // true  = RUN_USING_ENCODER (speed control using motor encoders)
-    public static final boolean USE_ENCODER_SPEED_CONTROL = false;
+    public static final boolean USE_ENCODER_SPEED_CONTROL = true;
 
     private final DcMotor frontLeftDrive;
     private final DcMotor frontRightDrive;
     private final DcMotor backLeftDrive;
     private final DcMotor backRightDrive;
+
+    private boolean brakeOnStop = true;
 
     public Drivetrain(HardwareMap hardwareMap) {
         frontLeftDrive  = hardwareMap.get(DcMotor.class, FRONT_LEFT_DRIVE_NAME);
@@ -53,10 +55,33 @@ public class Drivetrain {
                 : DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 
         for (DcMotor motor : new DcMotor[] {frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive}) {
-            // BRAKE makes the robot stop quickly when the sticks are released.
-            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             motor.setMode(runMode);
         }
+
+        // Default is BRAKE (precise stops, what autonomous needs). TeleOp switches to FLOAT
+        // for smoother driving by calling setBrakeOnStop(false). See decision 023.
+        setBrakeOnStop(true);
+    }
+
+    /**
+     * What the wheels do when power is 0 (decision 023).
+     *   true  = BRAKE: the motors resist turning, so the robot stops quickly. Autonomous uses this for precise moves.
+     *   false = FLOAT: the wheels coast to a stop. TeleOp uses this so driving feels smoother.
+     * This doesn't move anything, so it's OK to call during INIT.
+     */
+    public void setBrakeOnStop(boolean brake) {
+        brakeOnStop = brake;
+        DcMotor.ZeroPowerBehavior behavior = brake
+                ? DcMotor.ZeroPowerBehavior.BRAKE
+                : DcMotor.ZeroPowerBehavior.FLOAT;
+        for (DcMotor motor : new DcMotor[] {frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive}) {
+            motor.setZeroPowerBehavior(behavior);
+        }
+    }
+
+    /** True if the wheels BRAKE at zero power, false if they FLOAT. */
+    public boolean isBrakeOnStop() {
+        return brakeOnStop;
     }
 
     /**
@@ -98,6 +123,7 @@ public class Drivetrain {
     /** Show this subsystem's status on the Driver Station. */
     public void addTelemetry(Telemetry telemetry) {
         telemetry.addData("Drive mode", USE_ENCODER_SPEED_CONTROL ? "RUN_USING_ENCODER" : "RUN_WITHOUT_ENCODER");
+        telemetry.addData("Stop mode", brakeOnStop ? "BRAKE" : "FLOAT");
         telemetry.addData("Drivetrain front L/R", "%.2f  %.2f", frontLeftDrive.getPower(), frontRightDrive.getPower());
         telemetry.addData("Drivetrain back  L/R", "%.2f  %.2f", backLeftDrive.getPower(), backRightDrive.getPower());
     }
