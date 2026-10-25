@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 /**
  * Launcher subsystem: scores game elements using a flywheel launcher (issue #5).
@@ -25,7 +26,8 @@ public class Launcher {
 
     // Speed / power constants
     public static final double DEFAULT_SPIN_POWER = 1.0;
-    public static final boolean MOTOR_REVERSED = false;
+    // Motor direction is locked to REVERSED as requested.
+    public static final boolean MOTOR_REVERSED = true;
 
     // Minimum encoder velocity (ticks/sec) to consider flywheel ready (if encoders present)
     public static final double READY_VELOCITY_THRESHOLD = 1000.0;
@@ -82,6 +84,18 @@ public class Launcher {
         return 0.0;
     }
 
+    /** Current drawn by the launcher motor in Amperes (0.0 if offline/error). */
+    public double getCurrentAmps() {
+        if (launcherMotor != null) {
+            try {
+                return launcherMotor.getCurrent(CurrentUnit.AMPS);
+            } catch (Exception e) {
+                return 0.0;
+            }
+        }
+        return 0.0;
+    }
+
     /** Launch one game element. Only call this when isReady() is true. */
     public void fire() {
         // TODO(#5): trigger feed servo or pusher mechanism once designed
@@ -111,6 +125,7 @@ public class Launcher {
             telemetry.addData("Launcher Status", isReady() ? "READY (Spinning)" : (getPower() != 0 ? "SPINNING" : "STOPPED"));
             telemetry.addData("Launcher Power", "%.2f", getPower());
             telemetry.addData("Launcher Velocity", "%.0f ticks/s", getVelocity());
+            telemetry.addData("Launcher Current", "%.2f A", getCurrentAmps());
         } else {
             telemetry.addData("Launcher", "OFFLINE (device '%s' not in DS config)", FLYWHEEL_NAME);
         }

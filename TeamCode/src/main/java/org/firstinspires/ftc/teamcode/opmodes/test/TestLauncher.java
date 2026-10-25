@@ -5,11 +5,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.subsystems.Launcher;
 
 /**
  * TEST: Verify whether the launcher flywheel motor (goBILDA 5203 Series Yellow Jacket) can spin
  * and test various powers/speeds (issue #5).
+ *
+ * Direction is locked to REVERSED by default as per launcher subsystem configuration.
  *
  * Controls (gamepad 1):
  *   A                   Spin up at test speed / toggle spin
@@ -32,19 +35,21 @@ public class TestLauncher extends LinearOpMode {
         DcMotorEx directMotor;
         try {
             directMotor = hardwareMap.get(DcMotorEx.class, Launcher.FLYWHEEL_NAME);
+            directMotor.setDirection(Launcher.MOTOR_REVERSED ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
         } catch (Exception e) {
             directMotor = null;
         }
 
         double testPower = 0.5; // Default test power level
         boolean isSpinning = false;
-        boolean directionReversed = false;
+        boolean directionReversed = Launcher.MOTOR_REVERSED; // Locked to REVERSED by default
 
         // INIT loop
         while (opModeInInit()) {
             telemetry.addLine("=== LAUNCHER SPIN TEST ===");
             if (launcher.isConnected()) {
                 telemetry.addData("Hardware Status", "CONNECTED ('%s')", Launcher.FLYWHEEL_NAME);
+                telemetry.addData("Direction Lock", "REVERSED (Default)");
             } else {
                 telemetry.addData("Hardware Status", "⚠️ NOT FOUND ('%s' missing in DS config)", Launcher.FLYWHEEL_NAME);
                 telemetry.addLine("Check Driver Station configuration: name must be 'launcherMotor'");
@@ -103,12 +108,12 @@ public class TestLauncher extends LinearOpMode {
             telemetry.addLine("=== LAUNCHER TEST CONTROLS ===");
             telemetry.addLine("A = Toggle Spin | B = STOP | Right Trigger = Variable Power");
             telemetry.addLine("Dpad UP/DOWN = Adjust Power | X = 50% | Y = 100%");
-            telemetry.addLine("Dpad LEFT/RIGHT = Reverse Direction");
+            telemetry.addLine("Dpad LEFT/RIGHT = Toggle Direction");
             telemetry.addLine();
 
             telemetry.addData("Spin Toggle State", isSpinning ? "ON" : "OFF");
             telemetry.addData("Test Power Setting", "%.0f%%", testPower * 100);
-            telemetry.addData("Motor Direction", directionReversed ? "REVERSED" : "FORWARD");
+            telemetry.addData("Motor Direction", directionReversed ? "REVERSED (Locked)" : "FORWARD");
             telemetry.addLine();
 
             telemetry.addLine("--- Subsystem Telemetry ---");
@@ -118,6 +123,7 @@ public class TestLauncher extends LinearOpMode {
                 telemetry.addLine("--- Raw Motor Diagnostics ---");
                 telemetry.addData("Raw Motor Power", "%.2f", directMotor.getPower());
                 telemetry.addData("Encoder Velocity", "%.0f ticks/s", directMotor.getVelocity());
+                telemetry.addData("Motor Current", "%.2f Amps", directMotor.getCurrent(CurrentUnit.AMPS));
                 telemetry.addData("Encoder Position", "%d ticks", directMotor.getCurrentPosition());
             }
 
