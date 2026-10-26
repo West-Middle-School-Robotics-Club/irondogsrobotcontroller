@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.PwmControl;
 
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.subsystems.Power;
 
 /**
  * TEST: the turret servo ALONE, with nothing else in the way (issue #31).
@@ -30,6 +31,7 @@ public class TurretServoRawTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        Power power = new Power(hardwareMap); // battery voltage + current on every test
         CRServoImplEx turretServo = hardwareMap.get(CRServoImplEx.class, Turret.SERVO_NAME);
         turretServo.setPwmRange(new PwmControl.PwmRange(Turret.SERVO_PWM_MIN_US, Turret.SERVO_PWM_MAX_US));
 
@@ -39,6 +41,7 @@ public class TurretServoRawTest extends LinearOpMode {
             telemetry.addData("Signal range", "%.0f to %.0f µs (stop = %.0f µs)",
                     Turret.SERVO_PWM_MIN_US, Turret.SERVO_PWM_MAX_US,
                     (Turret.SERVO_PWM_MIN_US + Turret.SERVO_PWM_MAX_US) / 2);
+            power.addTelemetry(telemetry);
             telemetry.update();
         }
 
@@ -65,6 +68,7 @@ public class TurretServoRawTest extends LinearOpMode {
             telemetry.addLine();
             telemetry.addLine("Continuous mode: spins while held, stops in place when released.");
             telemetry.addLine("Stops while held + goes BACK when released = still in servo mode.");
+            power.addTelemetry(telemetry);
             telemetry.update();
         }
 

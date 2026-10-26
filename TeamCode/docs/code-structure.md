@@ -16,11 +16,15 @@ teamcode/
 │   ├── Launcher.java
 │   ├── Light.java          ← the goBILDA RGB light. Not in Robot.java yet; see below
 │   ├── Odometry.java       ← the Pinpoint (X, Y, heading). Not in Robot.java yet; see below
+│   ├── Power.java          ← battery voltage + hub current, shown on every test and Main TeleOp
 │   └── Turret.java         ← turns the launcher + camera left/right. Not in Robot.java yet; see below
 └── opmodes/                ← what shows up on the Driver Station
     ├── teleop/
     │   ├── DriverControls.java ← the ONLY code that turns gamepad sticks into drive commands
-    │   └── ExampleTeleOp.java
+    │   ├── ExampleTeleOp.java
+    │   ├── MainTeleOp.java     ← the match TeleOp (shared code, no @TeleOp of its own)
+    │   ├── MainTeleOpRed.java  ← "Main TeleOp RED": picks Alliance.RED (decision 022)
+    │   └── MainTeleOpBlue.java ← "Main TeleOp BLUE": picks Alliance.BLUE
     ├── auto/
     └── test/               ← test and tuning OpModes (the "Tests" group on the Driver Station)
         ├── AllianceCameraTest.java ← shared code for the red/blue camera tests (#7)

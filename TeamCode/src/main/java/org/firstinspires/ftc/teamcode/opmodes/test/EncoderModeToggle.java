@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.opmodes.teleop.DriverControls;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
+import org.firstinspires.ftc.teamcode.subsystems.Power;
 
 /**
  * TEST: compare driving WITH and WITHOUT encoder speed control (issue #11, decision 008).
@@ -27,10 +28,12 @@ public class EncoderModeToggle extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        Power power = new Power(hardwareMap); // battery voltage + current on every test
         Robot robot = new Robot(hardwareMap);
         boolean useEncoders = Drivetrain.USE_ENCODER_SPEED_CONTROL;  // start with the real setting
 
         telemetry.addLine("Press START, then Y to switch modes.");
+        power.addTelemetry(telemetry);
         telemetry.update();
         waitForStart();
 
@@ -49,6 +52,7 @@ public class EncoderModeToggle extends LinearOpMode {
             telemetry.addData("Slow mode", slowMode ? "ON" : "OFF");
             telemetry.addLine();
             telemetry.addLine("Y (gamepad 1 or 2) = switch mode");
+            power.addTelemetry(telemetry);
             telemetry.update();
         }
 

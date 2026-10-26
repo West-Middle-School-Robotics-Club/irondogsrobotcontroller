@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.teamcode.Alliance;
 import org.firstinspires.ftc.teamcode.subsystems.Camera;
+import org.firstinspires.ftc.teamcode.subsystems.Power;
 
 /**
  * TEST: check that the camera only targets OUR alliance's AprilTags (issue #7, decision 022).
@@ -34,6 +35,7 @@ public abstract class AllianceCameraTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        Power power = new Power(hardwareMap); // battery voltage + current on every test
         Camera camera = new Camera(hardwareMap, alliance());
 
         telemetry.addLine("Hold a RED tag (30-37) and a BLUE tag (38-45) in front of the camera.");
@@ -56,6 +58,7 @@ public abstract class AllianceCameraTest extends LinearOpMode {
                         pose.getOrientation().getPitch(AngleUnit.DEGREES),
                         pose.getOrientation().getRoll(AngleUnit.DEGREES));
             }
+            power.addTelemetry(telemetry);
             telemetry.update();
         }
 

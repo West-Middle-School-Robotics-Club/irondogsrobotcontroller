@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.subsystems.Light;
+import org.firstinspires.ftc.teamcode.subsystems.Power;
 
 /**
  * TEST: check the goBILDA RGB Indicator Light colors (decision 018).
@@ -21,6 +22,7 @@ public class LightTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        Power power = new Power(hardwareMap); // battery voltage + current on every test
         Light light = new Light(hardwareMap);
         // Test-only: the same light, set directly for fine-tuning (code-structure rule 8).
         Servo indicatorLight = hardwareMap.get(Servo.class, Light.LIGHT_NAME);
@@ -53,6 +55,7 @@ public class LightTest extends LinearOpMode {
             telemetry.addLine();
             telemetry.addData("Color name", colors[index]);
             telemetry.addData("Position", "%.3f", position);
+            power.addTelemetry(telemetry);
             telemetry.update();
         }
 

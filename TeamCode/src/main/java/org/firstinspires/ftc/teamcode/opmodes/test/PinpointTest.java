@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.opmodes.teleop.DriverControls;
 import org.firstinspires.ftc.teamcode.subsystems.Odometry;
+import org.firstinspires.ftc.teamcode.subsystems.Power;
 
 /**
  * TEST: check and tune the Pinpoint odometry (issue #6).
@@ -30,6 +31,7 @@ public class PinpointTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        Power power = new Power(hardwareMap); // battery voltage + current on every test
         Robot robot = new Robot(hardwareMap);
         Odometry odometry = new Odometry(hardwareMap);
         // Test-only: the same Pinpoint, used directly for resets and extra tuning details (code-structure rule 8).
@@ -47,6 +49,7 @@ public class PinpointTest extends LinearOpMode {
                 telemetry.addLine("Keep the robot STILL until the status says READY...");
             }
             telemetry.addData("Odometry status", odometry.getStatus());
+            power.addTelemetry(telemetry);
             telemetry.update();
         }
 
@@ -74,6 +77,7 @@ public class PinpointTest extends LinearOpMode {
             telemetry.addLine("Push forward: X goes UP");
             telemetry.addLine("Push left: Y goes UP");
             telemetry.addLine("Turn left: heading goes UP");
+            power.addTelemetry(telemetry);
             telemetry.update();
         }
 

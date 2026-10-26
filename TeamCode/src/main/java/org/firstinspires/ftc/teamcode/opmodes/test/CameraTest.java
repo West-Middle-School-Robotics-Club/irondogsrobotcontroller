@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.Camera;
+import org.firstinspires.ftc.teamcode.subsystems.Power;
 
 /**
  * TEST: check that the Limelight camera sees AprilTags (issue #7).
@@ -21,10 +22,12 @@ public class CameraTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        Power power = new Power(hardwareMap); // battery voltage + current on every test
         Camera camera = new Camera(hardwareMap);
 
         while (opModeInInit() || opModeIsActive()) {
             camera.addTelemetry(telemetry);
+            power.addTelemetry(telemetry);
             telemetry.update();
         }
 

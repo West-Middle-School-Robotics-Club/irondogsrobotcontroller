@@ -189,7 +189,7 @@ Context: We want a light that shows when the turret faces forward (017). We have
 Options: Put the light inside `Turret`, or make it its own subsystem.
 Decision:
 - **Own subsystem: `subsystems/Light.java`**, config name **`indicatorLight`** (configured as a Servo). It only knows colors (`Light.Color.GREEN`, `RED`, `OFF`, ...). **The OpMode decides what each color means**, so the same light can show other things later (target locked, pollen loaded)
-- First use: **GREEN = turret facing forward** (in "Turret Test"). 10/25: **RED / BLUE = our alliance** during INIT and the match (in "Main TeleOp", decision 022)
+- First use: **GREEN = turret facing forward** (in "Turret Test"). 10/25: **RED / BLUE = our alliance** during INIT and the match (in "Main TeleOp RED / BLUE", decision 022)
 - The light doesn't move anything, so it's **OK during INIT**: drivers can see the turret is forward while setting up for the match
 - Color positions come from goBILDA's color chart; check them with "Light Test"
 - Not in `Robot.java` yet (same reason as `Camera`/`Turret`/`Odometry`)
@@ -234,6 +234,7 @@ Decision:
 - **(b) Filter in code.** New `Alliance` enum (`RED`, `BLUE`) in `teamcode/`. The **OpMode** tells the camera which alliance we are (`new Camera(hardwareMap, Alliance.RED)` or `camera.setAlliance(...)`). Subsystems never guess the alliance
 - `Camera` keeps **seeing** every tag (`getVisibleTagIds()`, telemetry "Other tags (ignored)") but **targets only our color**: `getTargetDegreesLeft()`, `getTargetDegreesUp()`, `getTargetArea()`, `getTargetTagId()`, `seesOurTag()`. If several of our tags are visible, the target is the one with the **biggest area** (closest)
 - **No alliance set = every BIOBUZZ tag counts** (plain "Camera Test" on the bench). Match OpModes must always set one
+- 10/26: **two match OpModes, "Main TeleOp RED" and "Main TeleOp BLUE"** (shared code in `MainTeleOp`), instead of pressing a button during INIT. Less for the students to remember under pressure; the light shows the color during INIT as a check
 - Test with **"Red Camera Test" / "Blue Camera Test"** (`opmodes/test/`, shared code in `AllianceCameraTest`)
 - Later: the same `Alliance` picks the autonomous start side (011)
 Who: Team

@@ -1,60 +1,53 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Alliance;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.Camera;
 import org.firstinspires.ftc.teamcode.subsystems.Light;
+import org.firstinspires.ftc.teamcode.subsystems.Power;
 
 /**
- * Main TeleOp OpMode for competition driving.
+ * Main TeleOp for competition driving: the shared code behind "Main TeleOp RED" and "Main TeleOp BLUE".
+ *
+ * This class has no @TeleOp annotation, so it doesn't show on the Driver Station by itself.
+ * MainTeleOpRed and MainTeleOpBlue extend it and only say which alliance we are (decision 022).
+ * The drive team picks the OpMode that matches our alliance for the match; no buttons to press.
+ *
+ * During INIT the light shows the alliance color (red or blue) so the drive team can see from the
+ * field that the right OpMode is selected. Nothing moves during INIT (game rule G304.H).
  *
  * Driving goes through DriverControls, so every TeleOp drives consistently.
- * Hardware operations go through the Robot subsystem classes.
- *
- * PICKING OUR ALLIANCE (decision 022): during INIT, the driver presses
- *     B (the red button)  = RED alliance
- *     X (the blue button) = BLUE alliance
- * The Driver Station shows the choice and the robot's light turns that color, so the
- * drive team can check it from the field before START. The choice is remembered until
- * the robot is power-cycled, so it only needs picking once per match day unless it changes.
- * Nothing moves during INIT (game rule G304.H): the light is the only thing that changes.
- *
- * Camera and Light are created here, not in Robot.java, until they're configured on every robot
+ * Camera, Light and Power are created here, not in Robot.java, until they're configured on every robot
  * (see code-structure.md).
  */
-@TeleOp(name = "Main TeleOp", group = "TeleOp")
-public class MainTeleOp extends LinearOpMode {
+public abstract class MainTeleOp extends LinearOpMode {
 
-    // Remembered between runs of this OpMode (until the Robot Controller restarts).
-    private static Alliance alliance = Alliance.RED;
+    /** Which alliance this OpMode is for. */
+    protected abstract Alliance alliance();
 
     @Override
     public void runOpMode() {
+        Alliance alliance = alliance();
+
         Robot robot = new Robot(hardwareMap);
         Light light = new Light(hardwareMap);
         Camera camera = new Camera(hardwareMap, alliance);
+        Power power = new Power(hardwareMap);
 
         // TeleOp drives in FLOAT (wheels coast when the sticks are released) for smoother driving.
         // Autonomous keeps the Drivetrain default, BRAKE, for precise stops (decision 023).
         robot.drivetrain.setBrakeOnStop(false);
 
-        // ---------- INIT: pick the alliance ----------
-        while (opModeInInit()) {
-            if (gamepad1.b) {
-                alliance = Alliance.RED;
-            } else if (gamepad1.x) {
-                alliance = Alliance.BLUE;
-            }
-            camera.setAlliance(alliance);
-            light.setColor(allianceColor(alliance));
+        // ---------- INIT ----------
+        light.setColor(allianceColor(alliance));
 
-            telemetry.addLine("=== PICK ALLIANCE: press B = RED, X = BLUE ===");
-            telemetry.addData("ALLIANCE", alliance);
-            telemetry.addLine("Light shows the alliance color. Then press START.");
+        while (opModeInInit()) {
+            telemetry.addData("ALLIANCE", "%s  (light is %s)", alliance, allianceColor(alliance));
+            telemetry.addLine("Wrong color? Stop and pick the other Main TeleOp.");
             telemetry.addLine();
+            power.addTelemetry(telemetry);
             camera.addTelemetry(telemetry);
             telemetry.update();
         }
@@ -72,6 +65,7 @@ public class MainTeleOp extends LinearOpMode {
 
             telemetry.addData("Alliance", alliance);
             telemetry.addData("Slow mode", slowMode ? "ON" : "OFF");
+            power.addTelemetry(telemetry);
             robot.addTelemetry(telemetry);
             camera.addTelemetry(telemetry);
             light.addTelemetry(telemetry);

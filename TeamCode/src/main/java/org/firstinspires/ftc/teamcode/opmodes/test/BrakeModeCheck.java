@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.opmodes.teleop.DriverControls;
+import org.firstinspires.ftc.teamcode.subsystems.Power;
 
 /**
  * TEST: what brake mode do our drive motors really use?
@@ -28,6 +29,7 @@ public class BrakeModeCheck extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        Power power = new Power(hardwareMap); // battery voltage + current on every test
         // Read the leftover brake mode FIRST, because creating the Robot sets BRAKE.
         DcMotor.ZeroPowerBehavior brakeModeAtStart = TestDriveMotors.getBrakeMode(hardwareMap);
         Robot robot = new Robot(hardwareMap);
@@ -36,6 +38,7 @@ public class BrakeModeCheck extends LinearOpMode {
             telemetry.addData("Brake mode when this OpMode started", brakeModeAtStart);
             telemetry.addLine("(left over from the last OpMode, or from powering up)");
             telemetry.addLine("Write this down, then press START.");
+            power.addTelemetry(telemetry);
             telemetry.update();
         }
 
@@ -55,6 +58,7 @@ public class BrakeModeCheck extends LinearOpMode {
             telemetry.addLine("X = BRAKE     Y = FLOAT");
             telemetry.addLine("Drive full speed, let go, and see how far the robot rolls.");
             telemetry.addLine("With the robot stopped, try pushing it in each mode.");
+            power.addTelemetry(telemetry);
             telemetry.update();
         }
 

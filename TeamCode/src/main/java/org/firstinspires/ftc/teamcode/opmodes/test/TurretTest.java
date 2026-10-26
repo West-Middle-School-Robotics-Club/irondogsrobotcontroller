@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.Light;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.subsystems.Power;
 
 /**
  * TEST: turn the turret with the dpad, learn how the ELC encoder works, and calibrate (issue #31).
@@ -48,6 +49,7 @@ public class TurretTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        Power power = new Power(hardwareMap); // battery voltage + current on every test
         Turret turret = new Turret(hardwareMap);
         Light light = new Light(hardwareMap);
         // Test-only: the same encoder, used directly to show its speed (code-structure rule 8).
@@ -67,6 +69,7 @@ public class TurretTest extends LinearOpMode {
             telemetry.addLine("Don't force the turret by hand: the servo's gears can strip.");
             telemetry.addLine();
             addReadings(turret, turretEncoder, forwardSwitch, markCounts, sinceMarkSet);
+            power.addTelemetry(telemetry);
             telemetry.update();
         }
 
@@ -112,6 +115,7 @@ public class TurretTest extends LinearOpMode {
             }
             telemetry.addLine();
             addReadings(turret, turretEncoder, forwardSwitch, markCounts, sinceMarkSet);
+            power.addTelemetry(telemetry);
             telemetry.update();
         }
 
