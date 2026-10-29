@@ -105,3 +105,4 @@ Hardware update and one naming pattern for everything (decision 024): `<subsyste
 - **Lights**: two lights, `leftIndicatorLight` and `rightIndicatorLight` (was `indicatorLight`). `new Light(hardwareMap, Light.LEFT_LIGHT_NAME)`. Main TeleOp shows the alliance color on both; Turret Test uses the left one; Light Test sets both
 - New devices show **OFFLINE** if missing from the config instead of crashing
 - ⚠️ **Driver Station config must be updated** to the new names (see `hardware-config.md`)
+Added a printable **hardware map**: `TeamCode/docs/worksheets/hardware-map.pdf` (page 1: every device by subsystem with config name, device, config type, and blanks for hub CH/EH, port type and port #; page 2: Control Hub and Expansion Hub port charts to write names on). Made by `make_hardware_map.py`; edit its DEVICES list and re-run when hardware changes.
