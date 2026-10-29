@@ -21,10 +21,11 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *   Y                        set a MARK: "Since mark" counts from here. Use it to measure a move
  *   A                        turn to forward (0°)      } these use the encoder to aim,
  *   X / B                    turn to 45° left / right  } so they only work once HOMED
- *   any dpad                 cancels A / X / B
+ *   any dpad left/right      cancels A / X / B
+ *   dpad up / down           tilt the HOOD up / down a little (find HOOD_LOWEST / HIGHEST_POSITION)
  *
  * The first time the forward switch triggers, the encoder is HOMED (that spot = 0).
- * The light turns GREEN whenever the turret is at HOME: at the switch, or within ±HOME_TOLERANCE_COUNTS of 0.
+ * The LEFT light turns GREEN whenever the turret is at HOME: at the switch, or within ±HOME_TOLERANCE_COUNTS of 0.
  * Until then, the turret only moves slowly.
  *
  * Calibrate IN ORDER (steps in issue #31). Don't try A / X / B until steps 1 and 2 are right!
@@ -51,7 +52,7 @@ public class TurretTest extends LinearOpMode {
     public void runOpMode() {
         Power power = new Power(hardwareMap); // battery voltage + current on every test
         Turret turret = new Turret(hardwareMap);
-        Light light = new Light(hardwareMap);
+        Light light = new Light(hardwareMap, Light.LEFT_LIGHT_NAME);
         // Test-only: the same encoder, used directly to show its speed (code-structure rule 8).
         DcMotorEx turretEncoder = hardwareMap.get(DcMotorEx.class, Turret.ENCODER_NAME);
         // Test-only: the same switch, to show its RAW reading (code-structure rule 8).
@@ -92,6 +93,15 @@ public class TurretTest extends LinearOpMode {
                 dpadWasHeld = false;
             }
 
+            // Hood: dpad up/down nudges it. The first press starts from HOOD_START_POSITION.
+            double hood = Double.isNaN(turret.getHoodPosition()) ? Turret.HOOD_START_POSITION : turret.getHoodPosition();
+            if (gamepad1.dpadUpWasPressed()) {
+                turret.setHoodPosition(hood + 0.02);
+            }
+            if (gamepad1.dpadDownWasPressed()) {
+                turret.setHoodPosition(hood - 0.02);
+            }
+
             if (gamepad1.yWasPressed()) {
                 markCounts = turret.getEncoderCounts();
                 sinceMarkSet.reset();
@@ -109,7 +119,8 @@ public class TurretTest extends LinearOpMode {
             turret.update();
             showForward(turret, light);
 
-            telemetry.addLine("HOLD dpad = turn (+R trigger = FULL, +bumper = slow)   Y = mark   A = forward   X/B = 45° L/R");
+            telemetry.addLine("HOLD dpad L/R = turn (+R trigger = FULL, +bumper = slow)   dpad U/D = hood");
+            telemetry.addLine("Y = mark   A = forward   X/B = 45° L/R");
             if (!turret.isHomed()) {
                 telemetry.addData("Speed capped", "%.2f until homed: turn past forward once", Turret.NOT_HOMED_MAX_SPEED);
             }

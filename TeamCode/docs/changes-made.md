@@ -95,3 +95,13 @@ Camera distance math (#7): `Camera.getTargetDistanceInches()` (trig from the tag
 10/26:
 Main TeleOp is now two OpModes, **"Main TeleOp RED"** and **"Main TeleOp BLUE"** (`MainTeleOpRed` / `MainTeleOpBlue`, shared code in `MainTeleOp`), instead of picking the alliance with a button during INIT. The drive team just selects the one matching our alliance; the light shows the color during INIT as a check (decision 022 updated).
 Added `subsystems/Power.java`: battery voltage (lowest across hubs, with a LOW warning under 11.5 V) and current drawn per hub and in total. Shown on every test OpMode and Main TeleOp so we can spot a weak battery or a mechanism drawing too much current. No config needed; it finds the hubs itself.
+
+10/29:
+Hardware update and one naming pattern for everything (decision 024): `<subsystem><Job><Type>`.
+- **Intake** is now real: `intakeServo` and `intakeLoaderServo` (continuous). `in()`, `out()`, `load()`, `unload()`, `stopIntake()`, `stopLoader()`, `stop()`. New **Intake Test**
+- **Launcher**: new `launcherTriggerServo` (REST / FIRE): `fire()`, `resetTrigger()`. Launcher Test: hold left bumper = FIRE
+- **Turret**: `turretServo` renamed **`turretRotateServo`**; new **`turretHoodServo`** (`setHoodPosition()`, limits `HOOD_LOWEST/HIGHEST_POSITION`). Turret Test: dpad up/down = hood
+- **FlowerFlipper**: new subsystem, `flowerFlipperServo` shakes between two positions (`startShaking()`, `stop()`, `update()` every loop). In `Robot`. New **Flower Flipper Test**
+- **Lights**: two lights, `leftIndicatorLight` and `rightIndicatorLight` (was `indicatorLight`). `new Light(hardwareMap, Light.LEFT_LIGHT_NAME)`. Main TeleOp shows the alliance color on both; Turret Test uses the left one; Light Test sets both
+- New devices show **OFFLINE** if missing from the config instead of crashing
+- ⚠️ **Driver Station config must be updated** to the new names (see `hardware-config.md`)

@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *
  * No homing, no encoder, no limits: just the servo and a joystick. Use it to check the servo itself works
  * in continuous mode before testing the whole turret with "Turret Test".
- * Only needs "turretServo" (Continuous Rotation Servo) in the Driver Station config.
+ * Only needs "turretRotateServo" (Continuous Rotation Servo) in the Driver Station config.
  *
  * Controls (gamepad 1), after START:
  *   LEFT STICK left / right   speed (push farther = faster). Let go = stop
@@ -32,8 +32,8 @@ public class TurretServoRawTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         Power power = new Power(hardwareMap); // battery voltage + current on every test
-        CRServoImplEx turretServo = hardwareMap.get(CRServoImplEx.class, Turret.SERVO_NAME);
-        turretServo.setPwmRange(new PwmControl.PwmRange(Turret.SERVO_PWM_MIN_US, Turret.SERVO_PWM_MAX_US));
+        CRServoImplEx turretRotateServo = hardwareMap.get(CRServoImplEx.class, Turret.ROTATE_SERVO_NAME);
+        turretRotateServo.setPwmRange(new PwmControl.PwmRange(Turret.SERVO_PWM_MIN_US, Turret.SERVO_PWM_MAX_US));
 
         // INIT: nothing moves until START (game rule G304.H).
         while (opModeInInit()) {
@@ -57,7 +57,7 @@ public class TurretServoRawTest extends LinearOpMode {
                 speed = 0.0; // dead zone so a resting stick sends a clean stop
             }
 
-            turretServo.setPower(speed);
+            turretRotateServo.setPower(speed);
 
             double stopUs = (Turret.SERVO_PWM_MIN_US + Turret.SERVO_PWM_MAX_US) / 2;
             double halfRangeUs = (Turret.SERVO_PWM_MAX_US - Turret.SERVO_PWM_MIN_US) / 2;
@@ -72,6 +72,6 @@ public class TurretServoRawTest extends LinearOpMode {
             telemetry.update();
         }
 
-        turretServo.setPower(0.0);
+        turretRotateServo.setPower(0.0);
     }
 }

@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
  *   Dpad UP / DOWN      Increase / decrease test power (10% steps)
  *   X / Y               Preset speeds: 50% power (X) / 100% power (Y)
  *   Dpad LEFT / RIGHT   Toggle motor direction (FORWARD / REVERSE)
+ *   HOLD Left Bumper    Trigger servo to FIRE (let go = REST). Use it to find the TRIGGER_ positions
  *
  * Hardware config name in Driver Station: "launcherMotor" (goBILDA 5203 Series)
  */
@@ -104,11 +105,18 @@ public class TestLauncher extends LinearOpMode {
                 launcher.spinUp(testPower);
             }
 
+            // Trigger servo: hold left bumper = FIRE, let go = REST
+            if (gamepad1.leftBumperWasPressed()) {
+                launcher.fire();
+            } else if (gamepad1.leftBumperWasReleased()) {
+                launcher.resetTrigger();
+            }
+
             // Telemetry output
             telemetry.addLine("=== LAUNCHER TEST CONTROLS ===");
             telemetry.addLine("A = Toggle Spin | B = STOP | Right Trigger = Variable Power");
             telemetry.addLine("Dpad UP/DOWN = Adjust Power | X = 50% | Y = 100%");
-            telemetry.addLine("Dpad LEFT/RIGHT = Toggle Direction");
+            telemetry.addLine("Dpad LEFT/RIGHT = Toggle Direction | HOLD Left Bumper = Trigger FIRE");
             telemetry.addLine();
 
             telemetry.addData("Spin Toggle State", isSpinning ? "ON" : "OFF");
