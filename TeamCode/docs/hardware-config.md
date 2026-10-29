@@ -5,7 +5,7 @@ If a name doesn't match, the OpMode crashes on INIT with an error like `Unable t
 
 **Changing a name?** Update all three places: the Driver Station config, the constant in the subsystem class, and this table.
 
-🖨️ **Printable hardware map:** `TeamCode/docs/worksheets/hardware-map.pdf` lists every device by subsystem, with blanks for the hub and port, plus a page for each hub's ports. Regenerate it with `make_hardware_map.py` when hardware changes.
+🖨️ **Printable hardware map:** `TeamCode/docs/worksheets/hardware-map.pdf` is one page listing every device by subsystem, with blanks for the hub and port. Regenerate it with `make_hardware_map.py` when hardware changes.
 
 ## Naming rules (decisions 009, 024)
 

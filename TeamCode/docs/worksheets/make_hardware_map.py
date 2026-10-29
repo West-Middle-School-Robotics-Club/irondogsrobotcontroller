@@ -15,7 +15,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import landscape, letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
-from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hardware-map.pdf")
 
@@ -45,17 +45,6 @@ DEVICES = [
     ("Lights", "leftIndicatorLight", "goBILDA RGB Indicator Light", "Servo", "Servo", "", "", "Black wire to ground mark"),
     ("Lights", "rightIndicatorLight", "goBILDA RGB Indicator Light", "Servo", "Servo", "", "", "Black wire to ground mark"),
 ]
-
-# Ports each hub has: (port type, how many, numbering note)
-HUB_PORTS = [
-    ("Motor", 4, "0-3"),
-    ("Encoder", 4, "same # as its motor port"),
-    ("Servo", 6, "0-5"),
-    ("Digital", 8, "channels 0-7 (ports 0-1, 2-3, 4-5, 6-7)"),
-    ("Analog", 4, "0-3"),
-    ("I2C bus", 4, "0-3"),
-]
-FIXED = {("CH", "I2C bus", "0"): "imu (built in)"}
 
 # Colors per subsystem, so rows and the hub diagrams are easy to match up
 SUB_COLORS = {
@@ -116,53 +105,6 @@ def device_table():
     return t
 
 
-def hub_table(hub, title):
-    """One hub: every port with a line to write what's plugged into it.
-    Motor rows have two blanks: the motor, and what's on the ENCODER port with the same number."""
-    white = ParagraphStyle("HT", parent=CELLB, fontSize=10.5, textColor=colors.white)
-    cells = [[p("<b>%s</b>" % title, white), "", ""]]
-    style = [
-        ("SPAN", (0, 0), (2, 0)),
-        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1F3A68")),
-        ("GRID", (0, 0), (-1, -1), 0.4, GRID),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("LEFTPADDING", (0, 0), (-1, -1), 4),
-        ("TOPPADDING", (0, 0), (-1, -1), 0),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
-    ]
-
-    def group(label):
-        r = len(cells)
-        cells.append([p(label, CELL), "", ""])
-        style.extend([("SPAN", (0, r), (2, r)), ("BACKGROUND", (0, r), (2, r), colors.HexColor("#E7ECF4"))])
-
-    for ptype, count, note in HUB_PORTS:
-        if ptype == "Encoder":
-            continue  # shown on the motor rows
-        if ptype == "Motor":
-            group("<b>Motor</b> (0-3)  |  right column: its <b>Encoder</b> port (same number)")
-        else:
-            group("<b>%s</b>  <font size=7 color='#555555'>(%s)</font>" % (ptype, note))
-        for n in range(count):
-            fixed = FIXED.get((hub, ptype, str(n)), "")
-            r = len(cells)
-            if ptype == "Motor":
-                cells.append([p("Motor %d" % n, CELL), "", p("enc %d:" % n, SMALL)])
-            else:
-                cells.append([p("%s %d" % (ptype, n), CELL), p("<b>%s</b>" % fixed if fixed else "", CELL), ""])
-                style.append(("SPAN", (1, r), (2, r)))
-    if hub == "CH":
-        group("<b>USB</b>")
-        for label, fixed in (("USB 3.0", "<b>limelight</b> (must be this one)"), ("USB 2.0", "")):
-            r = len(cells)
-            cells.append([p(label, CELL), p(fixed, CELL), ""])
-            style.append(("SPAN", (1, r), (2, r)))
-    t = Table(cells, colWidths=[1.05 * inch, 2.35 * inch, 1.5 * inch],
-              rowHeights=[0.26 * inch] + [0.175 * inch] * (len(cells) - 1))
-    t.setStyle(TableStyle(style))
-    return t
-
-
 story = [
     p("Robot Hardware Map", TITLE),
     p("Every device, the subsystem that owns it, and where it plugs in. <b>Fill the blanks in pencil</b> as you wire: "
@@ -181,20 +123,6 @@ story = [
       "The turret encoder goes on an Expansion Hub encoder port whose motor port (same number) is <b>empty</b>. "
       "Drive motor encoders and the flywheel encoder use their own motor's encoder port. "
       "Nothing may move during INIT (G304.H).", SMALL),
-    PageBreak(),
-    p("Hub Ports", TITLE),
-    p("Write the <b>config name</b> next to each port as you plug things in, so anyone can trace a wire. "
-      "Count check: <b>5 motors</b> (8 ports), <b>8 servos</b> (12 ports), <b>3 digital</b> (16 channels), "
-      "<b>1 encoder</b> on its own (the ELC, on an <b>Expansion Hub</b> encoder port whose motor port stays empty).", BODY),
-    Spacer(1, 6),
-]
-
-hubs = Table([[hub_table("CH", "CONTROL HUB (CH)"), hub_table("EH", "EXPANSION HUB (EH)")]],
-             colWidths=[5.0 * inch, 5.0 * inch])
-hubs.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"), ("LEFTPADDING", (0, 0), (-1, -1), 0)]))
-story += [
-    hubs,
-    Spacer(1, 6),
 ]
 
 doc = SimpleDocTemplate(OUT, pagesize=landscape(letter), leftMargin=0.5 * inch, rightMargin=0.5 * inch,
