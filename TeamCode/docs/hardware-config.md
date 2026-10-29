@@ -5,15 +5,21 @@ If a name doesn't match, the OpMode crashes on INIT with an error like `Unable t
 
 **Changing a name?** Update all three places: the Driver Station config, the constant in the subsystem class, and this table.
 
-## Naming rules (decision 009)
+## Naming rules (decisions 009, 024)
+
+**Pattern: `<subsystem><Job><Type>`**, in camelCase.
+1. **Starts with the subsystem's name** (`intake`, `launcher`, `turret`, `flowerFlipper`), so you can tell which class owns it
+2. **The job in the middle**, when it helps say what the part does (`Loader`, `Trigger`, `Rotate`, `Hood`, `Forward`)
+3. **Ends with the device type**: `Motor`, `Servo`, `Encoder`, `Switch`, `Light`. You can see which `hardwareMap.get(...)` type to use
 
 | Kind of hardware | Rule | Examples |
 |---|---|---|
-| **One-of-a-kind devices** | Use the standard name that the SDK samples, Road Runner and Pedro Pathing all use | `imu`, `pinpoint`, `limelight` |
-| **Drive motors** | `<position>Drive`: named by their job, since other mechanisms use motors too | `frontLeftDrive`, `frontRightDrive`, `backLeftDrive`, `backRightDrive` |
-| **Mechanisms** | camelCase, mechanism first, then the part | `intakeMotor`, `launcherMotor`, `launcherFeedServo`, `intakeColorSensor` |
+| **Mechanisms** | `<subsystem><Job><Type>` | `intakeLoaderServo`, `launcherTriggerServo`, `turretRotateServo`, `turretForwardSwitch`, `launcherMotor` |
+| **Lights** | `<side>IndicatorLight` | `leftIndicatorLight`, `rightIndicatorLight` |
+| **Exception: drive motors** | `<position>Drive` ("Drive" already means motor, and Pedro's setup uses these) | `frontLeftDrive`, `frontRightDrive`, `backLeftDrive`, `backRightDrive` |
+| **Exception: one-of-a-kind devices** | The standard name the SDK samples, Road Runner and Pedro Pathing use | `imu`, `pinpoint`, `limelight` |
 
-- Name hardware by its **job**, not its port (`intakeMotor`, not `motor2`).
+- Name hardware by its **job**, not its port (`intakeServo`, not `servo2`).
 - The **variable in code uses the same name** as the config name: `DcMotor frontLeftDrive = hardwareMap.get(DcMotor.class, "frontLeftDrive");`
 - No spaces. Names are **case-sensitive**.
 - Label the physical wires with the same name.
@@ -39,10 +45,12 @@ A wrong type can make the robot much slower. Drive motor model / ratio: TBA
 
 | Hub | Notes |
 |---|---|
-| Control Hub | Drive motors (all 4 motor ports, planned; bench bot has the left side only), Limelight (USB 3.0), Pinpoint (I2C), `indicatorLight` (servo 0) |
-| Expansion Hub | Flywheel and intake motors (#5, #4), `turretEncoder` (motor-encoder port, decision 019). Bench bot (10/24): right drive motors on motors 0 and 1. Connected by: REV JST PH **3-pin** Communication Cable (RS485 → RS485, REV-31-1417) + XT30 Extension Cable for power (REV-31-1392). Without the 3-pin cable the hub has power (LED blinks blue) but the Driver Station can't find its devices |
+| Control Hub | Drive motors (all 4 motor ports, planned; bench bot has the left side only), Limelight (USB 3.0), Pinpoint (I2C), `leftIndicatorLight` (servo 0, was `indicatorLight`) |
+| Expansion Hub | `launcherMotor` (flywheel, #5), `turretEncoder` (motor-encoder port, decision 019). Bench bot (10/24): right drive motors on motors 0 and 1. Connected by: REV JST PH **3-pin** Communication Cable (RS485 → RS485, REV-31-1417) + XT30 Extension Cable for power (REV-31-1392). Without the 3-pin cable the hub has power (LED blinks blue) but the Driver Station can't find its devices |
 
 Each motor port has a matching **encoder port** with the same number. Ports on the Expansion Hub count from 0 again.
+
+**Servo ports:** we use **8 servos** (`intakeServo`, `intakeLoaderServo`, `launcherTriggerServo`, `turretRotateServo`, `turretHoodServo`, `flowerFlipperServo`, `leftIndicatorLight`, `rightIndicatorLight`). Each hub has 6 servo ports, 12 in all. Check the **config type** for each: Continuous Rotation Servo for `intakeServo`, `intakeLoaderServo`, `turretRotateServo`; plain **Servo** for the rest.
 
 ## IMU
 
@@ -60,7 +68,8 @@ Each motor port has a matching **encoder port** with the same number. Ports on t
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| ___ | ___ | ___ | Intake motor(s): waiting on build team |
+| `intakeServo` | Continuous Rotation Servo | ___ / servo port ___ | Pulls game elements in |
+| `intakeLoaderServo` | Continuous Rotation Servo | ___ / servo port ___ | Moves game elements up to the launcher |
 | `intake___Switch` | Digital Device | ___ / digital port ___ | goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**: switch 1. Exact job TBD. Name it by that job, e.g. `intakeLoadedSwitch`. Check which reading (true/false) means "pressed" |
 | `intake___Switch` | Digital Device | ___ / digital port ___ | goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**: switch 2. Same notes as switch 1 |
 
@@ -68,7 +77,8 @@ Each motor port has a matching **encoder port** with the same number. Ports on t
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| `launcherMotor` | Motor (DcMotorEx) | Expansion Hub / motor port ___ | **goBILDA 5203 Series Yellow Jacket Motor**. Configure as `goBILDA 5203 Series` in Driver Station |
+| `launcherMotor` | Motor (DcMotorEx) | Expansion Hub / motor port ___ | The flywheel. **goBILDA 5203 Series Yellow Jacket Motor** (same as the drive motors). Configure as `goBILDA 5203 Series` in Driver Station |
+| `launcherTriggerServo` | Servo | ___ / servo port ___ | Positional, two spots: REST and FIRE (pushes a game element into the flywheel). Positions in `Launcher.java` |
 
 ## Camera (`subsystems/Camera.java`, issue #7, decisions 015, 016)
 
@@ -76,16 +86,24 @@ Each motor port has a matching **encoder port** with the same number. Ports on t
 |---|---|---|---|
 | `limelight` | Limelight 3A | Control Hub / **USB 3.0 port** | ⚠️ **Must use the port labeled USB 3.0.** Mounted on turret. For distance math, measure and set in `Camera.java`: `CAMERA_MOUNT_TILT_DEGREES` (0 = faces forward; bench bot = 0), `CAMERA_HEIGHT_INCHES` (lens above floor, **not measured yet**), `TAG_HEIGHT_INCHES`. Limelight pipeline marker size = **3.25 in (82.55 mm)** |
 
-## Turret (`subsystems/Turret.java`, issue #31, decisions 016, 017, 019, 021)
+## Turret (`subsystems/Turret.java`, issue #31, decisions 016, 017, 019, 021, 024)
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| `turretServo` | **Continuous Rotation Servo** | ___ / servo port ___ | **goBILDA 2000 Series Dual Mode Servo, 25-3 Speed (2000-0025-0003)**, set to **continuous mode** with the goBILDA Servo Programmer (decision 021). Code sets its signal range to **1000–2000 µs** (goBILDA's continuous range). History: goBILDA 25-2 Torque → Axon MAX (10/14) → this (10/20) |
+| `turretRotateServo` | **Continuous Rotation Servo** | ___ / servo port ___ | **goBILDA 2000 Series Dual Mode Servo, 25-3 Speed (2000-0025-0003)**, set to **continuous mode** with the goBILDA Servo Programmer (decision 021). Code sets its signal range to **1000–2000 µs** (goBILDA's continuous range). History: goBILDA 25-2 Torque → Axon MAX (10/14) → this (10/20) |
 | `turretEncoder` | Motor (encoder only, never powered) | **Expansion Hub** / motor-encoder port ___ | ELC Encoder V2, **quadrature** output (decision 019): use the encoder's **"D" connector** (not "A" = analog). Configure the motor port with this name; the code only reads its encoder. Data sheet: 3.3–3.6 V (the hub's encoder port gives 3.3 V ✅), JST-PH 4-pin (same as the hub ✅), 4000 counts per revolution. ⚠️ Pin order isn't on the data sheet: use the cable that came with it and check "Encoder counts" changes when you turn it |
 | `turretForwardSwitch` | Digital Device | ___ / digital port ___ | REV Magnetic Limit Switch: triggers when the turret faces **forward** (indicator, not a stop, decision 017). Digital ports have 2 channels (n, n+1): if it never changes, try the other channel number |
+| `turretHoodServo` | Servo | ___ / servo port ___ | Positional. Tilts the hood to aim the launch up/down. Limits in `Turret.java` (`HOOD_LOWEST/HIGHEST_POSITION`); find them with Turret Test (dpad up/down) |
 
-## Light (`subsystems/Light.java`, issue #31, decision 018)
+## Flower Flipper (`subsystems/FlowerFlipper.java`, decision 024)
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| `indicatorLight` | Servo | Control Hub / servo port 0 | goBILDA RGB Indicator Light (3-pin servo plug; black wire toward the hub's ground mark). The "servo position" picks the color (see `Light.Color`). Tested 10/24 |
+| `flowerFlipperServo` | Servo | ___ / servo port ___ | Positional. Shakes back and forth between two positions. Positions and speed in `FlowerFlipper.java`; find them with Flower Flipper Test |
+
+## Lights (`subsystems/Light.java`, decisions 018, 024)
+
+| Config name | Device type | Hub / Port | Notes |
+|---|---|---|---|
+| `leftIndicatorLight` | Servo | ___ / servo port ___ | goBILDA RGB Indicator Light (3-pin servo plug; black wire toward the hub's ground mark). The "servo position" picks the color (see `Light.Color`). Was `indicatorLight` (Control Hub servo port 0, tested 10/24) |
+| `rightIndicatorLight` | Servo | ___ / servo port ___ | Second goBILDA RGB Indicator Light |

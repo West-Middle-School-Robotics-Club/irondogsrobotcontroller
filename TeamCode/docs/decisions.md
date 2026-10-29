@@ -249,3 +249,26 @@ Decision:
 - Because the constructor sets it every time an OpMode starts, the #17 question (does brake mode carry over between OpModes?) no longer matters for real code
 - Telemetry shows "Stop mode" so the driver can see which one is active
 Who: Team
+
+## 024 – One naming pattern for hardware: `<subsystem><Job><Type>`  (2026-10-29)
+Status: Accepted (adds to 009)
+Issue: #4, #5, #31
+Context: The robot grew to 8 servos, a flywheel motor, an encoder, a switch and 2 lights. Our names mixed styles: some ended with the device type (`turretServo`), some only said the job (`launchFlywheel`), and prefixes varied (`launch` / `launcher`).
+Decision:
+- **Pattern: `<subsystem><Job><Type>`.** Start with the subsystem's name, add the job when it helps, and **always end with the device type** (`Motor`, `Servo`, `Encoder`, `Switch`, `Light`)
+- **Exceptions:** drive motors keep `<position>Drive` (Pedro uses them), and one-of-a-kind devices keep their standard names (`imu`, `pinpoint`, `limelight`)
+- **The full list:**
+
+| Subsystem | Config names |
+|---|---|
+| Drivetrain | `frontLeftDrive`, `frontRightDrive`, `backLeftDrive`, `backRightDrive` |
+| Intake | `intakeServo`, `intakeLoaderServo` (+ 2 micro switches, names TBD) |
+| Launcher | `launcherMotor` (the flywheel), `launcherTriggerServo` |
+| Turret | `turretRotateServo` (was `turretServo`), `turretEncoder`, `turretForwardSwitch`, `turretHoodServo` |
+| FlowerFlipper | `flowerFlipperServo` (new subsystem: shakes back and forth) |
+| Light | `leftIndicatorLight`, `rightIndicatorLight` (was one `indicatorLight`) |
+| Single devices | `imu`, `pinpoint`, `limelight` |
+
+- The **hood belongs to Turret** (all aiming: left/right and up/down)
+- New devices in subsystems that `Robot` creates (Intake, Launcher, FlowerFlipper) and the lights show **OFFLINE** if they're missing from the config, instead of crashing every OpMode (the pattern the team started in `Launcher`)
+Who: Team

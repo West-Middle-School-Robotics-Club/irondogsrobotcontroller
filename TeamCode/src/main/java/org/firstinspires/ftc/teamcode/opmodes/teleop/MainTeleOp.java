@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  * MainTeleOpRed and MainTeleOpBlue extend it and only say which alliance we are (decision 022).
  * The drive team picks the OpMode that matches our alliance for the match; no buttons to press.
  *
- * During INIT the light shows the alliance color (red or blue) so the drive team can see from the
+ * During INIT both lights show the alliance color (red or blue) so the drive team can see from the
  * field that the right OpMode is selected. Nothing moves during INIT (game rule G304.H).
  *
  * Driving goes through DriverControls, so every TeleOp drives consistently.
@@ -32,7 +32,8 @@ public abstract class MainTeleOp extends LinearOpMode {
         Alliance alliance = alliance();
 
         Robot robot = new Robot(hardwareMap);
-        Light light = new Light(hardwareMap);
+        Light leftLight = new Light(hardwareMap, Light.LEFT_LIGHT_NAME);
+        Light rightLight = new Light(hardwareMap, Light.RIGHT_LIGHT_NAME);
         Camera camera = new Camera(hardwareMap, alliance);
         Power power = new Power(hardwareMap);
 
@@ -41,10 +42,11 @@ public abstract class MainTeleOp extends LinearOpMode {
         robot.drivetrain.setBrakeOnStop(false);
 
         // ---------- INIT ----------
-        light.setColor(allianceColor(alliance));
+        leftLight.setColor(allianceColor(alliance));
+        rightLight.setColor(allianceColor(alliance));
 
         while (opModeInInit()) {
-            telemetry.addData("ALLIANCE", "%s  (light is %s)", alliance, allianceColor(alliance));
+            telemetry.addData("ALLIANCE", "%s  (lights are %s)", alliance, allianceColor(alliance));
             telemetry.addLine("Wrong color? Stop and pick the other Main TeleOp.");
             telemetry.addLine();
             power.addTelemetry(telemetry);
@@ -54,7 +56,8 @@ public abstract class MainTeleOp extends LinearOpMode {
 
         if (isStopRequested()) {
             camera.stop();
-            light.off();
+            leftLight.off();
+            rightLight.off();
             return;
         }
 
@@ -68,13 +71,15 @@ public abstract class MainTeleOp extends LinearOpMode {
             power.addTelemetry(telemetry);
             robot.addTelemetry(telemetry);
             camera.addTelemetry(telemetry);
-            light.addTelemetry(telemetry);
+            leftLight.addTelemetry(telemetry);
+            rightLight.addTelemetry(telemetry);
             telemetry.update();
         }
 
         robot.stop();
         camera.stop();
-        light.off();
+        leftLight.off();
+        rightLight.off();
     }
 
     /** The light color for an alliance: the OpMode decides what colors mean (decision 018). */

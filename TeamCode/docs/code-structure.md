@@ -12,9 +12,10 @@ teamcode/
 ├── subsystems/             ← one class per mechanism; the ONLY code that touches hardware
 │   ├── Camera.java         ← the Limelight. Not in Robot.java yet; see below
 │   ├── Drivetrain.java
+│   ├── FlowerFlipper.java  ← shakes the flower flipper servo back and forth (decision 024)
 │   ├── Intake.java
 │   ├── Launcher.java
-│   ├── Light.java          ← the goBILDA RGB light. Not in Robot.java yet; see below
+│   ├── Light.java          ← one goBILDA RGB light (we have a left and a right). Not in Robot.java yet
 │   ├── Odometry.java       ← the Pinpoint (X, Y, heading). Not in Robot.java yet; see below
 │   ├── Power.java          ← battery voltage + hub current, shown on every test and Main TeleOp
 │   └── Turret.java         ← turns the launcher + camera left/right. Not in Robot.java yet; see below
@@ -32,7 +33,9 @@ teamcode/
         ├── BrakeModeCheck.java
         ├── CameraTest.java ← check the Limelight sees AprilTags (#7)
         ├── EncoderModeToggle.java ← drive and switch encoder mode with Y (#11)
-        ├── LightTest.java ← check the light's colors
+        ├── FlowerFlipperTest.java ← shake the flower flipper, find its positions
+        ├── IntakeTest.java ← hold buttons to run the intake and loader (#4)
+        ├── LightTest.java ← check the colors on both lights
         ├── PinpointTest.java
         ├── RedCameraTest.java ← camera as RED: only tags 30-37 are targets
         ├── TestDriveMotors.java ← test-only helper; never used by real robot code

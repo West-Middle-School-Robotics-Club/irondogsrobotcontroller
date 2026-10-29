@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
@@ -18,11 +19,18 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
  *   launcherMotor  Flywheel motor: goBILDA 5203 Series Yellow Jacket Motor (DcMotorEx)
  *                  on Expansion Hub (decision 009).
  *                  Config name: "launcherMotor" in Driver Station config.
+ *   launcherTriggerServo  POSITIONAL servo that pushes a game element into the flywheel (decision 024).
+ *                  Two positions: REST and FIRE. Config type: "Servo". Missing = OFFLINE, no crash.
  */
 public class Launcher {
 
     // Config name (decision 009, hardware-config.md). Must match Driver Station config.
     public static final String FLYWHEEL_NAME = "launcherMotor";
+    public static final String TRIGGER_SERVO_NAME = "launcherTriggerServo";
+
+    // Trigger servo positions (0.0 to 1.0). TODO(#5): find these with "Launcher Test" (left bumper).
+    public static final double TRIGGER_REST_POSITION = 0.0;
+    public static final double TRIGGER_FIRE_POSITION = 0.5;
 
     // Speed / power constants
     public static final double DEFAULT_SPIN_POWER = 1.0;
@@ -33,6 +41,8 @@ public class Launcher {
     public static final double READY_VELOCITY_THRESHOLD = 1000.0;
 
     private final DcMotorEx launcherMotor;
+    private final Servo launcherTriggerServo;  // null if not in the Driver Station config
+    private boolean triggerFired = false;
     private double targetPower = 0.0;
 
     public Launcher(HardwareMap hardwareMap) {
@@ -47,6 +57,9 @@ public class Launcher {
             motor = null;
         }
         launcherMotor = motor;
+
+        launcherTriggerServo = hardwareMap.tryGet(Servo.class, TRIGGER_SERVO_NAME);
+        // We do NOT move the trigger here. INIT must not move anything (game rule G304.H).
     }
 
     /** Start getting the launcher up to full speed. */
@@ -96,9 +109,29 @@ public class Launcher {
         return 0.0;
     }
 
-    /** Launch one game element. Only call this when isReady() is true. */
+    /**
+     * Launch: move the trigger to FIRE, pushing a game element into the flywheel.
+     * Only call this when isReady() is true. Call resetTrigger() afterwards to load the next one.
+     */
     public void fire() {
-        // TODO(#5): trigger feed servo or pusher mechanism once designed
+        setTrigger(true);
+    }
+
+    /** Move the trigger back to REST, out of the way of the next game element. */
+    public void resetTrigger() {
+        setTrigger(false);
+    }
+
+    /** True if the trigger is at FIRE. */
+    public boolean isTriggerFired() {
+        return triggerFired;
+    }
+
+    private void setTrigger(boolean fire) {
+        triggerFired = fire;
+        if (launcherTriggerServo != null) {
+            launcherTriggerServo.setPosition(fire ? TRIGGER_FIRE_POSITION : TRIGGER_REST_POSITION);
+        }
     }
 
     /** Stop the launcher flywheel. */
@@ -128,6 +161,11 @@ public class Launcher {
             telemetry.addData("Launcher Current", "%.2f A", getCurrentAmps());
         } else {
             telemetry.addData("Launcher", "OFFLINE (device '%s' not in DS config)", FLYWHEEL_NAME);
+        }
+        if (launcherTriggerServo != null) {
+            telemetry.addData("Launcher trigger", triggerFired ? "FIRE" : "rest");
+        } else {
+            telemetry.addData("Launcher trigger", "OFFLINE ('%s' not in DS config)", TRIGGER_SERVO_NAME);
         }
     }
 }
