@@ -272,3 +272,14 @@ Decision:
 - The **hood belongs to Turret** (all aiming: left/right and up/down)
 - New devices in subsystems that `Robot` creates (Intake, Launcher, FlowerFlipper) and the lights show **OFFLINE** if they're missing from the config, instead of crashing every OpMode (the pattern the team started in `Launcher`)
 Who: Team
+
+## 025 – NECTAR detection: two intake switches, read as a plain yes/no  (2026-11-02)
+Status: Accepted
+Issue: #4
+Context: BIOBUZZ has two balls: **POLLEN** (~2.8 in) and the larger **NECTAR** (~3.6 in). Two goBILDA micro limit switches sit on each side of the intake path; only a NECTAR is wide enough to press them. A switch's raw reading is backwards from what students expect (normally open: pressed = **false**).
+Decision:
+- Config names `intakeNectarLeftSwitch` and `intakeNectarRightSwitch` (Digital Device, decision 024)
+- **`intake.isNectarDetected()`** gives a plain true/false: true when **either** switch is pressed. OpModes never read raw switch values
+- The wiring is set **once** with an enum, `Intake.NECTAR_SWITCH_WIRING = SwitchWiring.NORMALLY_OPEN` (or `NORMALLY_CLOSED`), and `Intake` does the translation. Checked with Intake Test
+- A missing switch counts as "not pressed" and shows OFFLINE (no crash)
+Who: Team

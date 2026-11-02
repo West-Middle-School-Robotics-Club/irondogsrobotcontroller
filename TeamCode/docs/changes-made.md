@@ -107,3 +107,6 @@ Hardware update and one naming pattern for everything (decision 024): `<subsyste
 - ⚠️ **Driver Station config must be updated** to the new names (see `hardware-config.md`)
 Added a printable **hardware map**: `TeamCode/docs/worksheets/hardware-map.pdf` (page 1: every device by subsystem with config name, device, config type, and blanks for hub CH/EH, port type and port #; page 2: Control Hub and Expansion Hub port charts to write names on). Made by `make_hardware_map.py`; edit its DEVICES list and re-run when hardware changes.
 Hardware map trimmed to **one page** (the device list by subsystem). The hub port charts page was removed.
+
+11/2:
+The 2 intake micro switches detect **NECTAR** (decision 025): `intakeNectarLeftSwitch` and `intakeNectarRightSwitch`. New `intake.isNectarDetected()` (true if either is pressed). The raw true/false is translated inside `Intake` using a wiring enum (`NECTAR_SWITCH_WIRING = SwitchWiring.NORMALLY_OPEN`). Intake Test shows "NECTAR detected" and each switch as PRESSED / not pressed. Hardware map and hardware-config updated.
