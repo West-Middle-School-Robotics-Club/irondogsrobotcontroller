@@ -72,8 +72,8 @@ Each motor port has a matching **encoder port** with the same number. Ports on t
 |---|---|---|---|
 | `intakeServo` | Continuous Rotation Servo | ___ / servo port ___ | Pulls game elements in |
 | `intakeLoaderServo` | Continuous Rotation Servo | ___ / servo port ___ | Moves game elements up to the launcher |
-| `intake___Switch` | Digital Device | ___ / digital port ___ | goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**: switch 1. Exact job TBD. Name it by that job, e.g. `intakeLoadedSwitch`. Check which reading (true/false) means "pressed" |
-| `intake___Switch` | Digital Device | ___ / digital port ___ | goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**: switch 2. Same notes as switch 1 |
+| `intakeNectarLeftSwitch` | Digital Device | ___ / digital port ___ | goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**, left side of the intake path. Pressed by a **NECTAR** (~3.6 in), not by POLLEN (~2.8 in). Code: `intake.isNectarDetected()`. Wiring set by `Intake.NECTAR_SWITCH_WIRING` (normally open / closed); check with Intake Test. Digital ports have 2 channels (n, n+1): if it never changes, try the other |
+| `intakeNectarRightSwitch` | Digital Device | ___ / digital port ___ | goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**, right side of the intake path. Pressed by a **NECTAR** (~3.6 in), not by POLLEN (~2.8 in). Code: `intake.isNectarDetected()`. Wiring set by `Intake.NECTAR_SWITCH_WIRING` (normally open / closed); check with Intake Test. Digital ports have 2 channels (n, n+1): if it never changes, try the other |
 
 ## Launcher (`subsystems/Launcher.java`, issue #5)
 

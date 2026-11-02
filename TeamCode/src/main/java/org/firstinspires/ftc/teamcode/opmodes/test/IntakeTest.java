@@ -18,6 +18,13 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *
  * Check: A pulls game elements IN, X moves them UP. If one runs backwards,
  * set INTAKE_REVERSED or LOADER_REVERSED to true in Intake.java.
+ *
+ * Nectar switches ("intakeNectarLeftSwitch", "intakeNectarRightSwitch", Digital Device):
+ *   - Press each lever by hand: its line must say PRESSED, and "NECTAR detected" must say YES.
+ *     Backwards (PRESSED when not pressed)? Change NECTAR_SWITCH_WIRING in Intake.java.
+ *   - Never changes? Try the other channel of that digital port (each port has 2: n and n+1).
+ *   - Run a NECTAR through the intake: YES. Run a POLLEN through: it should stay "no".
+ * The switches work during INIT too (nothing moves).
  */
 @TeleOp(name = "Intake Test", group = "Tests")
 public class IntakeTest extends LinearOpMode {
