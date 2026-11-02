@@ -283,3 +283,18 @@ Decision:
 - The wiring is set **once** with an enum, `Intake.NECTAR_SWITCH_WIRING = SwitchWiring.NORMALLY_OPEN` (or `NORMALLY_CLOSED`), and `Intake` does the translation. Checked with Intake Test
 - A missing switch counts as "not pressed" and shows OFFLINE (no crash)
 Who: Team
+
+## 026 – How Basic Auton is built  (2026-11-02)
+Status: Accepted (positions and numbers are a first version, tuned in #22)
+Issue: #22
+Context: We need the minimum movement for competition: LEAVE (3) + PARK (5) in AUTO, which with our partner earns the SWARM ranking point. Decisions 014 and 020 make Basic Auton drive-only.
+Decision:
+- **4 OpModes:** Basic Auton RED/BLUE x NEAR/FAR (the proposed plan in #22). NEAR = tile A6 against our alliance wall, next to the LOADING ZONE. FAR = tile B1 against the audience wall, up column B
+- **One shared class, `BasicAuton`**; each OpMode only picks the alliance and route (same pattern as Main TeleOp RED/BLUE, decision 022)
+- **Positions written once, for RED**, in field coordinates (011). BLUE is calculated: (x, y, h) -> (-x, -y, h + 180)
+- **Drives with the Pinpoint**: proportional control to each waypoint (faster when far, slower when close), not timers. Each waypoint has a timeout, and everything stops by 28 s (G403)
+- **Start delay** (0-10 s) chosen with the dpad during INIT. **Nothing moves during INIT** (G304.H)
+- **Lights:** alliance color in INIT; GREEN = parked, YELLOW = stopped early
+- `Odometry.setPose()` added so the Pinpoint reports field positions from the start position
+- Uses BRAKE (023). After AUTO, the matching Main TeleOp is preselected (G305)
+Who: Team (positions to confirm on the field)

@@ -27,6 +27,9 @@ teamcode/
     │   ├── MainTeleOpRed.java  ← "Main TeleOp RED": picks Alliance.RED (decision 022)
     │   └── MainTeleOpBlue.java ← "Main TeleOp BLUE": picks Alliance.BLUE
     ├── auto/
+    │   ├── BasicAuton.java     ← Basic Auton shared code: LEAVE + PARK with the Pinpoint (#22, decision 026)
+    │   ├── BasicAutonRedNear.java / RedFar / BlueNear / BlueFar ← pick alliance + route
+    │   └── README.md           ← which Basic Auton to pick, and what to tune
     └── test/               ← test and tuning OpModes (the "Tests" group on the Driver Station)
         ├── AllianceCameraTest.java ← shared code for the red/blue camera tests (#7)
         ├── BlueCameraTest.java ← camera as BLUE: only tags 38-45 are targets
