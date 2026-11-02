@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="8.5in" height="11in" viewBox="0 0 850 1100">
+<rect width="850" height="1100" fill="white"/>
+<text x="50.0" y="48.0" font-family="Helvetica, Arial, sans-serif" font-size="21.0" fill="#111827" text-anchor="start" font-weight="bold">Basic Auton NEAR: LEAVE + PARK  (WMS Irondogs)</text>
+<text x="50.0" y="72.0" font-family="Helvetica, Arial, sans-serif" font-size="12.0" fill="#6b7280" text-anchor="start">Start against our alliance wall, next to the LOADING ZONE. OpModes: "Basic Auton RED NEAR" and "Basic Auton BLUE NEAR".</text>
+<rect x="150.0" y="120.0" width="277.2" height="554.4" fill="#fde8e8" stroke="none" stroke-width="1" />
+<rect x="427.2" y="120.0" width="277.2" height="554.4" fill="#e3ebfd" stroke="none" stroke-width="1" />
+<line x1="242.4" y1="120" x2="242.4" y2="674.4" stroke="#c4c8d0" stroke-width="1"/>
+<line x1="150" y1="212.4" x2="704.4" y2="212.4" stroke="#c4c8d0" stroke-width="1"/>
+<line x1="334.8" y1="120" x2="334.8" y2="674.4" stroke="#c4c8d0" stroke-width="1"/>
+<line x1="150" y1="304.8" x2="704.4" y2="304.8" stroke="#c4c8d0" stroke-width="1"/>
+<line x1="427.2" y1="120" x2="427.2" y2="674.4" stroke="#c4c8d0" stroke-width="1"/>
+<line x1="150" y1="397.2" x2="704.4" y2="397.2" stroke="#c4c8d0" stroke-width="1"/>
+<line x1="519.6" y1="120" x2="519.6" y2="674.4" stroke="#c4c8d0" stroke-width="1"/>
+<line x1="150" y1="489.6" x2="704.4" y2="489.6" stroke="#c4c8d0" stroke-width="1"/>
+<line x1="612.0" y1="120" x2="612.0" y2="674.4" stroke="#c4c8d0" stroke-width="1"/>
+<line x1="150" y1="582.0" x2="704.4" y2="582.0" stroke="#c4c8d0" stroke-width="1"/>
+<line x1="427.2" y1="120" x2="427.2" y2="674.4" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="6,4"/>
+<text x="196.2" y="117.1" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">A</text>
+<text x="196.2" y="687.1" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">A</text>
+<text x="288.6" y="117.1" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">B</text>
+<text x="288.6" y="687.1" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">B</text>
+<text x="381.0" y="117.1" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">C</text>
+<text x="381.0" y="687.1" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">C</text>
+<text x="473.4" y="117.1" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">D</text>
+<text x="473.4" y="687.1" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">D</text>
+<text x="565.8" y="117.1" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">E</text>
+<text x="565.8" y="687.1" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">E</text>
+<text x="658.2" y="117.1" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">F</text>
+<text x="658.2" y="687.1" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">F</text>
+<text x="143.1" y="632.2" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">1</text>
+<text x="711.3" y="632.2" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">1</text>
+<text x="143.1" y="539.8" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">2</text>
+<text x="711.3" y="539.8" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">2</text>
+<text x="143.1" y="447.4" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">3</text>
+<text x="711.3" y="447.4" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">3</text>
+<text x="143.1" y="355.0" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">4</text>
+<text x="711.3" y="355.0" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">4</text>
+<text x="143.1" y="262.6" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">5</text>
+<text x="711.3" y="262.6" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">5</text>
+<text x="143.1" y="170.2" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">6</text>
+<text x="711.3" y="170.2" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">6</text>
+<rect x="150.0" y="216.2" width="42.4" height="88.5" fill="#f6b3b3" stroke="#d62828" stroke-width="2" />
+<rect x="662.1" y="489.6" width="42.4" height="88.5" fill="#b3c6f6" stroke="#1d4ed8" stroke-width="2" />
+<rect x="150.0" y="666.7" width="88.5" height="7.7" fill="#d62828" stroke="none" stroke-width="1" />
+<rect x="615.9" y="120.0" width="88.5" height="7.7" fill="#1d4ed8" stroke="none" stroke-width="1" />
+<text x="195.8" y="259.2" font-family="Helvetica, Arial, sans-serif" font-size="8.7" fill="#d62828" text-anchor="start" font-weight="bold">LOADING</text>
+<text x="195.8" y="267.9" font-family="Helvetica, Arial, sans-serif" font-size="8.7" fill="#d62828" text-anchor="start" font-weight="bold">ZONE</text>
+<text x="658.6" y="532.6" font-family="Helvetica, Arial, sans-serif" font-size="8.7" fill="#1d4ed8" text-anchor="end" font-weight="bold">LOADING</text>
+<text x="658.6" y="541.2" font-family="Helvetica, Arial, sans-serif" font-size="8.7" fill="#1d4ed8" text-anchor="end" font-weight="bold">ZONE</text>
+<text x="194.3" y="663.2" font-family="Helvetica, Arial, sans-serif" font-size="8.7" fill="#d62828" text-anchor="middle" font-weight="bold">GARDEN</text>
+<text x="660.1" y="138.1" font-family="Helvetica, Arial, sans-serif" font-size="8.7" fill="#1d4ed8" text-anchor="middle" font-weight="bold">GARDEN</text>
+<rect x="352.1" y="302.1" width="150.2" height="190.2" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.5" />
+<rect x="346.4" y="326.0" width="77.0" height="50.1" fill="white" stroke="#d62828" stroke-width="2.5" />
+<rect x="346.4" y="418.4" width="77.0" height="50.1" fill="white" stroke="#d62828" stroke-width="2.5" />
+<rect x="431.1" y="326.0" width="77.0" height="50.1" fill="white" stroke="#1d4ed8" stroke-width="2.5" />
+<rect x="431.1" y="418.4" width="77.0" height="50.1" fill="white" stroke="#1d4ed8" stroke-width="2.5" />
+<text x="427.2" y="311.2" font-family="Helvetica, Arial, sans-serif" font-size="8.7" fill="#111827" text-anchor="middle" font-weight="bold">HIVE</text>
+<circle cx="161.6" cy="489.6" r="11.6" fill="#fde68a" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="334.8" cy="131.6" r="11.6" fill="#fde68a" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="692.9" cy="304.8" r="11.6" fill="#fde68a" stroke="#a16207" stroke-width="1.5"/>
+<circle cx="519.6" cy="662.9" r="11.6" fill="#fde68a" stroke="#a16207" stroke-width="1.5"/>
+<rect x="150" y="120" width="554.4" height="554.4" fill="none" stroke="#111827" stroke-width="3"/>
+<text x="427.2" y="101.5" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle">FAR WALL</text>
+<text x="427.2" y="703.3" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#6b7280" text-anchor="middle" font-weight="bold">AUDIENCE</text>
+<text x="128.1" y="397.2" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#d62828" font-weight="bold" text-anchor="middle" transform="rotate(-90 128.1 397.2)">RED ALLIANCE AREA</text>
+<text x="726.3" y="397.2" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#1d4ed8" font-weight="bold" text-anchor="middle" transform="rotate(90 726.3 397.2)">BLUE ALLIANCE AREA</text>
+<text x="288.6" y="535.8" font-family="Helvetica, Arial, sans-serif" font-size="9.2" fill="#d62828" text-anchor="middle" font-weight="bold">RED SIDE (A-C)</text>
+<text x="565.8" y="258.6" font-family="Helvetica, Arial, sans-serif" font-size="9.2" fill="#1d4ed8" text-anchor="middle" font-weight="bold">BLUE SIDE (D-F)</text>
+<polygon points="150.0,131.6 219.3,131.6 219.3,200.9 150.0,200.9" fill="#d62828" fill-opacity="0.35" stroke="#d62828" stroke-width="2.5"/>
+<line x1="184.7" y1="166.2" x2="184.7" y2="135.0" stroke="#d62828" stroke-width="2"/><polygon points="184.7,135.0 187.3,140.4 182.0,140.4" fill="#d62828"/>
+<text x="184.7" y="172.0" font-family="Helvetica, Arial, sans-serif" font-size="10.0" fill="#d62828" text-anchor="middle" font-weight="bold">START</text>
+<line x1="184.7" y1="166.2" x2="234.7" y2="166.2" stroke="#d62828" stroke-width="3"/><polygon points="234.7,166.2 229.3,168.8 229.3,163.6" fill="#d62828"/>
+<circle cx="234.7" cy="166.2" r="10.0" fill="white" stroke="#d62828" stroke-width="2"/>
+<text x="234.7" y="169.7" font-family="Helvetica, Arial, sans-serif" font-size="10.8" fill="#d62828" text-anchor="middle" font-weight="bold">1</text>
+<line x1="234.7" y1="166.2" x2="192.3" y2="243.2" stroke="#d62828" stroke-width="3"/><polygon points="192.3,243.2 192.7,237.2 197.2,239.7" fill="#d62828"/>
+<circle cx="192.3" cy="243.2" r="10.0" fill="white" stroke="#d62828" stroke-width="2"/>
+<text x="192.3" y="246.7" font-family="Helvetica, Arial, sans-serif" font-size="10.8" fill="#d62828" text-anchor="middle" font-weight="bold">2</text>
+<polygon points="157.7,208.6 227.0,208.6 227.0,277.9 157.7,277.9" fill="none" fill-opacity="0.35" stroke="#d62828" stroke-width="2.5" stroke-dasharray="6,4"/>
+<line x1="192.3" y1="243.2" x2="192.3" y2="212.0" stroke="#d62828" stroke-width="2"/><polygon points="192.3,212.0 195.0,217.4 189.7,217.4" fill="#d62828"/>
+<polygon points="704.4,662.9 635.1,662.9 635.1,593.5 704.4,593.5" fill="#1d4ed8" fill-opacity="0.35" stroke="#1d4ed8" stroke-width="2.5"/>
+<line x1="669.8" y1="628.2" x2="669.8" y2="659.4" stroke="#1d4ed8" stroke-width="2"/><polygon points="669.8,659.4 667.1,654.0 672.4,654.0" fill="#1d4ed8"/>
+<text x="669.8" y="634.0" font-family="Helvetica, Arial, sans-serif" font-size="10.0" fill="#1d4ed8" text-anchor="middle" font-weight="bold">START</text>
+<line x1="669.8" y1="628.2" x2="619.7" y2="628.2" stroke="#1d4ed8" stroke-width="3"/><polygon points="619.7,628.2 625.1,625.6 625.1,630.8" fill="#1d4ed8"/>
+<circle cx="619.7" cy="628.2" r="10.0" fill="white" stroke="#1d4ed8" stroke-width="2"/>
+<text x="619.7" y="631.7" font-family="Helvetica, Arial, sans-serif" font-size="10.8" fill="#1d4ed8" text-anchor="middle" font-weight="bold">1</text>
+<line x1="619.7" y1="628.2" x2="662.1" y2="551.2" stroke="#1d4ed8" stroke-width="3"/><polygon points="662.1,551.2 661.7,557.2 657.2,554.7" fill="#1d4ed8"/>
+<circle cx="662.1" cy="551.2" r="10.0" fill="white" stroke="#1d4ed8" stroke-width="2"/>
+<text x="662.1" y="554.7" font-family="Helvetica, Arial, sans-serif" font-size="10.8" fill="#1d4ed8" text-anchor="middle" font-weight="bold">2</text>
+<polygon points="696.7,585.9 627.4,585.9 627.4,516.5 696.7,516.5" fill="none" fill-opacity="0.35" stroke="#1d4ed8" stroke-width="2.5" stroke-dasharray="6,4"/>
+<line x1="662.1" y1="551.2" x2="662.1" y2="582.4" stroke="#1d4ed8" stroke-width="2"/><polygon points="662.1,582.4 659.4,577.0 664.7,577.0" fill="#1d4ed8"/>
+<text x="50.0" y="724.4" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#111827" text-anchor="start">Filled box = START (arrow = front of robot).  Numbered circles = waypoints, driven in order.  Dashed box = where it PARKS.</text>
+<text x="50.0" y="740.4" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start">Robot size used: 18 x 18 in (BasicAuton.ROBOT_LENGTH_IN / ROBOT_WIDTH_IN). Blue = Red rotated 180° (decision 011).</text>
+<text x="50.0" y="770.4" font-family="Helvetica, Arial, sans-serif" font-size="14.0" fill="#111827" text-anchor="start" font-weight="bold">The steps (from BasicAuton.java, in inches)</text>
+<text x="50.0" y="792.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">Step</text>
+<text x="105.0" y="792.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">RED x, y, heading</text>
+<text x="250.0" y="792.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">BLUE x, y, heading</text>
+<text x="395.0" y="792.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">What happens</text>
+<text x="50.0" y="812.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start" font-weight="bold">Start</text>
+<text x="105.0" y="812.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">60, 63, 0°</text>
+<text x="250.0" y="812.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-60, -63, 180°</text>
+<text x="395.0" y="812.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">Robot set up here. Nothing moves during INIT</text>
+<text x="50.0" y="831.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start" font-weight="bold">1</text>
+<text x="105.0" y="831.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">60, 50, 0°</text>
+<text x="250.0" y="831.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-60, -50, 180°</text>
+<text x="395.0" y="831.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">LEAVE: slide right, off the red wall</text>
+<text x="50.0" y="850.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start" font-weight="bold">2</text>
+<text x="105.0" y="850.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">40, 61, 0°</text>
+<text x="250.0" y="850.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-40, -61, 180°</text>
+<text x="395.0" y="850.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">PARK: in the wall end of the LOADING ZONE (zone: x 24.5 to 47.5, y 61 to 72)</text>
+<text x="50.0" y="897.4" font-family="Helvetica, Arial, sans-serif" font-size="14.0" fill="#111827" text-anchor="start" font-weight="bold">Test log: 5 good runs in a row = ready for competition</text>
+<text x="50.0" y="919.4" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Run</text>
+<text x="95.0" y="919.4" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Red / Blue</text>
+<text x="170.0" y="919.4" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Delay (s)</text>
+<text x="240.0" y="919.4" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Parked? (Y/N)</text>
+<text x="340.0" y="919.4" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Lights</text>
+<text x="405.0" y="919.4" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Time (s)</text>
+<text x="470.0" y="919.4" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Notes (overshoot, short, bumped...)</text>
+<line x1="50" y1="945.4" x2="800" y2="945.4" stroke="#c4c8d0" stroke-width="1"/>
+<text x="58.0" y="941.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">1</text>
+<line x1="50" y1="969.4" x2="800" y2="969.4" stroke="#c4c8d0" stroke-width="1"/>
+<text x="58.0" y="965.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">2</text>
+<line x1="50" y1="993.4" x2="800" y2="993.4" stroke="#c4c8d0" stroke-width="1"/>
+<text x="58.0" y="989.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">3</text>
+<line x1="50" y1="1017.4" x2="800" y2="1017.4" stroke="#c4c8d0" stroke-width="1"/>
+<text x="58.0" y="1013.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">4</text>
+<line x1="50" y1="1041.4" x2="800" y2="1041.4" stroke="#c4c8d0" stroke-width="1"/>
+<text x="58.0" y="1037.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">5</text>
+<text x="425.0" y="1088.0" font-family="Helvetica, Arial, sans-serif" font-size="9.0" fill="#6b7280" text-anchor="middle">Field positions approximate. Source: BIOBUZZ Competition Manual Section 9. Generated by TeamCode/docs/game/diagrams/make_diagrams.py</text>
+</svg>

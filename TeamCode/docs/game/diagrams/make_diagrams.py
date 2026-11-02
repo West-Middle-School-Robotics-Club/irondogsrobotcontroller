@@ -18,6 +18,7 @@ To change what the alliance sheet says about our robot, edit OUR_AUTO and OUR_TE
 """
 
 import os
+from html import escape  # notes from the code may contain < or &, which SVG doesn't allow
 
 # ---------------------------------------------------------------------------
 # What our robot can do (shown on the alliance sheet). Update as the robot improves!
@@ -338,6 +339,138 @@ def alliance_sheet():
     return svg_page("\n".join(out))
 
 
+# ---------------------------------------------------------------------------
+# AUTO route sheets (issue #22), drawn from the SAME positions as the robot code.
+# They are read straight out of BasicAuton.java, so the diagram always matches what the robot does.
+# Change a position in the code, re-run this script, and the picture updates.
+# ---------------------------------------------------------------------------
+BASIC_AUTON_JAVA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "src", "main", "java",
+                                "org", "firstinspires", "ftc", "teamcode", "opmodes", "auto", "BasicAuton.java")
+
+
+def read_basic_auton():
+    """Reads robot size, start positions and paths from BasicAuton.java. Returns (consts, routes)."""
+    import re
+    src = open(BASIC_AUTON_JAVA).read()
+    consts = {}
+    for name in ("ROBOT_LENGTH_IN", "ROBOT_WIDTH_IN"):
+        consts[name] = float(re.search(name + r"\s*=\s*([0-9.]+)", src).group(1))
+
+    def ev(expr):  # evaluates things like "72 - ROBOT_WIDTH_IN / 2" (only numbers and our constants)
+        return float(eval(expr, {"__builtins__": {}}, dict(consts)))
+
+    pose_re = r"redPose\(\s*([^,]+?)\s*,\s*([^,]+?)\s*,\s*([^)]+?)\s*\)"
+    routes = {}
+    for route in ("NEAR", "FAR"):
+        s = re.search(r"RED_%s_START\s*=\s*%s" % (route, pose_re), src)
+        start = tuple(ev(g) for g in s.groups())
+        block = re.search(r"RED_%s_PATH\s*=\s*\{(.*?)\};" % route, src, re.S).group(1)
+        path = []
+        for line in block.splitlines():
+            m = re.search(pose_re, line)
+            if m:
+                note = line.split("//", 1)[1].strip() if "//" in line else ""
+                path.append((tuple(ev(g) for g in m.groups()), note))
+        routes[route] = (start, path)
+    return consts, routes
+
+
+def to_blue(pose):
+    """Blue = Red rotated 180 degrees (decision 011)."""
+    x, y, h = pose
+    return (-x, -y, (h + 180) % 360)
+
+
+def robot_outline(f, pose, length, width, color, dashed=False, fill="none", label=""):
+    """The robot's footprint, with an arrow showing which way it faces."""
+    import math
+    x, y, h = pose
+    hr = math.radians(h)
+    fx, fy = math.cos(hr), math.sin(hr)       # forward, field coordinates
+    lx, ly = -math.sin(hr), math.cos(hr)      # left
+    corners = []
+    for a, b in ((1, 1), (1, -1), (-1, -1), (-1, 1)):
+        cx = x + a * length / 2 * fx + b * width / 2 * lx
+        cy = y + a * length / 2 * fy + b * width / 2 * ly
+        corners.append(f"{f.px(cy):.1f},{f.py(cx):.1f}")
+    dash = ' stroke-dasharray="6,4"' if dashed else ""
+    out = [f'<polygon points="{" ".join(corners)}" fill="{fill}" fill-opacity="0.35" stroke="{color}" '
+           f'stroke-width="2.5"{dash}/>']
+    tip = (x + length * 0.45 * fx, y + length * 0.45 * fy)
+    out.append(f.arrow(f.px(y), f.py(x), f.px(tip[1]), f.py(tip[0]), color, 2))
+    if label:
+        out.append(Field.text(f.px(y), f.py(x) + 0.5 * f.s * 3, label, 2.6 * f.s, color, "middle", bold=True))
+    return "\n".join(out)
+
+
+def draw_route(f, start, path, length, width, color):
+    """Start footprint, numbered waypoints joined by arrows, and the park footprint (dashed)."""
+    out = [robot_outline(f, start, length, width, color, fill=color, label="START")]
+    prev = start
+    for i, (wp, _note) in enumerate(path, start=1):
+        out.append(f.arrow(f.px(prev[1]), f.py(prev[0]), f.px(wp[1]), f.py(wp[0]), color, 3))
+        out.append(f'<circle cx="{f.px(wp[1]):.1f}" cy="{f.py(wp[0]):.1f}" r="{2.6 * f.s:.1f}" fill="white" '
+                   f'stroke="{color}" stroke-width="2"/>')
+        out.append(Field.text(f.px(wp[1]), f.py(wp[0]) + 0.9 * f.s, str(i), 2.8 * f.s, color, "middle", bold=True))
+        prev = wp
+    out.append(robot_outline(f, path[-1][0], length, width, color, dashed=True))
+    return "\n".join(out)
+
+
+def route_sheet(route, consts, routes):
+    """One printable page per route: the field with RED and BLUE drawn, the steps, and a test log."""
+    start, path = routes[route]
+    length, width = consts["ROBOT_LENGTH_IN"], consts["ROBOT_WIDTH_IN"]
+    where = {"NEAR": "against our alliance wall, next to the LOADING ZONE",
+             "FAR": "against the audience wall (Red) / far wall (Blue)"}[route]
+    out = [Field.text(50, 48, f"Basic Auton {route}: LEAVE + PARK  ({TEAM_NAME})", 21, INK, bold=True),
+           Field.text(50, 72, f"Start {where}. OpModes: \"Basic Auton RED {route}\" and \"Basic Auton BLUE {route}\".",
+                      12, GREY)]
+
+    f = Field(left=150, top=120, scale=3.85)  # 554 units
+    out.append(f.draw(show_axes=False))
+    out.append(draw_route(f, start, path, length, width, RED))
+    out.append(draw_route(f, to_blue(start), [(to_blue(p), n) for p, n in path], length, width, BLUE))
+
+    # Key
+    ky = 120 + f.size() + 50
+    out.append(Field.text(50, ky, "Filled box = START (arrow = front of robot).  Numbered circles = waypoints, driven in order.  "
+                          "Dashed box = where it PARKS.", 10.5, INK))
+    out.append(Field.text(50, ky + 16, f"Robot size used: {length:g} x {width:g} in (BasicAuton.ROBOT_LENGTH_IN / ROBOT_WIDTH_IN). "
+                          "Blue = Red rotated 180° (decision 011).", 10.5, GREY))
+
+    # Steps table, straight from the code
+    ty = ky + 46
+    out.append(Field.text(50, ty, "The steps (from BasicAuton.java, in inches)", 14, INK, bold=True))
+    cols = [50, 105, 250, 395]
+    heads = ["Step", "RED x, y, heading", "BLUE x, y, heading", "What happens"]
+    for c, h in zip(cols, heads):
+        out.append(Field.text(c, ty + 22, h, 11, GREY, bold=True))
+    rows = [("Start", start, "Robot set up here. Nothing moves during INIT")] + \
+           [(str(i), p, n) for i, (p, n) in enumerate(path, start=1)]
+    for r, (label, pose, note) in enumerate(rows):
+        y = ty + 42 + r * 19
+        b = to_blue(pose)
+        out.append(Field.text(cols[0], y, label, 11, INK, bold=True))
+        out.append(Field.text(cols[1], y, f"{pose[0]:g}, {pose[1]:g}, {pose[2]:g}°", 11, RED))
+        out.append(Field.text(cols[2], y, f"{b[0]:g}, {b[1]:g}, {b[2]:g}°", 11, BLUE))
+        out.append(Field.text(cols[3], y, escape(note)[:80], 11, INK))
+
+    # Test log for students
+    ly = ty + 42 + len(rows) * 19 + 28
+    out.append(Field.text(50, ly, "Test log: 5 good runs in a row = ready for competition", 14, INK, bold=True))
+    heads = ["Run", "Red / Blue", "Delay (s)", "Parked? (Y/N)", "Lights", "Time (s)", "Notes (overshoot, short, bumped...)"]
+    xs = [50, 95, 170, 240, 340, 405, 470]
+    for x, h in zip(xs, heads):
+        out.append(Field.text(x, ly + 22, h, 10.5, GREY, bold=True))
+    for r in range(5):
+        y = ly + 30 + r * 24
+        out.append(f'<line x1="50" y1="{y + 18}" x2="{PAGE_W - 50}" y2="{y + 18}" stroke="#c4c8d0" stroke-width="1"/>')
+        out.append(Field.text(58, y + 14, str(r + 1), 11, INK))
+    out.append(footer())
+    return svg_page("\n".join(out))
+
+
 def save(name, svg):
     here = os.path.dirname(os.path.abspath(__file__))
     path = os.path.join(here, name + ".svg")
@@ -359,3 +492,6 @@ def save(name, svg):
 if __name__ == "__main__":
     save("field-template", field_template())
     save("alliance-sheet", alliance_sheet())
+    consts, routes = read_basic_auton()
+    for route in ("NEAR", "FAR"):
+        save("basic-auton-" + route.lower(), route_sheet(route, consts, routes))

@@ -6,6 +6,10 @@ Printable diagrams for alliance planning, practice and the engineering portfolio
 |---|---|
 | `field-template.pdf` | Blank field to sketch routes and plans. Print a stack for the pit |
 | `alliance-sheet.pdf` | Bring to alliance planning before each match: what we can do, what the partner can do, a field to draw both AUTO routes, and the agreed plan |
+| `basic-auton-near.pdf` | **Basic Auton NEAR** route (#22): Red and Blue start, waypoints, park spot, the steps table, and a 5-run test log |
+| `basic-auton-far.pdf` | **Basic Auton FAR** route, same layout |
+
+**Drive team guide** (which OpMode to pick, the INIT screen, the **start delay**, the lights): `TeamCode/docs/worksheets/basic-auton-guide.pdf`
 
 Each diagram comes as **`.pdf`** (print, letter size), **`.svg`** (sharp at any size, opens in a browser) and **`.png`** (portfolio, phones).
 
@@ -17,8 +21,12 @@ coordinates (decision 011) and, later, the real AUTO routes.
 2. Run `python3 make_diagrams.py` from this folder (`pip install pymupdf` once, for the PDF/PNG files)
 3. Look at the PNGs to check nothing overlaps, then commit all the files
 
+## Route sheets come from the code
+`make_diagrams.py` **reads the robot size, start positions and waypoints straight out of
+`opmodes/auto/BasicAuton.java`**, so the route pictures always match what the robot really does.
+Change a position in the code, re-run the script, and commit the new PDFs with the code change.
+
 ## Coming next
-- **AUTO route sheet** for #22, drawn from the same start positions and waypoints as the AUTO code, for both Red and Blue
-- Level 2 routes once launching works
+- Level 2 routes once launching works (Advanced Auton, #25)
 
 Every AUTO change should update its route diagram (see #22).
