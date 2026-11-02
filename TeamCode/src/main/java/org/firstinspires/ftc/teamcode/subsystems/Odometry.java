@@ -66,6 +66,14 @@ public class Odometry {
         return pinpoint.getPosition();
     }
 
+    /**
+     * Tell the Pinpoint where the robot is on the field right now, for example the autonomous START position
+     * (field coordinates, decision 011). From then on getPose() gives field positions.
+     */
+    public void setPose(Pose2D pose) {
+        pinpoint.setPosition(pose);
+    }
+
     /** READY when it's working. CALIBRATING right after a reset. FAULT_... means a problem. */
     public GoBildaPinpointDriver.DeviceStatus getStatus() {
         return pinpoint.getDeviceStatus();
