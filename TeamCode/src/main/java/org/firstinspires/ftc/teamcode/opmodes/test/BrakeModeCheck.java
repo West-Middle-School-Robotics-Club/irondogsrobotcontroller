@@ -33,6 +33,7 @@ public class BrakeModeCheck extends LinearOpMode {
         // Read the leftover brake mode FIRST, because creating the Robot sets BRAKE.
         DcMotor.ZeroPowerBehavior brakeModeAtStart = TestDriveMotors.getBrakeMode(hardwareMap);
         Robot robot = new Robot(hardwareMap);
+        DriverControls driver = new DriverControls(); // A = straight-line assist on/off
 
         while (opModeInInit()) {
             telemetry.addData("Brake mode when this OpMode started", brakeModeAtStart);
@@ -50,7 +51,7 @@ public class BrakeModeCheck extends LinearOpMode {
                 TestDriveMotors.setBrake(hardwareMap, false);
             }
 
-            DriverControls.drive(robot.drivetrain, gamepad1);
+            driver.drive(robot.drivetrain, gamepad1);
 
             telemetry.addData("Brake mode when this OpMode started", brakeModeAtStart);
             telemetry.addData("Brake mode NOW", TestDriveMotors.getBrakeMode(hardwareMap));

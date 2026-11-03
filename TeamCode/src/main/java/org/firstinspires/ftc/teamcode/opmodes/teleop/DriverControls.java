@@ -2,21 +2,26 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 
 /**
  * The ONE place that turns gamepad sticks into drive commands.
  *
  * Gamepad 1 is the DRIVER (gamepad 2 is the OPERATOR, for the mechanisms):
- *   left stick   drive forward/back and strafe left/right. Almost straight = exactly straight (issue #67)
+ *   left stick   drive forward/back and strafe left/right
  *   right stick  turn (left/right)
  *   hold either bumper   SLOW   (precise lining up)
  *   hold either trigger  TURBO  (full speed)
+ *   A            STRAIGHT-LINE ASSIST on / off (issue #67). ON = a stick pointed almost straight drives
+ *                exactly straight. The gamepad rumbles: 1 blip = ON, 2 blips = OFF
  * Printable diagram: TeamCode/docs/worksheets/controller-layout.pdf
  *
  * Every TeleOp drives the robot with:
- *     DriverControls.drive(robot.drivetrain, gamepad1);
+ *     DriverControls driver = new DriverControls();   // once, before the loop
+ *     driver.drive(robot.drivetrain, gamepad1);       // every loop
  * so all TeleOps drive the same way, and a wrong direction only needs fixing here.
+ * It's an object (like OperatorControls) because the assist toggle must REMEMBER on/off between loops.
  *
  * Autonomous does NOT use this. It calls robot.drivetrain.drive(...) directly,
  * because its numbers (e.g. from the Pinpoint) already follow our convention.
@@ -32,9 +37,12 @@ public class DriverControls {
 
     // Straight-line assist (issue #67): if the left stick points ALMOST straight (forward, back, left or right),
     // drive EXACTLY straight. Forgives a thumb that leans a little. Diagonals still work outside the zone.
+    // The driver turns it on/off with A. ASSIST_ON_AT_START = how every TeleOp starts.
     // SNAP_ANGLE_DEGREES = how far off straight still counts as straight. Bigger = more forgiving.
-    public static final boolean SNAP_TO_STRAIGHT_LINES = true;
+    public static final boolean ASSIST_ON_AT_START = true;
     public static final double SNAP_ANGLE_DEGREES = 15.0;
+
+    private boolean straightLineAssist = ASSIST_ON_AT_START;
 
     /**
      * The three driving speeds. The driver picks one by holding a button:
@@ -58,7 +66,13 @@ public class DriverControls {
      *
      * @return which speed is active (SLOW, NORMAL or TURBO), to show on telemetry.
      */
-    public static DriveSpeed drive(Drivetrain drivetrain, Gamepad gamepad) {
+    public DriveSpeed drive(Drivetrain drivetrain, Gamepad gamepad) {
+        // A = straight-line assist on / off. aWasPressed() is true only ONCE per press.
+        if (gamepad.aWasPressed()) {
+            straightLineAssist = !straightLineAssist;
+            gamepad.rumbleBlips(straightLineAssist ? 1 : 2); // feel it without looking: 1 = ON, 2 = OFF
+        }
+
         // The gamepad sticks don't match our direction convention (decision 007),
         // so we flip them HERE, and only here:
         //   stick pushed forward = negative Y   -> flip to get +forward
@@ -69,7 +83,7 @@ public class DriverControls {
         double turn    = applyDeadzone(-gamepad.right_stick_x);
 
         // Almost straight? Make it exactly straight (issue #67).
-        if (SNAP_TO_STRAIGHT_LINES) {
+        if (straightLineAssist) {
             double strength = Math.min(1.0, Math.hypot(forward, left)); // how far the stick is pushed
             double snapRatio = Math.tan(Math.toRadians(SNAP_ANGLE_DEGREES));
             if (Math.abs(left) <= Math.abs(forward) * snapRatio) {
@@ -89,6 +103,17 @@ public class DriverControls {
 
         drivetrain.drive(forward * scale, left * scale, turn * scale);
         return speed;
+    }
+
+    /** True when straight-line assist is ON. */
+    public boolean isStraightLineAssistOn() {
+        return straightLineAssist;
+    }
+
+    /** Show the driver's settings. */
+    public void addTelemetry(Telemetry telemetry, DriveSpeed speed) {
+        telemetry.addData("Drive speed", speed);
+        telemetry.addData("Straight-line assist (A)", straightLineAssist ? "ON" : "OFF");
     }
 
     /** Which speed the driver wants: either bumper = SLOW, either trigger = TURBO, otherwise NORMAL. */

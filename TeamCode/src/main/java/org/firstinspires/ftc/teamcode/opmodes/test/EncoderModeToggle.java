@@ -30,6 +30,7 @@ public class EncoderModeToggle extends LinearOpMode {
     public void runOpMode() {
         Power power = new Power(hardwareMap); // battery voltage + current on every test
         Robot robot = new Robot(hardwareMap);
+        DriverControls driver = new DriverControls(); // A = straight-line assist on/off
         boolean useEncoders = Drivetrain.USE_ENCODER_SPEED_CONTROL;  // start with the real setting
 
         telemetry.addLine("Press START, then Y to switch modes.");
@@ -44,12 +45,12 @@ public class EncoderModeToggle extends LinearOpMode {
                 TestDriveMotors.setUseEncoders(hardwareMap, useEncoders);
             }
 
-            DriverControls.DriveSpeed speed = DriverControls.drive(robot.drivetrain, gamepad1);
+            DriverControls.DriveSpeed speed = driver.drive(robot.drivetrain, gamepad1);
 
             telemetry.addData("MODE", useEncoders ? "WITH encoders" : "WITHOUT encoders");
             telemetry.addData("Motors report", TestDriveMotors.getRunMode(hardwareMap));
             telemetry.addData("Avg wheel speed (ticks/s)", "%.0f", TestDriveMotors.getAverageWheelSpeed(hardwareMap));
-            telemetry.addData("Drive speed", speed);
+            driver.addTelemetry(telemetry, speed);
             telemetry.addLine();
             telemetry.addLine("Y (gamepad 1 or 2) = switch mode");
             power.addTelemetry(telemetry);

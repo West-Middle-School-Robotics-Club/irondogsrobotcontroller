@@ -33,6 +33,8 @@ public class PinpointTest extends LinearOpMode {
     public void runOpMode() {
         Power power = new Power(hardwareMap); // battery voltage + current on every test
         Robot robot = new Robot(hardwareMap);
+        // Here A = reset (below). It reads A first, so the driver's A (straight-line assist) never toggles in this test.
+        DriverControls driver = new DriverControls();
         Odometry odometry = new Odometry(hardwareMap);
         // Test-only: the same Pinpoint, used directly for resets and extra tuning details (code-structure rule 8).
         GoBildaPinpointDriver pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, Odometry.PINPOINT_NAME);
@@ -65,7 +67,7 @@ public class PinpointTest extends LinearOpMode {
                 pinpoint.resetPosAndIMU();
             }
 
-            DriverControls.drive(robot.drivetrain, gamepad1);
+            driver.drive(robot.drivetrain, gamepad1);
 
             telemetry.addLine("A = reset to 0,0,0     B = reset + recalibrate (keep STILL)");
             telemetry.addLine();

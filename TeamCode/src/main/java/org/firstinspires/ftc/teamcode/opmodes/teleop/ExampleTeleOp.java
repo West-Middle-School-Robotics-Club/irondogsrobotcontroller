@@ -22,6 +22,7 @@ public class ExampleTeleOp extends LinearOpMode {
     @Override
     public void runOpMode() {
         Robot robot = new Robot(hardwareMap);
+        DriverControls driver = new DriverControls(); // A = straight-line assist on/off
 
         telemetry.addData("Status", "Ready! Press START");
         telemetry.update();
@@ -29,7 +30,7 @@ public class ExampleTeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
             // Driving always goes through DriverControls, so every TeleOp drives the same way.
-            DriverControls.drive(robot.drivetrain, gamepad1);
+            driver.drive(robot.drivetrain, gamepad1);
 
             robot.addTelemetry(telemetry);
             telemetry.update();
