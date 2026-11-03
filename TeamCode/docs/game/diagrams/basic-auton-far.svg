@@ -66,9 +66,9 @@
 <text x="726.3" y="397.2" font-family="Helvetica, Arial, sans-serif" font-size="11.6" fill="#1d4ed8" font-weight="bold" text-anchor="middle" transform="rotate(90 726.3 397.2)">BLUE ALLIANCE AREA</text>
 <text x="288.6" y="535.8" font-family="Helvetica, Arial, sans-serif" font-size="9.2" fill="#d62828" text-anchor="middle" font-weight="bold">RED SIDE (A-C)</text>
 <text x="565.8" y="258.6" font-family="Helvetica, Arial, sans-serif" font-size="9.2" fill="#1d4ed8" text-anchor="middle" font-weight="bold">BLUE SIDE (D-F)</text>
-<polygon points="253.9,605.1 323.2,605.1 323.2,674.4 253.9,674.4" fill="#d62828" fill-opacity="0.35" stroke="#d62828" stroke-width="2.5"/>
+<polygon points="257.8,605.2 319.4,605.2 319.4,674.4 257.8,674.4" fill="#d62828" fill-opacity="0.35" stroke="#d62828" stroke-width="2.5"/>
 <line x1="288.6" y1="639.8" x2="288.6" y2="608.6" stroke="#d62828" stroke-width="2"/><polygon points="288.6,608.6 291.2,614.0 286.0,614.0" fill="#d62828"/>
-<text x="288.6" y="645.5" font-family="Helvetica, Arial, sans-serif" font-size="10.0" fill="#d62828" text-anchor="middle" font-weight="bold">START</text>
+<text x="288.6" y="645.6" font-family="Helvetica, Arial, sans-serif" font-size="10.0" fill="#d62828" text-anchor="middle" font-weight="bold">START</text>
 <line x1="288.6" y1="639.8" x2="273.2" y2="582.0" stroke="#d62828" stroke-width="3"/><polygon points="273.2,582.0 277.1,586.5 272.1,587.9" fill="#d62828"/>
 <circle cx="273.2" cy="582.0" r="10.0" fill="white" stroke="#d62828" stroke-width="2"/>
 <text x="273.2" y="585.5" font-family="Helvetica, Arial, sans-serif" font-size="10.8" fill="#d62828" text-anchor="middle" font-weight="bold">1</text>
@@ -78,12 +78,12 @@
 <line x1="273.2" y1="304.8" x2="203.9" y2="281.7" stroke="#d62828" stroke-width="3"/><polygon points="203.9,281.7 209.9,280.9 208.2,285.9" fill="#d62828"/>
 <circle cx="203.9" cy="281.7" r="10.0" fill="white" stroke="#d62828" stroke-width="2"/>
 <text x="203.9" y="285.2" font-family="Helvetica, Arial, sans-serif" font-size="10.8" fill="#d62828" text-anchor="middle" font-weight="bold">3</text>
-<polygon points="169.2,247.1 238.6,247.1 238.6,316.4 169.2,316.4" fill="none" fill-opacity="0.35" stroke="#d62828" stroke-width="2.5" stroke-dasharray="6,4"/>
-<line x1="203.9" y1="281.7" x2="203.9" y2="250.5" stroke="#d62828" stroke-width="2"/><polygon points="203.9,250.5 206.5,255.9 201.3,255.9" fill="#d62828"/>
-<polygon points="600.5,189.3 531.2,189.3 531.2,120.0 600.5,120.0" fill="#1d4ed8" fill-opacity="0.35" stroke="#1d4ed8" stroke-width="2.5"/>
-<line x1="565.8" y1="154.7" x2="565.8" y2="185.8" stroke="#1d4ed8" stroke-width="2"/><polygon points="565.8,185.8 563.2,180.4 568.4,180.4" fill="#1d4ed8"/>
+<polygon points="173.1,247.1 234.7,247.1 234.7,316.3 173.1,316.3" fill="none" fill-opacity="0.35" stroke="#d62828" stroke-width="2.5" stroke-dasharray="6,4"/>
+<line x1="203.9" y1="281.7" x2="203.9" y2="250.5" stroke="#d62828" stroke-width="2"/><polygon points="203.9,250.5 206.5,256.0 201.3,256.0" fill="#d62828"/>
+<polygon points="596.6,189.2 535.0,189.2 535.0,120.0 596.6,120.0" fill="#1d4ed8" fill-opacity="0.35" stroke="#1d4ed8" stroke-width="2.5"/>
+<line x1="565.8" y1="154.6" x2="565.8" y2="185.8" stroke="#1d4ed8" stroke-width="2"/><polygon points="565.8,185.8 563.2,180.4 568.4,180.4" fill="#1d4ed8"/>
 <text x="565.8" y="160.4" font-family="Helvetica, Arial, sans-serif" font-size="10.0" fill="#1d4ed8" text-anchor="middle" font-weight="bold">START</text>
-<line x1="565.8" y1="154.7" x2="581.2" y2="212.4" stroke="#1d4ed8" stroke-width="3"/><polygon points="581.2,212.4 577.3,207.9 582.3,206.5" fill="#1d4ed8"/>
+<line x1="565.8" y1="154.6" x2="581.2" y2="212.4" stroke="#1d4ed8" stroke-width="3"/><polygon points="581.2,212.4 577.3,207.9 582.3,206.5" fill="#1d4ed8"/>
 <circle cx="581.2" cy="212.4" r="10.0" fill="white" stroke="#1d4ed8" stroke-width="2"/>
 <text x="581.2" y="215.9" font-family="Helvetica, Arial, sans-serif" font-size="10.8" fill="#1d4ed8" text-anchor="middle" font-weight="bold">1</text>
 <line x1="581.2" y1="212.4" x2="581.2" y2="489.6" stroke="#1d4ed8" stroke-width="3"/><polygon points="581.2,489.6 578.6,484.2 583.8,484.2" fill="#1d4ed8"/>
@@ -92,18 +92,18 @@
 <line x1="581.2" y1="489.6" x2="650.5" y2="512.7" stroke="#1d4ed8" stroke-width="3"/><polygon points="650.5,512.7 644.5,513.5 646.2,508.5" fill="#1d4ed8"/>
 <circle cx="650.5" cy="512.7" r="10.0" fill="white" stroke="#1d4ed8" stroke-width="2"/>
 <text x="650.5" y="516.2" font-family="Helvetica, Arial, sans-serif" font-size="10.8" fill="#1d4ed8" text-anchor="middle" font-weight="bold">3</text>
-<polygon points="685.1,547.4 615.9,547.4 615.9,478.1 685.1,478.1" fill="none" fill-opacity="0.35" stroke="#1d4ed8" stroke-width="2.5" stroke-dasharray="6,4"/>
-<line x1="650.5" y1="512.7" x2="650.5" y2="543.9" stroke="#1d4ed8" stroke-width="2"/><polygon points="650.5,543.9 647.9,538.5 653.1,538.5" fill="#1d4ed8"/>
+<polygon points="681.3,547.3 619.7,547.3 619.7,478.1 681.3,478.1" fill="none" fill-opacity="0.35" stroke="#1d4ed8" stroke-width="2.5" stroke-dasharray="6,4"/>
+<line x1="650.5" y1="512.7" x2="650.5" y2="543.9" stroke="#1d4ed8" stroke-width="2"/><polygon points="650.5,543.9 647.9,538.4 653.1,538.4" fill="#1d4ed8"/>
 <text x="50.0" y="724.4" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#111827" text-anchor="start">Filled box = START (arrow = front of robot).  Numbered circles = waypoints, driven in order.  Dashed box = where it PARKS.</text>
-<text x="50.0" y="740.4" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start">Robot size used: 18 x 18 in (BasicAuton.ROBOT_LENGTH_IN / ROBOT_WIDTH_IN). Blue = Red rotated 180° (decision 011).</text>
+<text x="50.0" y="740.4" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start">Robot size used: 17.98 x 15.99 in (BasicAuton.ROBOT_LENGTH_IN / ROBOT_WIDTH_IN). Blue = Red rotated 180° (decision 011).</text>
 <text x="50.0" y="770.4" font-family="Helvetica, Arial, sans-serif" font-size="14.0" fill="#111827" text-anchor="start" font-weight="bold">The steps (from BasicAuton.java, in inches)</text>
 <text x="50.0" y="792.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">Step</text>
 <text x="105.0" y="792.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">RED x, y, heading</text>
 <text x="250.0" y="792.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">BLUE x, y, heading</text>
 <text x="395.0" y="792.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">What happens</text>
 <text x="50.0" y="812.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start" font-weight="bold">Start</text>
-<text x="105.0" y="812.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">-63, 36, 0°</text>
-<text x="250.0" y="812.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">63, -36, 180°</text>
+<text x="105.0" y="812.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">-63.01, 36, 0°</text>
+<text x="250.0" y="812.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">63.01, -36, 180°</text>
 <text x="395.0" y="812.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">Robot set up here. Nothing moves during INIT</text>
 <text x="50.0" y="831.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start" font-weight="bold">1</text>
 <text x="105.0" y="831.4" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">-48, 40, 0°</text>
