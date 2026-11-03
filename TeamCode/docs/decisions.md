@@ -321,3 +321,17 @@ Decision:
 - The switches work as an **OR**: if either is pressed, **the next ball to launch is a NECTAR** (`intake.isNectarDetected()`, unchanged from 025)
 - **Main TeleOp:** both lights turn **purple** (`Light.Color.VIOLET`) while a NECTAR is detected, then back to the alliance color. A first choice; the team can change it
 Who: Team
+
+## 029 – The operator's buttons (gamepad 2)  (2026-11-03)
+Status: Accepted (a first version: expect changes after driving practice)
+Issue: #3
+Context: Decision 027 split the work between a DRIVER (gamepad 1) and an OPERATOR (gamepad 2). The team chose the operator's buttons.
+Decision:
+- **Y (hold) = LAUNCH.** The `launcherTriggerServo` rests in the way, blocking launching; while Y is held it moves out of the way
+- **X = water wheel UP, B = water wheel DOWN.** Both are **toggles** (press = on, press again = off), and they cancel each other (B while going up = going down)
+- **A = intake** on/off (toggle)
+- **Left trigger (hold) = EJECT:** water wheel down + intake out, to push stored balls out. Eject beats the toggles; when it's let go, the intake and water wheel are off
+- **The flywheel (`launcherMotor`) runs the whole match**, starting when START is pressed (not during INIT, G304.H). No button
+- All in one class, `opmodes/teleop/OperatorControls.java` (like `DriverControls`). It's an object because toggles must remember on/off between loops. It uses the SDK's `xWasPressed()` so a held button toggles only once
+- Not on a button yet: flower flipper, turret, hood, auto-aim
+Who: Team

@@ -22,6 +22,7 @@ teamcode/
 └── opmodes/                ← what shows up on the Driver Station
     ├── teleop/
     │   ├── DriverControls.java ← the ONLY code that turns gamepad sticks into drive commands
+    │   ├── OperatorControls.java ← the ONLY code that turns gamepad 2 buttons into mechanism commands (decision 029)
     │   ├── ExampleTeleOp.java
     │   ├── MainTeleOp.java     ← the match TeleOp (shared code, no @TeleOp of its own)
     │   ├── MainTeleOpRed.java  ← "Main TeleOp RED": picks Alliance.RED (decision 022)
@@ -67,6 +68,7 @@ to `Robot.java` like the other subsystems.
    only the OpMode knows where commands come from (sticks in TeleOp, code in Autonomous).
 7. **Every TeleOp drives with `DriverControls.drive(robot.drivetrain, gamepad1);`.** Don't read the drive
    sticks anywhere else. Autonomous skips `DriverControls` and calls `robot.drivetrain.drive(...)` directly.
+   Mechanism buttons (gamepad 2, the operator) are read only in `OperatorControls` (decision 029).
 8. **Test code stays in `opmodes/test/`.** Test and tuning OpModes (and their helpers) may break rules 1–7
    when a test needs to, for example by reading or changing motor settings directly. Real robot code
    (subsystems, `opmodes/teleop/`, `opmodes/auto/`) **never** uses anything from `opmodes/test/`, and we never

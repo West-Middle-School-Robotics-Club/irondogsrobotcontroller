@@ -1,14 +1,14 @@
 """
 Makes the printable CONTROLLER LAYOUT: one page per gamepad.
   Page 1  Gamepad 1 = DRIVER    (filled in: what DriverControls.java does)
-  Page 2  Gamepad 2 = OPERATOR  (blanks: the students decide, then we wire it into Main TeleOp)
+  Page 2  Gamepad 2 = OPERATOR  (filled in: what OperatorControls.java does. Empty OPERATOR = blanks to decide)
 
 Run:   python3 make_controller_layout.py
 Needs: pip install reportlab
 Makes: controller-layout.pdf (in this folder)
 
-Keep DRIVER in sync with opmodes/teleop/DriverControls.java. When the operator layout is decided,
-fill in OPERATOR below (button -> text) and re-run to print the final version for the drive team.
+Keep DRIVER in sync with opmodes/teleop/DriverControls.java and OPERATOR with OperatorControls.java.
+Set OPERATOR = {} to print a blank operator page again (for planning a new layout).
 """
 import os
 from datetime import date
@@ -29,7 +29,13 @@ DRIVER = {
     "LS": ("DRIVE", "forward / back, strafe left / right"),
     "RS": ("TURN", "push left / right"),
 }
-OPERATOR = {}  # Filled in once the students decide, e.g. "A": ("FIRE (press)", "only when the flywheel is ready")
+OPERATOR = {  # decision 029
+    "Y": ("LAUNCH (hold)", "trigger moves out of the way; let go = blocked"),
+    "X": ("WATER WHEEL UP (toggle)", "press = on, press again = off"),
+    "B": ("WATER WHEEL DOWN (toggle)", "press = on, again = off. X and B cancel"),
+    "A": ("INTAKE (toggle)", "press = on, press again = off"),
+    "LT": ("EJECT (hold)", "water wheel DOWN + intake OUT; then all off"),
+}
 
 # (key, button name, anchor x, anchor y). Positions are in inches on a landscape page.
 LEFT = [
@@ -165,7 +171,7 @@ def header(c, title, subtitle):
     c.setFont("Helvetica", 7.5)
     c.setFillColor(GREY)
     c.drawString(0.45 * inch, 0.32 * inch, "WMS Irondogs  |  Controller layout  |  code: TeamCode/opmodes/teleop "
-                 "(DriverControls.java, MainTeleOp.java)  |  printed " + date.today().isoformat())
+                 "(DriverControls.java, OperatorControls.java, MainTeleOp.java)  |  printed " + date.today().isoformat())
 
 
 def box(c, x, y, w, h, title, lines, size=9):
@@ -253,6 +259,21 @@ if not decided:
         "3. Anything automatic? e.g. stop the",
         "   intake when a NECTAR is detected",
         "4. Lights: what should they show?",
+    ], size=8.6)
+else:
+    box(c, 0.45, 0.55, 5.6, 1.85, "How it works", [
+        [("Flywheel: ", True), ("starts when START is pressed and runs the whole match.", False)],
+        "It is NOT on a button. Watch \"Launcher Status\" for READY.",
+        [("Toggles ", True), ("(A, X, B): press once = on, press again = off.", False)],
+        [("X and B ", True), ("cancel each other: press B while going UP = going DOWN.", False)],
+        [("EJECT ", True), ("beats everything; let go and the intake + water wheel are OFF.", False)],
+        [("Lights: ", True), ("PURPLE = the next ball to launch is a NECTAR.", False)],
+    ], size=8.6)
+    box(c, 6.25, 0.55, 4.3, 1.85, "Not on a button yet", [
+        "Flower flipper shake, turret left / right, turret to",
+        "forward, hood up / down, turret auto-aim (later, #7).",
+        "Free: dpad, bumpers, right trigger, sticks.",
+        "Code: opmodes/teleop/OperatorControls.java",
     ], size=8.6)
 c.showPage()
 c.save()
