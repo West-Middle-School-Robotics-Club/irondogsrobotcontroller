@@ -51,6 +51,7 @@ public abstract class MainTeleOp extends LinearOpMode {
         rightLight.setColor(allianceColor(alliance));
 
         while (opModeInInit()) {
+            robot.turret.update(); // homes the turret if it passes forward; never moves it during INIT
             telemetry.addData("ALLIANCE", "%s  (lights are %s)", alliance, allianceColor(alliance));
             telemetry.addLine("Wrong color? Stop and pick the other Main TeleOp.");
             telemetry.addLine();
@@ -76,6 +77,7 @@ public abstract class MainTeleOp extends LinearOpMode {
             DriverControls.DriveSpeed speed = DriverControls.drive(robot.drivetrain, gamepad1);
             // Mechanisms always go through OperatorControls (gamepad 2).
             operator.update(robot, gamepad2);
+            robot.turret.update(); // every loop: turns the turret and keeps it inside its limits
 
             // Lights: PURPLE = the next ball to launch is a NECTAR, otherwise our alliance color.
             Light.Color lightColor = robot.intake.isNectarDetected() ? Light.Color.VIOLET : allianceColor(alliance);

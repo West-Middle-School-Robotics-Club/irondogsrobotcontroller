@@ -25,6 +25,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  *                        It is NOT a stop. It is our HOME sensor.
  *   turretHoodServo      POSITIONAL servo: tilts the hood to aim the launch UP or DOWN (decision 024).
  *                        Optional: if it's not in the config, the turret still works and the hood shows OFFLINE.
+ * Turning needs ALL THREE of turretRotateServo, turretEncoder and turretForwardSwitch. If any is missing from
+ * the config, the turret shows OFFLINE and does nothing (no crash), so Main TeleOp still runs on any robot.
  *
  * How it works:
  *   - A continuous servo doesn't know its own angle, so OUR CODE holds the angle using the encoder.
@@ -98,10 +100,11 @@ public class Turret {
     // TODO(#31): tune. Smaller = stricter "home".
     public static final int HOME_TOLERANCE_COUNTS = 200;
 
-    private final CRServoImplEx turretRotateServo;
+    private final CRServoImplEx turretRotateServo;  // null if not in the Driver Station config
     // Only used to READ the encoder port. We never give it power.
-    private final DcMotorEx turretEncoder;
-    private final DigitalChannel turretForwardSwitch;
+    private final DcMotorEx turretEncoder;           // null if not in the Driver Station config
+    private final DigitalChannel turretForwardSwitch; // null if not in the Driver Station config
+    private final boolean connected;                 // true only if all three are in the config
     private final Servo turretHoodServo;   // null if not in the Driver Station config
     private double hoodPosition = Double.NaN; // NaN until the first hood command
 
@@ -118,15 +121,25 @@ public class Turret {
     private double speedSent = 0.0;
 
     public Turret(HardwareMap hardwareMap) {
-        turretRotateServo = hardwareMap.get(CRServoImplEx.class, ROTATE_SERVO_NAME);
-        turretEncoder = hardwareMap.get(DcMotorEx.class, ENCODER_NAME);
-        turretForwardSwitch = hardwareMap.get(DigitalChannel.class, FORWARD_SWITCH_NAME);
-        turretForwardSwitch.setMode(DigitalChannel.Mode.INPUT);
+        turretRotateServo = hardwareMap.tryGet(CRServoImplEx.class, ROTATE_SERVO_NAME);
+        turretEncoder = hardwareMap.tryGet(DcMotorEx.class, ENCODER_NAME);
+        turretForwardSwitch = hardwareMap.tryGet(DigitalChannel.class, FORWARD_SWITCH_NAME);
         turretHoodServo = hardwareMap.tryGet(Servo.class, HOOD_SERVO_NAME);
+        connected = turretRotateServo != null && turretEncoder != null && turretForwardSwitch != null;
 
-        turretRotateServo.setDirection(SERVO_REVERSED ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
-        // Only sets the signal range. Nothing moves until the first command (game rule G304.H: INIT must not move).
-        turretRotateServo.setPwmRange(new PwmControl.PwmRange(SERVO_PWM_MIN_US, SERVO_PWM_MAX_US));
+        if (turretForwardSwitch != null) {
+            turretForwardSwitch.setMode(DigitalChannel.Mode.INPUT);
+        }
+        if (turretRotateServo != null) {
+            turretRotateServo.setDirection(SERVO_REVERSED ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
+            // Only sets the signal range. Nothing moves until the first command (game rule G304.H: INIT must not move).
+            turretRotateServo.setPwmRange(new PwmControl.PwmRange(SERVO_PWM_MIN_US, SERVO_PWM_MAX_US));
+        }
+    }
+
+    /** True if the rotate servo, encoder and forward switch are all in the Driver Station config. */
+    public boolean isConnected() {
+        return connected;
     }
 
     /**
@@ -134,6 +147,9 @@ public class Turret {
      * It homes the encoder at the forward switch, and spins the servo toward the target.
      */
     public void update() {
+        if (!connected) {
+            return; // OFFLINE: nothing to do
+        }
         if (!homed && isFacingForward()) {
             homeCounts = turretEncoder.getCurrentPosition();
             homed = true;
@@ -232,7 +248,9 @@ public class Turret {
         targetDegrees = Double.NaN;
         manualSpeed = 0.0;
         speedSent = 0.0;
-        turretRotateServo.setPower(0.0);
+        if (turretRotateServo != null) {
+            turretRotateServo.setPower(0.0);
+        }
     }
 
     /**
@@ -286,7 +304,7 @@ public class Turret {
 
     /** Raw encoder count. Used for calibrating. */
     public int getEncoderCounts() {
-        return turretEncoder.getCurrentPosition();
+        return turretEncoder != null ? turretEncoder.getCurrentPosition() : 0;
     }
 
     /**
@@ -294,7 +312,7 @@ public class Turret {
      * This is the exact magnet spot. For the light, use isAtHome() (a wider zone).
      */
     public boolean isFacingForward() {
-        return turretForwardSwitch.getState() == FORWARD_SWITCH_TRIGGERED_STATE;
+        return turretForwardSwitch != null && turretForwardSwitch.getState() == FORWARD_SWITCH_TRIGGERED_STATE;
     }
 
     private static double clamp(double value, double limit) {
@@ -303,6 +321,11 @@ public class Turret {
 
     /** Show this subsystem's status on the Driver Station. */
     public void addTelemetry(Telemetry telemetry) {
+        if (!connected) {
+            telemetry.addData("Turret", "OFFLINE (needs '%s', '%s' and '%s' in DS config)",
+                    ROTATE_SERVO_NAME, ENCODER_NAME, FORWARD_SWITCH_NAME);
+            return;
+        }
         telemetry.addData("Turret homed", homed ? "yes" : "NO: turn the turret to forward once (slow until then)");
         telemetry.addData("Turret at home", "%s  (%d counts from home, zone ±%d)",
                 isAtHome() ? "YES" : "no", getCountsFromHome(), HOME_TOLERANCE_COUNTS);
