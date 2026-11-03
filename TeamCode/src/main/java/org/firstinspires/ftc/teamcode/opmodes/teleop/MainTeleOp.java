@@ -18,7 +18,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  * During INIT both lights show the alliance color (red or blue) so the drive team can see from the
  * field that the right OpMode is selected. Nothing moves during INIT (game rule G304.H).
  *
- * Driving goes through DriverControls, so every TeleOp drives consistently.
+ * Gamepad 1 = DRIVER: driving goes through DriverControls (sticks, bumpers = SLOW, triggers = TURBO), so every
+ * TeleOp drives consistently. Gamepad 2 = OPERATOR: mechanism buttons, chosen by the students (not wired yet).
  * Camera, Light and Power are created here, not in Robot.java, until they're configured on every robot
  * (see code-structure.md).
  */
@@ -64,10 +65,10 @@ public abstract class MainTeleOp extends LinearOpMode {
         // ---------- MATCH ----------
         while (opModeIsActive()) {
             // Driving always goes through DriverControls, so every TeleOp drives the same way.
-            boolean slowMode = DriverControls.drive(robot.drivetrain, gamepad1);
+            DriverControls.DriveSpeed speed = DriverControls.drive(robot.drivetrain, gamepad1);
 
             telemetry.addData("Alliance", alliance);
-            telemetry.addData("Slow mode", slowMode ? "ON" : "OFF");
+            telemetry.addData("Drive speed", speed);
             power.addTelemetry(telemetry);
             robot.addTelemetry(telemetry);
             camera.addTelemetry(telemetry);

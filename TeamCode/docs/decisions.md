@@ -298,3 +298,14 @@ Decision:
 - `Odometry.setPose()` added so the Pinpoint reports field positions from the start position
 - Uses BRAKE (023). After AUTO, the matching Main TeleOp is preselected (G305)
 Who: Team (positions to confirm on the field)
+
+## 027 – Two gamepads: DRIVER and OPERATOR; three driving speeds  (2026-11-03)
+Status: Accepted (driver controls). Operator buttons: the students are deciding
+Issue: #3
+Context: The robot now has many mechanisms (intake, loader, flywheel, trigger, turret, hood, flower flipper). One person driving AND running all of them is a lot to learn.
+Decision:
+- **Gamepad 1 = DRIVER** (START + A on the Driver Station): only driving, in `DriverControls.java`
+- **Gamepad 2 = OPERATOR** (START + B): the mechanisms. The students choose the buttons with the printable sheet `docs/worksheets/controller-layout.pdf`, then we wire them into Main TeleOp
+- **Driver:** left stick = drive and strafe, right stick = turn. **Three speeds**: hold either **bumper** = SLOW (40%), nothing = NORMAL (70%), hold either **trigger** = TURBO (100%). If both are held, SLOW wins (safer). The percentages are a first try, tuned with the drivers
+- `DriverControls.drive()` returns the speed (`DriveSpeed.SLOW / NORMAL / TURBO`) so TeleOps can show it on telemetry
+Who: Team / mentors
