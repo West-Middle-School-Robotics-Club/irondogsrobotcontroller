@@ -26,6 +26,17 @@ If a name doesn't match, the OpMode crashes on INIT with an error like `Unable t
 - No spaces. Names are **case-sensitive**.
 - Label the physical wires with the same name.
 
+## Robot dimensions (measured 2026-11-03)
+
+| Measurement | mm | inches | Used by |
+|---|---|---|---|
+| Total length (front to back) | 456.59 | 17.98 | Basic Auton start/park positions (`BasicAuton.ROBOT_LENGTH_IN`). ⚠️ Only 0.02 in under the 18 in starting size limit |
+| Total width (left to right) | 406.19 | 15.99 | Basic Auton (`BasicAuton.ROBOT_WIDTH_IN`) |
+| Wheelbase length (front wheel center to back wheel center) | 264.00 | 10.39 | Reference (Pedro Pathing, later) |
+| Wheelbase width (left wheel center to right wheel center) | 336.93 | 13.26 | Reference (Pedro Pathing, later) |
+
+**Still to measure (#21):** where each Pinpoint pod is, from the robot's center (`Odometry.X_POD_OFFSET_MM` / `Y_POD_OFFSET_MM`).
+
 ## Drivetrain (`subsystems/Drivetrain.java`)
 
 | Config name | Device type | Hub / Port | Direction | Notes                     |

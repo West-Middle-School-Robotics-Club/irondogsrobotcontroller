@@ -46,10 +46,10 @@ public abstract class BasicAuton extends LinearOpMode {
     protected abstract Route route();
 
     // ------------------------------------------------------------------------------------------------
-    // ROBOT SIZE. TODO(#22): measure the competition robot (inches) and update these.
+    // ROBOT SIZE, measured 11/3: 456.59 mm x 406.19 mm (hardware-config.md). Update if the robot changes.
     // ------------------------------------------------------------------------------------------------
-    public static final double ROBOT_LENGTH_IN = 18.0; // front to back
-    public static final double ROBOT_WIDTH_IN = 18.0;  // left to right
+    public static final double ROBOT_LENGTH_IN = 17.98; // front to back (456.59 mm)
+    public static final double ROBOT_WIDTH_IN = 15.99;  // left to right (406.19 mm)
 
     // ------------------------------------------------------------------------------------------------
     // RED positions (inches, degrees). See TeamCode/docs/game/field.md for the map.
