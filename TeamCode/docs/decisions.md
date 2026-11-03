@@ -346,3 +346,14 @@ Decision:
 - So **`Turret` is now in `Robot`** (`robot.turret`). Main TeleOp calls `robot.turret.update()` every loop, in INIT too (homing only; nothing moves in INIT)
 - **Flower flipper stays off the controller** until we know it's on the build
 Who: Team
+
+## 031 – Driver straight-line assist: the left stick snaps to straight lines  (2026-11-03)
+Status: Proposed (to test with the drivers before merging; PR for #67)
+Issue: #67
+Context: The team asked for cleaner straight driving. A thumb rarely pushes the stick perfectly straight, so "forward" usually drifts a little sideways.
+Decision:
+- If the left stick points within **±`SNAP_ANGLE_DEGREES` (15°)** of straight forward, back, left or right, the robot drives **exactly** that way, at the same speed (how far the stick is pushed)
+- **Diagonals still work** outside those zones. **Turning (right stick) is not changed**
+- On/off with `SNAP_TO_STRAIGHT_LINES` in `DriverControls.java`, so every TeleOp gets it (rule 7)
+- Strafe correction is applied after snapping, so a snapped strafe is still exactly sideways
+Who: Team (angle to tune with the drivers)

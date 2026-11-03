@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
  * The ONE place that turns gamepad sticks into drive commands.
  *
  * Gamepad 1 is the DRIVER (gamepad 2 is the OPERATOR, for the mechanisms):
- *   left stick   drive forward/back and strafe left/right
+ *   left stick   drive forward/back and strafe left/right. Almost straight = exactly straight (issue #67)
  *   right stick  turn (left/right)
  *   hold either bumper   SLOW   (precise lining up)
  *   hold either trigger  TURBO  (full speed)
@@ -29,6 +29,12 @@ public class DriverControls {
 
     // Small deadzone so the robot doesn't creep when sticks are released.
     public static final double DEADZONE = 0.05;
+
+    // Straight-line assist (issue #67): if the left stick points ALMOST straight (forward, back, left or right),
+    // drive EXACTLY straight. Forgives a thumb that leans a little. Diagonals still work outside the zone.
+    // SNAP_ANGLE_DEGREES = how far off straight still counts as straight. Bigger = more forgiving.
+    public static final boolean SNAP_TO_STRAIGHT_LINES = true;
+    public static final double SNAP_ANGLE_DEGREES = 15.0;
 
     /**
      * The three driving speeds. The driver picks one by holding a button:
@@ -59,8 +65,24 @@ public class DriverControls {
         //   stick pushed right   = positive X   -> flip to get +left
         //   right stick right    = positive X   -> flip to get +turn (counter-clockwise)
         double forward = applyDeadzone(-gamepad.left_stick_y);
-        double left    = applyDeadzone(-gamepad.left_stick_x) * STRAFE_CORRECTION;
+        double left    = applyDeadzone(-gamepad.left_stick_x);
         double turn    = applyDeadzone(-gamepad.right_stick_x);
+
+        // Almost straight? Make it exactly straight (issue #67).
+        if (SNAP_TO_STRAIGHT_LINES) {
+            double strength = Math.min(1.0, Math.hypot(forward, left)); // how far the stick is pushed
+            double snapRatio = Math.tan(Math.toRadians(SNAP_ANGLE_DEGREES));
+            if (Math.abs(left) <= Math.abs(forward) * snapRatio) {
+                // Close to forward/back: no sideways part, same speed.
+                forward = Math.copySign(strength, forward);
+                left = 0.0;
+            } else if (Math.abs(forward) <= Math.abs(left) * snapRatio) {
+                // Close to strafe left/right: no forward part, same speed.
+                left = Math.copySign(strength, left);
+                forward = 0.0;
+            }
+        }
+        left *= STRAFE_CORRECTION;
 
         DriveSpeed speed = pickSpeed(gamepad);
         double scale = scaleFor(speed);

@@ -26,7 +26,7 @@ DRIVER = {
     "RT": ("TURBO (hold)", "full speed: 100%"),
     "LB": ("SLOW (hold)", "lining up: 40%"),
     "RB": ("SLOW (hold)", "lining up: 40%"),
-    "LS": ("DRIVE", "forward / back, strafe left / right"),
+    "LS": ("DRIVE", "almost straight = exactly straight (±15°)"),
     "RS": ("TURN", "push left / right"),
 }
 OPERATOR = {  # decision 029
@@ -226,6 +226,8 @@ box(c, 0.45, 0.55, 4.9, 1.85, "Three driving speeds", [
 box(c, 5.65, 0.55, 4.9, 1.85, "Good to know", [
     "Directions match the robot: stick forward = drive forward,",
     "stick left = strafe left, right stick left = turn left.",
+    [("Straight-line assist: ", True), ("left stick within 15° of straight", False)],
+    "forward / back / left / right drives exactly straight (#67).",
     "Let go of the sticks and the robot coasts to a stop (FLOAT, decision 023).",
     "Nothing moves during INIT (game rule G304.H).",
     [("Free buttons ", True), ("(A B X Y, dpad, stick presses) can get", False)],
