@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *   WITH encoders    (RUN_USING_ENCODER):   power = % of max speed, held steady by the hub
  *
  * Controls:
- *   Gamepad 1 sticks   drive (bumpers = slow mode, same as Main TeleOp)
+ *   Gamepad 1 sticks   drive (bumpers = slow, triggers = turbo, same as Main TeleOp)
  *   Y on gamepad 1     switch mode
  *   Y on gamepad 2     switch mode, for the "blind" test: the driver doesn't know which mode is on
  *
@@ -44,12 +44,12 @@ public class EncoderModeToggle extends LinearOpMode {
                 TestDriveMotors.setUseEncoders(hardwareMap, useEncoders);
             }
 
-            boolean slowMode = DriverControls.drive(robot.drivetrain, gamepad1);
+            DriverControls.DriveSpeed speed = DriverControls.drive(robot.drivetrain, gamepad1);
 
             telemetry.addData("MODE", useEncoders ? "WITH encoders" : "WITHOUT encoders");
             telemetry.addData("Motors report", TestDriveMotors.getRunMode(hardwareMap));
             telemetry.addData("Avg wheel speed (ticks/s)", "%.0f", TestDriveMotors.getAverageWheelSpeed(hardwareMap));
-            telemetry.addData("Slow mode", slowMode ? "ON" : "OFF");
+            telemetry.addData("Drive speed", speed);
             telemetry.addLine();
             telemetry.addLine("Y (gamepad 1 or 2) = switch mode");
             power.addTelemetry(telemetry);
