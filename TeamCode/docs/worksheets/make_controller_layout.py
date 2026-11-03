@@ -132,7 +132,7 @@ def draw_gamepad(c):
 def callout(c, side, top, name, anchor, job):
     """A button name, what it does (or blank lines), and a line to the button."""
     i = inch
-    left_x, width = (0.45, 2.85) if side == "L" else (7.70, 2.85)
+    left_x, width = (0.45, 2.55) if side == "L" else (8.05, 2.5)  # clear of the gamepad (x 3.15 to 7.85)
     c.setFillColor(NAVY)
     c.setFont("Helvetica-Bold", 9.5)
     c.drawString(left_x * i, (top - 0.13) * i, name)
