@@ -29,9 +29,12 @@ public class Odometry {
     public static final GoBildaPinpointDriver.GoBildaOdometryPods POD_TYPE =
             GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD;
 
-    // TODO(#6) Step 1: measure from the robot's center, in millimeters.
-    // X pod offset: how far SIDEWAYS the X (forward) pod is.   Left of center = +, right = -
-    // Y pod offset: how far FORWARD the Y (strafe) pod is.     In front of center = +, behind = -
+    // TODO(#21) Step 1: measure from the robot's TURNING CENTER, in millimeters, to the middle of each pod's wheel.
+    // For our mecanum drive the turning center = the center of the WHEELBASE (where an X between the 4 wheels
+    // crosses), NOT the middle of the frame.
+    // X pod (wheel rolls front-back) offset: how far SIDEWAYS it is.     Left of center = +, right = -
+    // Y pod (wheel rolls side-side) offset:  how far FORWARD it is.      In front of center = +, behind = -
+    // A pod sitting AT the turning center has offset 0.
     public static final double X_POD_OFFSET_MM = 0.0;
     public static final double Y_POD_OFFSET_MM = 0.0;
 
