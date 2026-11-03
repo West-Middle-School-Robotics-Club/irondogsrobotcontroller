@@ -67,7 +67,7 @@ when its devices aren't in the config.
 5. **Config names match `TeamCode/docs/hardware-config.md`.**
 6. **Subsystems never read the gamepad.** The same subsystem is used by TeleOp *and* Autonomous;
    only the OpMode knows where commands come from (sticks in TeleOp, code in Autonomous).
-7. **Every TeleOp drives with `DriverControls.drive(robot.drivetrain, gamepad1);`.** Don't read the drive
+7. **Every TeleOp drives with `DriverControls`**: `DriverControls driver = new DriverControls();` before the loop, then `driver.drive(robot.drivetrain, gamepad1);` every loop. Don't read the drive
    sticks anywhere else. Autonomous skips `DriverControls` and calls `robot.drivetrain.drive(...)` directly.
    Mechanism buttons (gamepad 2, the operator) are read only in `OperatorControls` (decision 029).
 8. **Test code stays in `opmodes/test/`.** Test and tuning OpModes (and their helpers) may break rules 1–7

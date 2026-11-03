@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  * During the match both lights turn PURPLE (VIOLET) while the next ball to launch is a NECTAR
  * (either nectar detector switch pressed), then go back to the alliance color (decision 028).
  *
- * Gamepad 1 = DRIVER: driving goes through DriverControls (sticks, bumpers = SLOW, triggers = TURBO), so every
+ * Gamepad 1 = DRIVER: driving goes through DriverControls (sticks, bumpers = SLOW, triggers = TURBO, A = assist), so every
  * TeleOp drives consistently. Gamepad 2 = OPERATOR: mechanism buttons, in OperatorControls (decision 029).
  * The flywheel (launcherMotor) starts when START is pressed and runs the whole match (not in INIT: G304.H).
  * Camera, Light and Power are created here, not in Robot.java, until they're configured on every robot
@@ -40,6 +40,7 @@ public abstract class MainTeleOp extends LinearOpMode {
         Light rightLight = new Light(hardwareMap, Light.RIGHT_LIGHT_NAME);
         Camera camera = new Camera(hardwareMap, alliance);
         Power power = new Power(hardwareMap);
+        DriverControls driver = new DriverControls();
         OperatorControls operator = new OperatorControls();
 
         // TeleOp drives in FLOAT (wheels coast when the sticks are released) for smoother driving.
@@ -74,7 +75,7 @@ public abstract class MainTeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
             // Driving always goes through DriverControls, so every TeleOp drives the same way.
-            DriverControls.DriveSpeed speed = DriverControls.drive(robot.drivetrain, gamepad1);
+            DriverControls.DriveSpeed speed = driver.drive(robot.drivetrain, gamepad1);
             // Mechanisms always go through OperatorControls (gamepad 2).
             operator.update(robot, gamepad2);
             robot.turret.update(); // every loop: turns the turret and keeps it inside its limits
@@ -85,7 +86,7 @@ public abstract class MainTeleOp extends LinearOpMode {
             rightLight.setColor(lightColor);
 
             telemetry.addData("Alliance", alliance);
-            telemetry.addData("Drive speed", speed);
+            driver.addTelemetry(telemetry, speed);
             operator.addTelemetry(telemetry);
             power.addTelemetry(telemetry);
             robot.addTelemetry(telemetry);
