@@ -18,7 +18,7 @@ teamcode/
 │   ├── Light.java          ← one goBILDA RGB light (we have a left and a right). Not in Robot.java yet
 │   ├── Odometry.java       ← the Pinpoint (X, Y, heading). Not in Robot.java yet; see below
 │   ├── Power.java          ← battery voltage + hub current, shown on every test and Main TeleOp
-│   └── Turret.java         ← turns the launcher + camera left/right. Not in Robot.java yet; see below
+│   └── Turret.java         ← turns the launcher + camera left/right. In Robot.java (OFFLINE if not configured)
 └── opmodes/                ← what shows up on the Driver Station
     ├── teleop/
     │   ├── DriverControls.java ← the ONLY code that turns gamepad sticks into drive commands
@@ -48,10 +48,11 @@ teamcode/
         └── TurretTest.java ← turn the (continuous) turret with the dpad, learn the ELC encoder, calibrate (#31)
 ```
 
-`Odometry`, `Camera`, `Turret` and `Light` are created directly by the OpModes that need them, not by `Robot.java` yet. If a device
+`Odometry`, `Camera` and `Light` are created directly by the OpModes that need them, not by `Robot.java` yet. If a device
 is missing from the Driver Station config, `new Robot(hardwareMap)` would crash **every** OpMode. Once the Pinpoint
-(issue #6) the Limelight (issue #7), and the turret and light (issue #31) are configured and tested on the robot, we'll add them
-to `Robot.java` like the other subsystems.
+(issue #6), the Limelight (issue #7) and the lights are configured and tested on the robot, we'll add them
+to `Robot.java` like the other subsystems. `Turret` is in `Robot.java` (decision 030): it shows OFFLINE instead of crashing
+when its devices aren't in the config.
 
 ## The rules
 

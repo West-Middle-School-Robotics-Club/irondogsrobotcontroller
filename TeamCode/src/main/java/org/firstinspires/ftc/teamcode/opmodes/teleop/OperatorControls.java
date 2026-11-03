@@ -16,6 +16,8 @@ import org.firstinspires.ftc.teamcode.Robot;
  *   A             intake on / off (toggle)
  *   Left trigger  HOLD to EJECT: water wheel DOWN + intake OUT, to push out stored balls.
  *                 Eject beats the toggles. When you let go, the intake and water wheel are OFF.
+ *   Left stick    push LEFT / RIGHT to turn the turret by hand (further = faster). Let go = stop.
+ *                 Slow until the turret is homed (turn it past forward once). Stops at its limits.
  * The flywheel (launcherMotor) isn't on a button: Main TeleOp runs it the whole match.
  *
  * Printable diagram: TeamCode/docs/worksheets/controller-layout.pdf
@@ -30,6 +32,10 @@ public class OperatorControls {
 
     // The triggers are analog (0 = released, 1 = all the way down). Pressed past this = "held".
     public static final double TRIGGER_HELD = 0.5;
+
+    // Turret stick: ignore tiny stick movement, and the fastest the stick can turn it (0 to 1).
+    public static final double TURRET_STICK_DEADZONE = 0.05;
+    public static final double TURRET_MAX_STICK_SPEED = 1.0;
 
     private WaterWheel waterWheel = WaterWheel.OFF;
     private boolean intakeOn = false;
@@ -63,6 +69,14 @@ public class OperatorControls {
                 robot.intake.stopIntake();
             }
         }
+
+        // --- Turret (left stick, left / right) ---
+        // Stick pushed LEFT is negative x, but turret + = LEFT (decision 007), so we flip it here.
+        double turretSpeed = -gamepad.left_stick_x;
+        if (Math.abs(turretSpeed) < TURRET_STICK_DEADZONE) {
+            turretSpeed = 0.0;
+        }
+        robot.turret.setManualSpeed(turretSpeed * TURRET_MAX_STICK_SPEED);
 
         // --- Launch (hold Y) ---
         if (gamepad.y) {

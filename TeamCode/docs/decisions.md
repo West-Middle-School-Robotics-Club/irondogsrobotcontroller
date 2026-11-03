@@ -335,3 +335,14 @@ Decision:
 - All in one class, `opmodes/teleop/OperatorControls.java` (like `DriverControls`). It's an object because toggles must remember on/off between loops. It uses the SDK's `xWasPressed()` so a held button toggles only once
 - Not on a button yet: flower flipper, turret, hood, auto-aim
 Who: Team
+
+## 030 – Operator's left stick turns the turret; Turret joins Robot  (2026-11-03)
+Status: Accepted (adds to 029)
+Issue: #3, #31
+Context: The operator needs to aim by hand until camera auto-aim (#7) is designed. Main TeleOp needs the turret, but `Turret` crashed any OpMode on a robot without its devices configured.
+Decision:
+- **Gamepad 2 left stick, left / right = turret by hand.** Further = faster, let go = stop. Slow until homed (turn past forward once); stops at its ±90° limits. Stick left = turret left (flipped in `OperatorControls`, decision 007)
+- `Turret` now shows **OFFLINE** (no crash) unless all three of `turretRotateServo`, `turretEncoder` and `turretForwardSwitch` are in the config, like the other subsystems
+- So **`Turret` is now in `Robot`** (`robot.turret`). Main TeleOp calls `robot.turret.update()` every loop, in INIT too (homing only; nothing moves in INIT)
+- **Flower flipper stays off the controller** until we know it's on the build
+Who: Team

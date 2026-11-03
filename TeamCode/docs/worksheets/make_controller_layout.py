@@ -35,6 +35,7 @@ OPERATOR = {  # decision 029
     "B": ("WATER WHEEL DOWN (toggle)", "press = on, again = off. X and B cancel"),
     "A": ("INTAKE (toggle)", "press = on, press again = off"),
     "LT": ("EJECT (hold)", "water wheel DOWN + intake OUT; then all off"),
+    "LS": ("TURRET (left / right)", "further = faster; let go = stop. Slow until homed"),
 }
 
 # (key, button name, anchor x, anchor y). Positions are in inches on a landscape page.
@@ -270,9 +271,9 @@ else:
         [("Lights: ", True), ("PURPLE = the next ball to launch is a NECTAR.", False)],
     ], size=8.6)
     box(c, 6.25, 0.55, 4.3, 1.85, "Not on a button yet", [
-        "Flower flipper shake, turret left / right, turret to",
-        "forward, hood up / down, turret auto-aim (later, #7).",
-        "Free: dpad, bumpers, right trigger, sticks.",
+        "Turret to forward, hood up / down, turret auto-aim",
+        "(later, #7). Flower flipper: waiting to see if it's built.",
+        "Free: dpad, bumpers, right trigger, right stick.",
         "Code: opmodes/teleop/OperatorControls.java",
     ], size=8.6)
 c.showPage()
