@@ -238,7 +238,7 @@ if not decided:
         "Tick each job once it has a button. A stick or trigger is good for",
         "\"how much\" (turret speed); a button is good for on/off.",
     ], size=8.6)
-    jobs = ["Intake IN", "Intake OUT", "Loader UP", "Loader DOWN (clear a jam)",
+    jobs = ["Intake IN", "Intake OUT", "Water wheel UP", "Water wheel DOWN (clear a jam)",
             "Flywheel ON / OFF", "FIRE (the trigger)", "Flower flipper shake", "Turret LEFT / RIGHT",
             "Turret to FORWARD", "Hood UP / DOWN", "Turret AUTO-AIM (later, #7)"]
     c.setFont("Helvetica", 8.6)

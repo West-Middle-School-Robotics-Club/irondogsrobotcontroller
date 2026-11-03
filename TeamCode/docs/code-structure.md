@@ -37,7 +37,7 @@ teamcode/
         ├── CameraTest.java ← check the Limelight sees AprilTags (#7)
         ├── EncoderModeToggle.java ← drive and switch encoder mode with Y (#11)
         ├── FlowerFlipperTest.java ← shake the flower flipper, find its positions
-        ├── IntakeTest.java ← hold buttons to run the intake and loader (#4)
+        ├── IntakeTest.java ← hold buttons to run the intake and water wheel (#4)
         ├── LightTest.java ← check the colors on both lights
         ├── PinpointTest.java
         ├── RedCameraTest.java ← camera as RED: only tags 30-37 are targets

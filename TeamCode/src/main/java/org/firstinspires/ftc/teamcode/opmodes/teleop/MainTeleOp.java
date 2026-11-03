@@ -17,6 +17,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *
  * During INIT both lights show the alliance color (red or blue) so the drive team can see from the
  * field that the right OpMode is selected. Nothing moves during INIT (game rule G304.H).
+ * During the match both lights turn PURPLE (VIOLET) while the next ball to launch is a NECTAR
+ * (either nectar detector switch pressed), then go back to the alliance color (decision 028).
  *
  * Gamepad 1 = DRIVER: driving goes through DriverControls (sticks, bumpers = SLOW, triggers = TURBO), so every
  * TeleOp drives consistently. Gamepad 2 = OPERATOR: mechanism buttons, chosen by the students (not wired yet).
@@ -66,6 +68,11 @@ public abstract class MainTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             // Driving always goes through DriverControls, so every TeleOp drives the same way.
             DriverControls.DriveSpeed speed = DriverControls.drive(robot.drivetrain, gamepad1);
+
+            // Lights: PURPLE = the next ball to launch is a NECTAR, otherwise our alliance color.
+            Light.Color lightColor = robot.intake.isNectarDetected() ? Light.Color.VIOLET : allianceColor(alliance);
+            leftLight.setColor(lightColor);
+            rightLight.setColor(lightColor);
 
             telemetry.addData("Alliance", alliance);
             telemetry.addData("Drive speed", speed);

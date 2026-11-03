@@ -31,9 +31,9 @@ DEVICES = [
     ("Odometry", "pinpoint", "goBILDA Pinpoint + 2 pods", "goBILDA Pinpoint", "I2C bus", "", "", "Not bus 0 (built-in IMU)"),
     ("Odometry", "imu", "Control Hub built-in IMU", "(built in)", "I2C bus", "CH", "0", "Built in, can't move"),
     ("Intake", "intakeServo", "Servo (continuous)", "Continuous Rotation Servo", "Servo", "", "", "Pulls game elements in"),
-    ("Intake", "intakeLoaderServo", "Servo (continuous)", "Continuous Rotation Servo", "Servo", "", "", "Moves them up to the launcher"),
-    ("Intake", "intakeNectarLeftSwitch", "goBILDA micro limit switch", "Digital Device", "Digital", "", "", "Pressed by NECTAR (left side)"),
-    ("Intake", "intakeNectarRightSwitch", "goBILDA micro limit switch", "Digital Device", "Digital", "", "", "Pressed by NECTAR (right side)"),
+    ("Intake", "waterWheelServo", "Servo (continuous)", "Continuous Rotation Servo", "Servo", "", "", "Water wheel: up to the launcher"),
+    ("Intake", "nectarDetectorLeftSwitch", "goBILDA micro limit switch", "Digital Device", "Digital", "", "", "Either one = next ball is NECTAR"),
+    ("Intake", "nectarDetectorRightSwitch", "goBILDA micro limit switch", "Digital Device", "Digital", "", "", "Either one = next ball is NECTAR"),
     ("Launcher", "launcherMotor", "goBILDA 5203 Yellow Jacket", "goBILDA 5203 Series", "Motor", "", "", "The flywheel"),
     ("Launcher", "launcherTriggerServo", "Servo", "Servo", "Servo", "", "", "REST / FIRE"),
     ("Turret", "turretRotateServo", "goBILDA 2000 25-3 Speed (continuous)", "Continuous Rotation Servo", "Servo", "", "", "Signal 1000-2000 us"),
@@ -98,7 +98,7 @@ def device_table():
         rows.append([p(sub, CELLB), p(name, MONO), p(device, CELL), p(cfg, CELL), p(hub_cell, CELL),
                      p(ptype, CELL), p("<b>%s</b>" % port if port else "", CELL), p(note, CELL)])
         style.append(("BACKGROUND", (0, i), (0, i), colors.HexColor(SUB_COLORS[sub])))
-    widths = [0.95, 1.75, 1.75, 1.55, 0.7, 0.7, 0.6, 2.0]
+    widths = [0.95, 2.05, 1.75, 1.6, 0.6, 0.65, 0.55, 1.85]
     t = Table(rows, colWidths=[w * inch for w in widths], rowHeights=[0.34 * inch] + [0.27 * inch] * len(DEVICES),
               repeatRows=1)
     t.setStyle(TableStyle(style))

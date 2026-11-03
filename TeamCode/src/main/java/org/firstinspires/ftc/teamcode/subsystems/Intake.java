@@ -8,18 +8,21 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
- * Intake subsystem: picks up game elements and loads them toward the launcher (issue #4).
+ * Intake subsystem: picks up game elements and carries them to the launcher (issue #4).
  *
  * Used by BOTH TeleOp and Autonomous. This class doesn't know where its commands come from.
  *
  * Hardware (decision 024 names):
  *   intakeServo        CONTINUOUS servo: pulls game elements into the robot
- *   intakeLoaderServo  CONTINUOUS servo: moves game elements up to the launcher
- *   intakeNectarLeftSwitch, intakeNectarRightSwitch
- *                      goBILDA micro limit switches (bump lever), one on each side of the intake path.
+ *   waterWheelServo    CONTINUOUS servo: the "water wheel" (the team's name, from how it looks).
+ *                      Moves game elements up to the launcher
+ *   nectarDetectorLeftSwitch, nectarDetectorRightSwitch
+ *                      goBILDA micro limit switches (bump lever), one on each side of the ball path.
  *                      A NECTAR (~3.6 in ball) is wide enough to press them; a POLLEN (~2.8 in) is not.
+ *                      If EITHER switch is pressed, the NEXT ball to be launched is a NECTAR.
  *                      Use isNectarDetected(): it gives a plain true/false, already translated from the
  *                      switch's raw reading (set NECTAR_SWITCH_WIRING once, below).
+ * (These names don't start with "intake": the team picked them, decision 028.)
  *
  * Driver Station config types: "Continuous Rotation Servo" for the two servos, "Digital Device" for the switches.
  * A device that isn't in the config shows OFFLINE instead of crashing every OpMode.
@@ -28,9 +31,9 @@ public class Intake {
 
     // Config names (decisions 009, 024). Must match the Driver Station robot configuration.
     public static final String INTAKE_SERVO_NAME = "intakeServo";
-    public static final String LOADER_SERVO_NAME = "intakeLoaderServo";
-    public static final String NECTAR_LEFT_SWITCH_NAME = "intakeNectarLeftSwitch";
-    public static final String NECTAR_RIGHT_SWITCH_NAME = "intakeNectarRightSwitch";
+    public static final String WATER_WHEEL_SERVO_NAME = "waterWheelServo";
+    public static final String NECTAR_LEFT_SWITCH_NAME = "nectarDetectorLeftSwitch";
+    public static final String NECTAR_RIGHT_SWITCH_NAME = "nectarDetectorRightSwitch";
 
     /**
      * How a switch is wired. This tells the code how to read it, so nobody has to remember
@@ -46,36 +49,36 @@ public class Intake {
 
     // Speeds, from 0 to 1. TODO(#4): tune on the robot with "Intake Test".
     public static final double INTAKE_SPEED = 1.0;
-    public static final double LOADER_SPEED = 1.0;
+    public static final double WATER_WHEEL_SPEED = 1.0;
 
-    // TODO(#4): set to true if "in" / "load" spins the wrong way.
+    // TODO(#4): set to true if "in" / "waterWheelUp" spins the wrong way.
     public static final boolean INTAKE_REVERSED = false;
-    public static final boolean LOADER_REVERSED = false;
+    public static final boolean WATER_WHEEL_REVERSED = false;
 
     private final CRServo intakeServo;        // null if not in the Driver Station config
-    private final CRServo intakeLoaderServo;  // null if not in the Driver Station config
-    private final DigitalChannel intakeNectarLeftSwitch;   // null if not in the Driver Station config
-    private final DigitalChannel intakeNectarRightSwitch;  // null if not in the Driver Station config
+    private final CRServo waterWheelServo;  // null if not in the Driver Station config
+    private final DigitalChannel nectarDetectorLeftSwitch;   // null if not in the Driver Station config
+    private final DigitalChannel nectarDetectorRightSwitch;  // null if not in the Driver Station config
     private double intakeSpeed = 0.0;
-    private double loaderSpeed = 0.0;
+    private double waterWheelSpeed = 0.0;
 
     public Intake(HardwareMap hardwareMap) {
         intakeServo = hardwareMap.tryGet(CRServo.class, INTAKE_SERVO_NAME);
-        intakeLoaderServo = hardwareMap.tryGet(CRServo.class, LOADER_SERVO_NAME);
-        intakeNectarLeftSwitch = hardwareMap.tryGet(DigitalChannel.class, NECTAR_LEFT_SWITCH_NAME);
-        intakeNectarRightSwitch = hardwareMap.tryGet(DigitalChannel.class, NECTAR_RIGHT_SWITCH_NAME);
-        if (intakeNectarLeftSwitch != null) {
-            intakeNectarLeftSwitch.setMode(DigitalChannel.Mode.INPUT);
+        waterWheelServo = hardwareMap.tryGet(CRServo.class, WATER_WHEEL_SERVO_NAME);
+        nectarDetectorLeftSwitch = hardwareMap.tryGet(DigitalChannel.class, NECTAR_LEFT_SWITCH_NAME);
+        nectarDetectorRightSwitch = hardwareMap.tryGet(DigitalChannel.class, NECTAR_RIGHT_SWITCH_NAME);
+        if (nectarDetectorLeftSwitch != null) {
+            nectarDetectorLeftSwitch.setMode(DigitalChannel.Mode.INPUT);
         }
-        if (intakeNectarRightSwitch != null) {
-            intakeNectarRightSwitch.setMode(DigitalChannel.Mode.INPUT);
+        if (nectarDetectorRightSwitch != null) {
+            nectarDetectorRightSwitch.setMode(DigitalChannel.Mode.INPUT);
         }
 
         if (intakeServo != null) {
             intakeServo.setDirection(INTAKE_REVERSED ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
         }
-        if (intakeLoaderServo != null) {
-            intakeLoaderServo.setDirection(LOADER_REVERSED ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
+        if (waterWheelServo != null) {
+            waterWheelServo.setDirection(WATER_WHEEL_REVERSED ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
         }
         // Nothing spins until the first command (game rule G304.H: INIT must not move).
     }
@@ -90,29 +93,29 @@ public class Intake {
         setIntakeSpeed(-INTAKE_SPEED);
     }
 
-    /** Run the loader to move game elements UP to the launcher. */
-    public void load() {
-        setLoaderSpeed(LOADER_SPEED);
+    /** Run the water wheel to move game elements UP to the launcher. */
+    public void waterWheelUp() {
+        setWaterWheelSpeed(WATER_WHEEL_SPEED);
     }
 
-    /** Run the loader backwards, to clear a jam. */
-    public void unload() {
-        setLoaderSpeed(-LOADER_SPEED);
+    /** Run the water wheel backwards (DOWN), to clear a jam. */
+    public void waterWheelDown() {
+        setWaterWheelSpeed(-WATER_WHEEL_SPEED);
     }
 
-    /** Stop only the intake (the loader keeps doing what it was doing). */
+    /** Stop only the intake (the water wheel keeps doing what it was doing). */
     public void stopIntake() {
         setIntakeSpeed(0.0);
     }
 
-    /** Stop only the loader. */
-    public void stopLoader() {
-        setLoaderSpeed(0.0);
+    /** Stop only the water wheel. */
+    public void stopWaterWheel() {
+        setWaterWheelSpeed(0.0);
     }
 
-    /** True when a NECTAR is in the intake: either nectar switch is pressed. */
+    /** True when the NEXT ball to be launched is a NECTAR: either nectar detector switch is pressed. */
     public boolean isNectarDetected() {
-        return isPressed(intakeNectarLeftSwitch) || isPressed(intakeNectarRightSwitch);
+        return isPressed(nectarDetectorLeftSwitch) || isPressed(nectarDetectorRightSwitch);
     }
 
     /** Turns a switch's raw reading into "pressed or not", using NECTAR_SWITCH_WIRING. A missing switch = not pressed. */
@@ -132,10 +135,10 @@ public class Intake {
         return isPressed(nectarSwitch) ? "PRESSED" : "not pressed";
     }
 
-    /** Stop the intake AND the loader. */
+    /** Stop the intake AND the water wheel. */
     public void stop() {
         setIntakeSpeed(0.0);
-        setLoaderSpeed(0.0);
+        setWaterWheelSpeed(0.0);
     }
 
     private void setIntakeSpeed(double speed) {
@@ -145,10 +148,10 @@ public class Intake {
         }
     }
 
-    private void setLoaderSpeed(double speed) {
-        loaderSpeed = speed;
-        if (intakeLoaderServo != null) {
-            intakeLoaderServo.setPower(speed);
+    private void setWaterWheelSpeed(double speed) {
+        waterWheelSpeed = speed;
+        if (waterWheelServo != null) {
+            waterWheelServo.setPower(speed);
         }
     }
 
@@ -156,10 +159,10 @@ public class Intake {
     public void addTelemetry(Telemetry telemetry) {
         telemetry.addData("Intake", intakeServo != null ? String.format("%.2f", intakeSpeed)
                 : "OFFLINE ('" + INTAKE_SERVO_NAME + "' not in DS config)");
-        telemetry.addData("Intake loader", intakeLoaderServo != null ? String.format("%.2f", loaderSpeed)
-                : "OFFLINE ('" + LOADER_SERVO_NAME + "' not in DS config)");
-        telemetry.addData("NECTAR detected", isNectarDetected() ? "YES" : "no");
-        telemetry.addData("  Nectar left switch", switchStatus(intakeNectarLeftSwitch, NECTAR_LEFT_SWITCH_NAME));
-        telemetry.addData("  Nectar right switch", switchStatus(intakeNectarRightSwitch, NECTAR_RIGHT_SWITCH_NAME));
+        telemetry.addData("Water wheel", waterWheelServo != null ? String.format("%.2f", waterWheelSpeed)
+                : "OFFLINE ('" + WATER_WHEEL_SERVO_NAME + "' not in DS config)");
+        telemetry.addData("NECTAR detected", isNectarDetected() ? "YES (next ball is a NECTAR)" : "no");
+        telemetry.addData("  Nectar left switch", switchStatus(nectarDetectorLeftSwitch, NECTAR_LEFT_SWITCH_NAME));
+        telemetry.addData("  Nectar right switch", switchStatus(nectarDetectorRightSwitch, NECTAR_RIGHT_SWITCH_NAME));
     }
 }

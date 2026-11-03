@@ -309,3 +309,15 @@ Decision:
 - **Driver:** left stick = drive and strafe, right stick = turn. **Three speeds**: hold either **bumper** = SLOW (40%), nothing = NORMAL (70%), hold either **trigger** = TURBO (100%). If both are held, SLOW wins (safer). The percentages are a first try, tuned with the drivers
 - `DriverControls.drive()` returns the speed (`DriveSpeed.SLOW / NORMAL / TURBO`) so TeleOps can show it on telemetry
 Who: Team / mentors
+
+## 028 – Team names for the water wheel and the NECTAR detector switches  (2026-11-03)
+Status: Accepted (renames devices from 024 and 025)
+Issue: #4
+Context: The team calls the intake's lifting wheel the **"water wheel"** because of how it looks. The two NECTAR switches sit where they tell us about the **next ball to be launched**, so "intake" in their names was misleading.
+Decision:
+- `intakeLoaderServo` → **`waterWheelServo`**. Code: `intake.waterWheelUp()`, `waterWheelDown()` (clear a jam), `stopWaterWheel()`
+- `intakeNectarLeftSwitch` / `intakeNectarRightSwitch` → **`nectarDetectorLeftSwitch`** / **`nectarDetectorRightSwitch`**
+- Still owned by `Intake`, and still end with the device type. They are an **exception** to 024's "start with the subsystem" rule: the team's names for the parts are clearer to us
+- The switches work as an **OR**: if either is pressed, **the next ball to launch is a NECTAR** (`intake.isNectarDetected()`, unchanged from 025)
+- **Main TeleOp:** both lights turn **purple** (`Light.Color.VIOLET`) while a NECTAR is detected, then back to the alliance color. A first choice; the team can change it
+Who: Team
