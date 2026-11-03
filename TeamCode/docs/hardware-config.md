@@ -11,13 +11,14 @@ If a name doesn't match, the OpMode crashes on INIT with an error like `Unable t
 
 **Pattern: `<subsystem><Job><Type>`**, in camelCase.
 1. **Starts with the subsystem's name** (`intake`, `launcher`, `turret`, `flowerFlipper`), so you can tell which class owns it
-2. **The job in the middle**, when it helps say what the part does (`Loader`, `Trigger`, `Rotate`, `Hood`, `Forward`)
+2. **The job in the middle**, when it helps say what the part does (`Trigger`, `Rotate`, `Hood`, `Forward`)
 3. **Ends with the device type**: `Motor`, `Servo`, `Encoder`, `Switch`, `Light`. You can see which `hardwareMap.get(...)` type to use
 
 | Kind of hardware | Rule | Examples |
 |---|---|---|
-| **Mechanisms** | `<subsystem><Job><Type>` | `intakeLoaderServo`, `launcherTriggerServo`, `turretRotateServo`, `turretForwardSwitch`, `launcherMotor` |
+| **Mechanisms** | `<subsystem><Job><Type>` | `launcherTriggerServo`, `turretRotateServo`, `turretForwardSwitch`, `launcherMotor` |
 | **Lights** | `<side>IndicatorLight` | `leftIndicatorLight`, `rightIndicatorLight` |
+| **Exception: team names for intake parts** (decision 028) | The name the team uses for the part, still ending with the type | `waterWheelServo`, `nectarDetectorLeftSwitch`, `nectarDetectorRightSwitch` (all in `Intake`) |
 | **Exception: drive motors** | `<position>Drive` ("Drive" already means motor, and Pedro's setup uses these) | `frontLeftDrive`, `frontRightDrive`, `backLeftDrive`, `backRightDrive` |
 | **Exception: one-of-a-kind devices** | The standard name the SDK samples, Road Runner and Pedro Pathing use | `imu`, `pinpoint`, `limelight` |
 
@@ -63,7 +64,7 @@ A wrong type can make the robot much slower. Drive motor model / ratio: TBA
 
 Each motor port has a matching **encoder port** with the same number. Ports on the Expansion Hub count from 0 again.
 
-**Servo ports:** we use **8 servos** (`intakeServo`, `intakeLoaderServo`, `launcherTriggerServo`, `turretRotateServo`, `turretHoodServo`, `flowerFlipperServo`, `leftIndicatorLight`, `rightIndicatorLight`). Each hub has 6 servo ports, 12 in all. Check the **config type** for each: Continuous Rotation Servo for `intakeServo`, `intakeLoaderServo`, `turretRotateServo`; plain **Servo** for the rest.
+**Servo ports:** we use **8 servos** (`intakeServo`, `waterWheelServo`, `launcherTriggerServo`, `turretRotateServo`, `turretHoodServo`, `flowerFlipperServo`, `leftIndicatorLight`, `rightIndicatorLight`). Each hub has 6 servo ports, 12 in all. Check the **config type** for each: Continuous Rotation Servo for `intakeServo`, `waterWheelServo`, `turretRotateServo`; plain **Servo** for the rest.
 
 ## IMU
 
@@ -82,9 +83,9 @@ Each motor port has a matching **encoder port** with the same number. Ports on t
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
 | `intakeServo` | Continuous Rotation Servo | ___ / servo port ___ | Pulls game elements in |
-| `intakeLoaderServo` | Continuous Rotation Servo | ___ / servo port ___ | Moves game elements up to the launcher |
-| `intakeNectarLeftSwitch` | Digital Device | ___ / digital port ___ | goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**, left side of the intake path. Pressed by a **NECTAR** (~3.6 in), not by POLLEN (~2.8 in). Code: `intake.isNectarDetected()`. Wiring set by `Intake.NECTAR_SWITCH_WIRING` (normally open / closed); check with Intake Test. Digital ports have 2 channels (n, n+1): if it never changes, try the other |
-| `intakeNectarRightSwitch` | Digital Device | ___ / digital port ___ | goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**, right side of the intake path. Pressed by a **NECTAR** (~3.6 in), not by POLLEN (~2.8 in). Code: `intake.isNectarDetected()`. Wiring set by `Intake.NECTAR_SWITCH_WIRING` (normally open / closed); check with Intake Test. Digital ports have 2 channels (n, n+1): if it never changes, try the other |
+| `waterWheelServo` | Continuous Rotation Servo | ___ / servo port ___ | The "water wheel": moves game elements up to the launcher (was `intakeLoaderServo`) |
+| `nectarDetectorLeftSwitch` | Digital Device | ___ / digital port ___ | (was `intakeNectarLeftSwitch`) goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**, left side of the ball path. Either switch pressed = the **next ball to launch is a NECTAR** (lights turn purple in Main TeleOp). Pressed by a **NECTAR** (~3.6 in), not by POLLEN (~2.8 in). Code: `intake.isNectarDetected()`. Wiring set by `Intake.NECTAR_SWITCH_WIRING` (normally open / closed); check with Intake Test. Digital ports have 2 channels (n, n+1): if it never changes, try the other |
+| `nectarDetectorRightSwitch` | Digital Device | ___ / digital port ___ | (was `intakeNectarRightSwitch`) goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**, right side of the ball path. Either switch pressed = the **next ball to launch is a NECTAR** (lights turn purple in Main TeleOp). Pressed by a **NECTAR** (~3.6 in), not by POLLEN (~2.8 in). Code: `intake.isNectarDetected()`. Wiring set by `Intake.NECTAR_SWITCH_WIRING` (normally open / closed); check with Intake Test. Digital ports have 2 channels (n, n+1): if it never changes, try the other |
 
 ## Launcher (`subsystems/Launcher.java`, issue #5)
 
