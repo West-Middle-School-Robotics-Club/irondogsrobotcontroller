@@ -116,3 +116,4 @@ Basic Auton visuals for students (#22): **route sheets** `docs/game/diagrams/bas
 11/3:
 Robot measured: 456.59 x 406.19 mm (17.98 x 15.99 in), wheelbase 264 x 336.93 mm. Recorded in `hardware-config.md` (new "Robot dimensions" section). Basic Auton uses the real size now (`ROBOT_LENGTH_IN` / `ROBOT_WIDTH_IN`), so start and park positions against the walls are exact. Route diagrams regenerated.
 Corrected the Pinpoint pod offset instructions (`Odometry.java`, #21): measure from the robot's **turning center** (the center of the wheelbase), not the middle of the frame. Added which pod is which (X pod wheel rolls front-back, Y pod side-side).
+Pinpoint pods measured (#21): the X pod is at the wheelbase center and the Y pod is in line with it, so both offsets are ~0 (already the values in `Odometry.java`). To confirm with the spin test once the robot drives again.

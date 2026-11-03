@@ -35,8 +35,10 @@ public class Odometry {
     // X pod (wheel rolls front-back) offset: how far SIDEWAYS it is.     Left of center = +, right = -
     // Y pod (wheel rolls side-side) offset:  how far FORWARD it is.      In front of center = +, behind = -
     // A pod sitting AT the turning center has offset 0.
-    public static final double X_POD_OFFSET_MM = 0.0;
-    public static final double Y_POD_OFFSET_MM = 0.0;
+    // Measured 11/3 on the competition robot: both pods sit at the wheelbase center, so both are ~0.
+    // TODO(#21): confirm with the spin test (step 5) once the robot drives again.
+    public static final double X_POD_OFFSET_MM = 0.0;  // X pod is at the wheelbase center
+    public static final double Y_POD_OFFSET_MM = 0.0;  // Y pod is in line with the X pod (front-back)
 
     // TODO(#6) Step 2: push the robot forward, X must go UP. Push it left, Y must go UP.
     // If one goes down instead, change that pod to REVERSED.
