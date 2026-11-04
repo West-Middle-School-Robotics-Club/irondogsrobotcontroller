@@ -24,6 +24,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
  *   HOLD Left Bumper    Trigger servo to FIRE (let go = REST). Use it to find the TRIGGER_ positions
  *
  * Hardware config name in Driver Station: "launcherMotor" (goBILDA 5203 Series)
+ *
+ * Printable worksheet (steps, Expected / Actual / Fix, numbers for the code): TeamCode/docs/worksheets/launcher-test.pdf
  */
 @TeleOp(name = "Launcher Test", group = "Tests")
 public class TestLauncher extends LinearOpMode {

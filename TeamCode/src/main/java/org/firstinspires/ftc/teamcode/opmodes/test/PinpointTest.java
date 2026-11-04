@@ -25,6 +25,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *   sticks     drive, if you want to move the robot back to the start
  *
  * The drive motors are set to FLOAT (no brake) so the robot is easier to push by hand.
+ *
+ * Printable worksheet (steps, Expected / Actual / Fix, numbers for the code): TeamCode/docs/worksheets/pinpoint-test.pdf
  */
 @TeleOp(name = "Pinpoint Test", group = "Tests")
 public class PinpointTest extends LinearOpMode {

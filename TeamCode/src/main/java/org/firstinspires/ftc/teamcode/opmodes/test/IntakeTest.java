@@ -25,6 +25,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *   - Never changes? Try the other channel of that digital port (each port has 2: n and n+1).
  *   - Run a NECTAR up to the launcher: YES. Run a POLLEN through: it should stay "no".
  * The switches work during INIT too (nothing moves).
+ *
+ * Printable worksheet (steps, Expected / Actual / Fix, numbers for the code): TeamCode/docs/worksheets/intake-test.pdf
  */
 @TeleOp(name = "Intake Test", group = "Tests")
 public class IntakeTest extends LinearOpMode {
