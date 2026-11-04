@@ -124,3 +124,6 @@ Hardware renames (decision 028): `intakeLoaderServo` → **`waterWheelServo`** (
 Controller layout PDF: the labels on both sides now sit clear of the gamepad drawing, so it prints cleanly in black and white.
 **Straight-line assist** for the driver (#67, decision 031): in `DriverControls`, if the left stick points within 15° of straight forward / back / left / right, the robot drives exactly straight at the same speed. Diagonals still work outside those zones; turning unchanged. Settings: `SNAP_TO_STRAIGHT_LINES`, `SNAP_ANGLE_DEGREES`. Controller layout page 1 updated.
 Straight-line assist now has an **on/off button: A on gamepad 1** (#67). Rumble: 1 blip = ON, 2 = OFF; telemetry shows it; every TeleOp starts with it ON (`ASSIST_ON_AT_START`). `DriverControls` is now an object: `DriverControls driver = new DriverControls();` then `driver.drive(robot.drivetrain, gamepad1);` (all TeleOps and test OpModes updated). In Pinpoint Test, A is still "reset".
+
+11/4:
+New portfolio entry `docs/portfolio/2026-11-04-intake-and-nectar-detection.md` (#4): the story of the intake and the NECTAR detector switches (decisions 024, 025, 028), with the **robot test checklist** for Intake Test: directions and speeds, each switch by hand, a NECTAR and a POLLEN through, and a table for the hub / port numbers to copy into `hardware-config.md`. No code changed.
