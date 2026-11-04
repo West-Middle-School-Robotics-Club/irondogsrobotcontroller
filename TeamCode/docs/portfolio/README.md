@@ -29,3 +29,4 @@ Judges care about what *the team* learned and did, so be honest about who did wh
 |---|---|---|---|
 | 2026-09-24 | [Direction convention](2026-09-24-direction-convention.md) | Programming | Done |
 | 2026-09-26 | [Brake mode experiment](2026-09-26-brake-mode-experiment.md) | Programming / testing | Waiting on results (#17) |
+| 2026-11-04 | [Intake and the NECTAR detector](2026-11-04-intake-and-nectar-detection.md) | Intake / sensors | Waiting on results (#4) |

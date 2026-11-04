@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
  *   A            STRAIGHT-LINE ASSIST on / off (issue #67). ON = a stick pointed almost straight drives
  *                exactly straight. The gamepad rumbles: 1 blip = ON, 2 blips = OFF
  * Printable diagram: TeamCode/docs/worksheets/controller-layout.pdf
+ * Tuning worksheet (speeds, assist angle, with the drivers): TeamCode/docs/worksheets/driver-tuning.pdf
  *
  * Every TeleOp drives the robot with:
  *     DriverControls driver = new DriverControls();   // once, before the loop

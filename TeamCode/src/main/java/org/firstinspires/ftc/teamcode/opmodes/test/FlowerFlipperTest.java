@@ -16,6 +16,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *   A                   start shaking      B   stop (goes to REST_POSITION)
  *   dpad up / down      move the servo by hand (+/- 0.01), when NOT shaking.
  *                       Use it to find REST_POSITION, POSITION_A and POSITION_B for FlowerFlipper.java
+ *
+ * Printable worksheet (steps, Expected / Actual / Fix, numbers for the code): TeamCode/docs/worksheets/flower-flipper-test.pdf
  */
 @TeleOp(name = "Flower Flipper Test", group = "Tests")
 public class FlowerFlipperTest extends LinearOpMode {

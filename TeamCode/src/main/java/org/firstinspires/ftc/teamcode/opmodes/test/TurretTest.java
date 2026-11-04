@@ -39,6 +39,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *   It counts tiny steps as its shaft turns: 4000 counts = 1 full turn, so about 11 counts = 1 degree.
  *   Turning one way counts UP, the other way counts DOWN. It starts at 0 when the robot powers on,
  *   which is why we home it at the forward switch.
+ *
+ * Printable worksheet (steps, Expected / Actual / Fix, numbers for the code): TeamCode/docs/worksheets/turret-test.pdf
  */
 @TeleOp(name = "Turret Test", group = "Tests")
 public class TurretTest extends LinearOpMode {

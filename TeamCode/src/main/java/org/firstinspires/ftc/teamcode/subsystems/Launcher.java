@@ -19,8 +19,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
  *   launcherMotor  Flywheel motor: goBILDA 5203 Series Yellow Jacket Motor (DcMotorEx)
  *                  on Expansion Hub (decision 009).
  *                  Config name: "launcherMotor" in Driver Station config.
- *   launcherTriggerServo  POSITIONAL servo that pushes a game element into the flywheel (decision 024).
- *                  Two positions: REST and FIRE. Config type: "Servo". Missing = OFFLINE, no crash.
+ *   launcherTriggerServo  POSITIONAL servo that works as a GATE in front of the flywheel (decisions 024, 029).
+ *                  REST = in the way, so balls can't reach the flywheel. FIRE = moved clear, so the
+ *                  water wheel (Intake) can feed balls through. The operator holds Y to launch.
+ *                  Config type: "Servo". Missing = OFFLINE, no crash.
+ *
+ * Speed control (decision 032): the flywheel runs in RUN_WITHOUT_ENCODER at a fixed POWER (DEFAULT_SPIN_POWER),
+ * not at a set velocity. Simpler, and it runs the whole match so it has time to settle. The encoder is still
+ * read so isReady() and telemetry can show the real speed.
  */
 public class Launcher {
 
@@ -28,16 +34,19 @@ public class Launcher {
     public static final String FLYWHEEL_NAME = "launcherMotor";
     public static final String TRIGGER_SERVO_NAME = "launcherTriggerServo";
 
-    // Trigger servo positions (0.0 to 1.0). TODO(#5): find these with "Launcher Test" (left bumper).
+    // Trigger (gate) servo positions (0.0 to 1.0). REST blocks the ball path, FIRE opens it.
+    // TODO(#5): find these with "Launcher Test" (hold left bumper = FIRE).
     public static final double TRIGGER_REST_POSITION = 0.0;
     public static final double TRIGGER_FIRE_POSITION = 0.5;
 
-    // Speed / power constants
+    // Flywheel power (0 to 1), decision 032. TODO(#5): tune with "Launcher Test" and a hit-rate test.
     public static final double DEFAULT_SPIN_POWER = 1.0;
-    // Motor direction is locked to REVERSED as requested.
+    // TODO(#5): confirm on the robot. true = the flywheel spins the right way with REVERSE set.
     public static final boolean MOTOR_REVERSED = true;
 
-    // Minimum encoder velocity (ticks/sec) to consider flywheel ready (if encoders present)
+    // The flywheel counts as READY once the encoder reads at least this many ticks per second.
+    // TODO(#5): run "Launcher Test" at DEFAULT_SPIN_POWER, read "Launcher Velocity" once it settles,
+    // and set this to about 90% of that number. 1000 is a placeholder.
     public static final double READY_VELOCITY_THRESHOLD = 1000.0;
 
     private final DcMotorEx launcherMotor;
@@ -110,19 +119,19 @@ public class Launcher {
     }
 
     /**
-     * Launch: move the trigger to FIRE, pushing a game element into the flywheel.
-     * Only call this when isReady() is true. Call resetTrigger() afterwards to load the next one.
+     * Open the gate: move the trigger to FIRE, out of the ball path, so the water wheel can feed
+     * balls into the flywheel. Best when isReady() is true. Call resetTrigger() to close it again.
      */
     public void fire() {
         setTrigger(true);
     }
 
-    /** Move the trigger back to REST, out of the way of the next game element. */
+    /** Close the gate: move the trigger back to REST, blocking the ball path. */
     public void resetTrigger() {
         setTrigger(false);
     }
 
-    /** True if the trigger is at FIRE. */
+    /** True if the trigger is at FIRE (gate open). */
     public boolean isTriggerFired() {
         return triggerFired;
     }
@@ -139,12 +148,16 @@ public class Launcher {
         spinUp(0.0);
     }
 
-    /** True when the launcher is spinning and ready to fire. */
+    /**
+     * True when the flywheel is really up to speed: the encoder reads at least READY_VELOCITY_THRESHOLD.
+     * Power alone doesn't count, because a motor at full power is still slow for the first moment,
+     * and slows down again right after each ball.
+     */
     public boolean isReady() {
         if (launcherMotor == null) {
             return false;
         }
-        return Math.abs(getPower()) > 0.05 || Math.abs(getVelocity()) >= READY_VELOCITY_THRESHOLD;
+        return Math.abs(getVelocity()) >= READY_VELOCITY_THRESHOLD;
     }
 
     /** True if the launcher motor was found in the Driver Station configuration. */
@@ -155,7 +168,7 @@ public class Launcher {
     /** Show this subsystem's status on the Driver Station. */
     public void addTelemetry(Telemetry telemetry) {
         if (launcherMotor != null) {
-            telemetry.addData("Launcher Status", isReady() ? "READY (Spinning)" : (getPower() != 0 ? "SPINNING" : "STOPPED"));
+            telemetry.addData("Launcher Status", isReady() ? "READY" : (getPower() != 0 ? "SPINNING UP (not ready)" : "STOPPED"));
             telemetry.addData("Launcher Power", "%.2f", getPower());
             telemetry.addData("Launcher Velocity", "%.0f ticks/s", getVelocity());
             telemetry.addData("Launcher Current", "%.2f A", getCurrentAmps());
@@ -163,7 +176,7 @@ public class Launcher {
             telemetry.addData("Launcher", "OFFLINE (device '%s' not in DS config)", FLYWHEEL_NAME);
         }
         if (launcherTriggerServo != null) {
-            telemetry.addData("Launcher trigger", triggerFired ? "FIRE" : "rest");
+            telemetry.addData("Launcher trigger", triggerFired ? "FIRE (gate open)" : "rest (gate closed)");
         } else {
             telemetry.addData("Launcher trigger", "OFFLINE ('%s' not in DS config)", TRIGGER_SERVO_NAME);
         }
