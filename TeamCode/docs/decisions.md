@@ -358,3 +358,14 @@ Decision:
 - In `DriverControls.java`, so every TeleOp gets it (rule 7). `DriverControls` is now an object (`new DriverControls()`), like `OperatorControls`, so the toggle remembers on/off between loops
 - Strafe correction is applied after snapping, so a snapped strafe is still exactly sideways
 Who: Team (angle to tune with the drivers)
+
+## 032 – Flywheel runs at a fixed power, not a set velocity  (2026-11-04)
+Status: Accepted (revisit if shots fall short late in a match)
+Issue: #5
+Context: Issue #5 first asked for `DcMotorEx.setVelocity()`, which uses the encoder to hold a target speed as the battery drains. The code was written with `RUN_WITHOUT_ENCODER` and `setPower()` instead, and `isReady()` said "ready" as soon as any power was set, so it never really waited for speed.
+Decision:
+- **Keep `RUN_WITHOUT_ENCODER` with a fixed power** (`Launcher.DEFAULT_SPIN_POWER`). Simpler to understand and tune, no dependence on the motor type in the Driver Station config, and the flywheel runs the whole match (029) so it has time to settle
+- **Trade-off we accept:** at the same power the flywheel spins a bit slower as the battery drains. If shots fall short late in a match, switch to velocity control (and set the exact goBILDA motor type in the config, see 008)
+- **`isReady()` means up to speed:** true only when the encoder velocity is at least `READY_VELOCITY_THRESHOLD`. Power alone doesn't count. The threshold is set from "Launcher Test": read the settled velocity at `DEFAULT_SPIN_POWER`, use about 90% of it
+- The trigger servo is a **gate**, as in 029: REST blocks the ball path, FIRE opens it. `Launcher.java` and `hardware-config.md` now say so (they used to say it "pushes" a ball)
+Who: Mentor (2026-11-04)
