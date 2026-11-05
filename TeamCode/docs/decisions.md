@@ -369,3 +369,15 @@ Decision:
 - **`isReady()` means up to speed:** true only when the encoder velocity is at least `READY_VELOCITY_THRESHOLD`. Power alone doesn't count. The threshold is set from "Launcher Test": read the settled velocity at `DEFAULT_SPIN_POWER`, use about 90% of it
 - The trigger servo is a **gate**, as in 029: REST blocks the ball path, FIRE opens it. `Launcher.java` and `hardware-config.md` now say so (they used to say it "pushes" a ball)
 Who: Mentor (2026-11-04)
+
+## 033 – Turret mounted reversed: the home switch is at the REAR  (2026-11-05)
+Status: Accepted (turn limits are placeholders until measured, #31)
+Issue: #31
+Context: The build had to mount the turret reversed. The magnetic switch that marked "forward" (decision 017) now triggers when the turret faces the **rear** of the robot.
+Decision:
+- Config name `turretForwardSwitch` → **`turretHomeSwitch`**: it says what the switch does (homing) and stays right if the turret is remounted again
+- New **`Turret.HOME_ANGLE_DEGREES = 180`**: when the switch triggers, the turret is at 180 (the rear). Angles still mean the same thing: 0 = robot forward, + = left. Remounting later = change only this number
+- Angles **don't wrap**: from the rear, turning left counts up past 180 (to 270), turning right counts down. `turnTo()` picks the way of writing an angle that's inside the limits (`turnTo(-90)` = 270), or the closest limit if it can't get there
+- **Turn limits are placeholders: rear ±90** (`MAX_RIGHT_DEGREES = 90`, `MAX_LEFT_DEGREES = 270`): the same 180° of travel as before, centered on the switch, which we know the turret can reach. With these, the turret can't point forward yet. Measure the real range with Turret Test step 4
+- Servo and encoder directions should not change (the turret turned around, it didn't flip over), but re-check Turret Test steps 1 and 2
+Who: Team / mentor

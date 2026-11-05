@@ -19,13 +19,14 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *     + hold RIGHT TRIGGER   FULL speed (only once homed; before that, everything is capped at NOT_HOMED_MAX_SPEED)
  *     + hold a bumper        SLOW, fine moves
  *   Y                        set a MARK: "Since mark" counts from here. Use it to measure a move
- *   A                        turn to forward (0°)      } these use the encoder to aim,
- *   X / B                    turn to 45° left / right  } so they only work once HOMED
+ *   A                        turn to forward (0°)      } these use the encoder to aim, so they only work once
+ *   X / B                    turn to 45° left / right  } HOMED, and only as far as MAX_LEFT / MAX_RIGHT allow
  *   any dpad left/right      cancels A / X / B
  *   dpad up / down           tilt the HOOD up / down a little (find HOOD_LOWEST / HIGHEST_POSITION)
  *
- * The first time the forward switch triggers, the encoder is HOMED (that spot = 0).
- * The LEFT light turns GREEN whenever the turret is at HOME: at the switch, or within ±HOME_TOLERANCE_COUNTS of 0.
+ * The turret is mounted reversed (decision 033): the home switch is at the REAR. The first time it triggers,
+ * the encoder is HOMED (that spot = HOME_ANGLE_DEGREES = 180).
+ * The LEFT light turns GREEN whenever the turret is at HOME: at the switch, or within ±HOME_TOLERANCE_COUNTS of it.
  * Until then, the turret only moves slowly.
  *
  * Calibrate IN ORDER (steps in issue #31). Don't try A / X / B until steps 1 and 2 are right!
@@ -38,7 +39,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  * How the ELC encoder works:
  *   It counts tiny steps as its shaft turns: 4000 counts = 1 full turn, so about 11 counts = 1 degree.
  *   Turning one way counts UP, the other way counts DOWN. It starts at 0 when the robot powers on,
- *   which is why we home it at the forward switch.
+ *   which is why we home it at the home switch.
  *
  * Printable worksheet (steps, Expected / Actual / Fix, numbers for the code): TeamCode/docs/worksheets/turret-test.pdf
  */
@@ -58,7 +59,7 @@ public class TurretTest extends LinearOpMode {
         // Test-only: the same encoder, used directly to show its speed (code-structure rule 8).
         DcMotorEx turretEncoder = hardwareMap.get(DcMotorEx.class, Turret.ENCODER_NAME);
         // Test-only: the same switch, to show its RAW reading (code-structure rule 8).
-        DigitalChannel forwardSwitch = hardwareMap.get(DigitalChannel.class, Turret.FORWARD_SWITCH_NAME);
+        DigitalChannel homeSwitch = hardwareMap.get(DigitalChannel.class, Turret.HOME_SWITCH_NAME);
         ElapsedTime sinceMarkSet = new ElapsedTime(1000); // starts "long ago", so no message at first
 
         int markCounts = turret.getEncoderCounts();
@@ -67,11 +68,11 @@ public class TurretTest extends LinearOpMode {
         // INIT: nothing moves until START (game rule G304.H). Readings, homing and the light work already.
         while (opModeInInit()) {
             turret.update();
-            showForward(turret, light);
+            showHome(turret, light);
             telemetry.addLine("Press START. Nothing moves until you press a button.");
             telemetry.addLine("Don't force the turret by hand: the servo's gears can strip.");
             telemetry.addLine();
-            addReadings(turret, turretEncoder, forwardSwitch, markCounts, sinceMarkSet);
+            addReadings(turret, turretEncoder, homeSwitch, markCounts, sinceMarkSet);
             power.addTelemetry(telemetry);
             telemetry.update();
         }
@@ -119,15 +120,15 @@ public class TurretTest extends LinearOpMode {
             }
 
             turret.update();
-            showForward(turret, light);
+            showHome(turret, light);
 
             telemetry.addLine("HOLD dpad L/R = turn (+R trigger = FULL, +bumper = slow)   dpad U/D = hood");
             telemetry.addLine("Y = mark   A = forward   X/B = 45° L/R");
             if (!turret.isHomed()) {
-                telemetry.addData("Speed capped", "%.2f until homed: turn past forward once", Turret.NOT_HOMED_MAX_SPEED);
+                telemetry.addData("Speed capped", "%.2f until homed: turn past the REAR (home switch) once", Turret.NOT_HOMED_MAX_SPEED);
             }
             telemetry.addLine();
-            addReadings(turret, turretEncoder, forwardSwitch, markCounts, sinceMarkSet);
+            addReadings(turret, turretEncoder, homeSwitch, markCounts, sinceMarkSet);
             power.addTelemetry(telemetry);
             telemetry.update();
         }
@@ -137,24 +138,24 @@ public class TurretTest extends LinearOpMode {
     }
 
     /** GREEN when the turret is at home, OFF otherwise. The light is OK during INIT: it doesn't move anything. */
-    private void showForward(Turret turret, Light light) {
+    private void showHome(Turret turret, Light light) {
         light.setColor(turret.isAtHome() ? Light.Color.GREEN : Light.Color.OFF);
     }
 
-    private void addReadings(Turret turret, DcMotorEx turretEncoder, DigitalChannel forwardSwitch,
+    private void addReadings(Turret turret, DcMotorEx turretEncoder, DigitalChannel homeSwitch,
                              int markCounts, ElapsedTime sinceMarkSet) {
         int counts = turret.getEncoderCounts();
         int sinceMark = counts - markCounts;
 
-        telemetry.addLine("--- Forward switch ---");
-        telemetry.addData("Forward switch (magnet)", turret.isFacingForward() ? "YES" : "no");
-        telemetry.addData("Switch raw reading", "%b  (should FLIP when the magnet passes)", forwardSwitch.getState());
+        telemetry.addLine("--- Home switch (at the REAR) ---");
+        telemetry.addData("Home switch (magnet)", turret.isAtHomeSwitch() ? "YES" : "no");
+        telemetry.addData("Switch raw reading", "%b  (should FLIP when the magnet passes)", homeSwitch.getState());
         telemetry.addLine("  Never flips? Try the other channel of that digital port (REV switch: usually the odd one, n+1).");
 
         telemetry.addLine("--- Turret ---");
         turret.addTelemetry(telemetry);
         if (!turret.isHomed()) {
-            telemetry.addLine("A / X / B do nothing until homed. Turn to forward with the dpad first.");
+            telemetry.addLine("A / X / B do nothing until homed. Turn past the REAR (home switch) with the dpad first.");
         }
 
         telemetry.addLine("--- ELC encoder (on the servo) ---");

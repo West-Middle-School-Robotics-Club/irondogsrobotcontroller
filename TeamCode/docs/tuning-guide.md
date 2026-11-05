@@ -128,15 +128,16 @@ Worksheet: `turret-test.pdf`. Test with **Turret Test**, **in this order** (step
 | `SERVO_REVERSED` | `false` | Step 1: set `true` if a + (left) speed turns the turret RIGHT | Turret Test, dpad left | 🔧 |
 | `ENCODER_REVERSED` | `false` | Step 2: set `true` if "Turret angle" goes DOWN when turning left | Turret Test | 🔧 |
 | `ENCODER_REVS_PER_TURRET_REV` | `1.0` | Step 3: encoder turns per one turret turn (gear ratio) | Turn exactly 90°; angle must read ~90. Or count gear teeth | 🔧 (changes if the encoder moves to the big gear) |
-| `MAX_LEFT_DEGREES` | `90.0` | Step 4: farthest the turret may turn left | Turn slowly until wires/frame get close; back off | 🔧 |
-| `MAX_RIGHT_DEGREES` | `-90.0` | Step 4: farthest right (negative) | Same | 🔧 |
+| `HOME_ANGLE_DEGREES` | `180.0` | Where the turret points when the home switch triggers. Mounted reversed, so the switch is at the REAR (decision 033). Change only if the turret is remounted | Where the magnet is | ✅ |
+| `MAX_LEFT_DEGREES` | `270.0` | Step 4: farthest the turret may turn left. Angles don't wrap: from the rear (180), left counts up | Home it, turn slowly left until wires/frame get close; back off. Must be over 180 | 🔧 placeholder (rear ±90) |
+| `MAX_RIGHT_DEGREES` | `90.0` | Step 4: farthest right. From the rear, right counts down | Same, turning right. Must be under 180 | 🔧 placeholder (rear ±90) |
 | `AIM_GAIN` | `0.02` | Step 5: speed per degree away from a target. Bigger = faster, may wobble | Turret Test X / B (±45°) | 🔧 |
 | `MAX_SPEED` | `0.6` | Fastest the turret turns to a target | | 🔧 |
 | `TOLERANCE_DEGREES` | `1.0` | "Close enough" to a target | | 🔧 |
 | `NOT_HOMED_MAX_SPEED` | `0.35` | Speed cap until the turret has passed forward once | 0.15 was too slow (10/15) | ✅ |
 | `RUNAWAY_DEGREES` | `20.0` | Safety: stop if it moves this much the WRONG way | Leave it | ✅ |
 | `HOME_TOLERANCE_COUNTS` | `200` | How close to forward counts as "home" (light green) | Smaller = stricter | ✅ |
-| `FORWARD_SWITCH_TRIGGERED_STATE` | `false` | What the forward switch reads at the magnet | Turret Test: "at switch" shows when the magnet is there | ✅ |
+| `HOME_SWITCH_TRIGGERED_STATE` | `false` | What the home switch reads at the magnet | Turret Test: "Home switch (magnet)" says YES at the magnet | ✅ |
 | `HOOD_LOWEST_POSITION` | `0.0` | Hood's flattest position (0 to 1). Keeps it off its hard stop | Turret Test dpad down | 🔧 |
 | `HOOD_HIGHEST_POSITION` | `1.0` | Hood's steepest position | Turret Test dpad up | 🔧 |
 | `HOOD_START_POSITION` | `0.5` | Hood position after START in Turret Test | | 🔧 |
