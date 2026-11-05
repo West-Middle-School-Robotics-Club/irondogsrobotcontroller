@@ -6,6 +6,7 @@ Our team's fork of FIRST's FtcRobotController (SDK v12.0). Middle school team; c
 - `TeamCode/docs/decisions.md`: every team decision and why (numbered; add new ones, never rewrite accepted ones)
 - `TeamCode/docs/code-structure.md`: folder layout, the code rules, direction convention
 - `TeamCode/docs/hardware-config.md`: Driver Station config names and naming rules
+- `TeamCode/docs/tuning-guide.md`: every tunable value (speeds, powers, offsets, positions), where it is and how to tune it. A new or changed tunable constant gets a row there; `python3 TeamCode/docs/check_tuning_guide.py` checks the values match the code
 - `TeamCode/docs/game/`: BIOBUZZ field, scoring and rules summaries (from the Competition Manual, with page numbers)
 - `TeamCode/docs/changes-made.md`: running change log (add an entry for each change)
 - `TeamCode/docs/portfolio/`: engineering portfolio notes, written as we go

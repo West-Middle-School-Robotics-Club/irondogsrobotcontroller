@@ -85,6 +85,12 @@ public abstract class BasicAuton extends LinearOpMode {
     static final double STOP_BY_S = 28.0;            // stop everything by this time (AUTO is 30 s)
     static final int MAX_DELAY_S = 10;               // start delay the drive team can choose in INIT
 
+    // What the lights mean in Basic Auton. Colors are in Light.Color.
+    static final Light.Color RED_ALLIANCE_COLOR = Light.Color.RED;   // during INIT
+    static final Light.Color BLUE_ALLIANCE_COLOR = Light.Color.BLUE; // during INIT
+    static final Light.Color PARKED_COLOR = Light.Color.GREEN;       // reached every waypoint
+    static final Light.Color STOPPED_EARLY_COLOR = Light.Color.YELLOW; // a waypoint timed out, or out of time
+
     @Override
     public void runOpMode() {
         Alliance alliance = alliance();
@@ -102,7 +108,7 @@ public abstract class BasicAuton extends LinearOpMode {
         Pose2D[] path = route == Route.NEAR ? RED_NEAR_PATH : RED_FAR_PATH;
 
         // ---------- INIT: show the alliance, choose a delay. Nothing moves. ----------
-        Light.Color allianceColor = alliance == Alliance.RED ? Light.Color.RED : Light.Color.BLUE;
+        Light.Color allianceColor = alliance == Alliance.RED ? RED_ALLIANCE_COLOR : BLUE_ALLIANCE_COLOR;
         leftLight.setColor(allianceColor);
         rightLight.setColor(allianceColor);
         int delaySeconds = 0;
@@ -153,7 +159,7 @@ public abstract class BasicAuton extends LinearOpMode {
         robot.drivetrain.stop();
 
         // Done: GREEN = parked where we planned, YELLOW = stopped early (timeout or time limit)
-        Light.Color doneColor = allReached ? Light.Color.GREEN : Light.Color.YELLOW;
+        Light.Color doneColor = allReached ? PARKED_COLOR : STOPPED_EARLY_COLOR;
         leftLight.setColor(doneColor);
         rightLight.setColor(doneColor);
         while (opModeIsActive()) {

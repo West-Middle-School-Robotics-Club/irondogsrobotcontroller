@@ -4,6 +4,8 @@ Print one, take it to the robot, fill it in with a pen, then a coder copies the 
 go on the GitHub issue. Each PDF is made by a Python script here (`pip install reportlab`, then `python3 make_...py`).
 Edit the script, not the PDF.
 
+Where each number goes in the code (and what it is now): `TeamCode/docs/tuning-guide.md`.
+
 ## Robot tests (one sheet per test OpMode)
 | Sheet | Test OpMode | Numbers it finds | Issue |
 |---|---|---|---|
