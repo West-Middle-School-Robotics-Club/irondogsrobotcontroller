@@ -62,6 +62,7 @@ when its devices aren't in the config.
 3. **No magic numbers.** Config names, speeds and positions are named constants at the top of the subsystem,
    e.g. `FRONT_LEFT_DRIVE_NAME = "frontLeftDrive"`.
    The variable holding the device uses the same name as the config: `frontLeftDrive`.
+   Every value the team tunes is listed in `TeamCode/docs/tuning-guide.md`: add a row when you add one.
 4. **Every subsystem has `stop()` and `addTelemetry(telemetry)`**, so `Robot` can stop everything
    and show everything with one call.
 5. **Config names match `TeamCode/docs/hardware-config.md`.**

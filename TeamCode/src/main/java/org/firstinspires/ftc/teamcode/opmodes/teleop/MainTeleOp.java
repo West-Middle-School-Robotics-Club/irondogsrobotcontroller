@@ -28,6 +28,11 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  */
 public abstract class MainTeleOp extends LinearOpMode {
 
+    // What the lights mean in Main TeleOp (decisions 018, 022, 028). Colors are in Light.Color.
+    public static final Light.Color RED_ALLIANCE_COLOR = Light.Color.RED;
+    public static final Light.Color BLUE_ALLIANCE_COLOR = Light.Color.BLUE;
+    public static final Light.Color NECTAR_COLOR = Light.Color.VIOLET; // "purple": the next ball to launch is a NECTAR
+
     /** Which alliance this OpMode is for. */
     protected abstract Alliance alliance();
 
@@ -81,7 +86,7 @@ public abstract class MainTeleOp extends LinearOpMode {
             robot.turret.update(); // every loop: turns the turret and keeps it inside its limits
 
             // Lights: PURPLE = the next ball to launch is a NECTAR, otherwise our alliance color.
-            Light.Color lightColor = robot.intake.isNectarDetected() ? Light.Color.VIOLET : allianceColor(alliance);
+            Light.Color lightColor = robot.intake.isNectarDetected() ? NECTAR_COLOR : allianceColor(alliance);
             leftLight.setColor(lightColor);
             rightLight.setColor(lightColor);
 
@@ -104,6 +109,6 @@ public abstract class MainTeleOp extends LinearOpMode {
 
     /** The light color for an alliance: the OpMode decides what colors mean (decision 018). */
     private static Light.Color allianceColor(Alliance alliance) {
-        return alliance == Alliance.RED ? Light.Color.RED : Light.Color.BLUE;
+        return alliance == Alliance.RED ? RED_ALLIANCE_COLOR : BLUE_ALLIANCE_COLOR;
     }
 }
