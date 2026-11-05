@@ -255,12 +255,12 @@ build("launcher-test.pdf", "Launcher Test", "#5", story)
 story = header_block(
     "Turret Test",
     "Calibrate the turret IN ORDER: servo direction, encoder direction, gear ratio, limits, aiming. Then the hood "
-    "and the home switch.  (issue #31, decisions 019, 021)",
+    "and the home switch.  (issue #31, decisions 019, 021, 033)",
     "Turret Servo Raw Test, then Turret Test",
     c("turretRotateServo") + " (Continuous Rotation Servo), " + c("turretEncoder") + " (Motor port, encoder only), " +
-    c("turretForwardSwitch") + " (Digital Device), " + c("turretHoodServo") + " (Servo)")
+    c("turretHomeSwitch") + " (Digital Device), " + c("turretHoodServo") + " (Servo)")
 story += [warn("<b>Nothing physical stops the turret.</b> Until step 4 is done it can turn into wires or the frame. "
-               "Keep a hand near STOP and turn in small moves. Angles: 0 = forward, + = LEFT.")]
+               "Keep a hand near STOP and turn in small moves. Angles: 0 = forward, + = LEFT, 180 = REAR (home switch).")]
 story += [p("Part A: Turret Servo Raw Test (servo alone)", H2),
           table([["#", "Do this", "Expected", "Actual", "If wrong"],
                  ["A1", "Push the left stick left and hold", "turret KEEPS turning while held, stops when let go", "",
@@ -270,22 +270,24 @@ story += [p("Part A: Turret Servo Raw Test (servo alone)", H2),
 story += controls([
     ["HOLD dpad LEFT / RIGHT", "turn left / right (half speed). + right trigger = full speed (once homed). + bumper = slow"],
     ["Y", "set a MARK: \"Since mark\" counts degrees from here"],
-    ["A", "turn to 0° (forward). Only once HOMED and after steps 1 to 3 are right!"],
+    ["A", "turn to 0° (forward), as far as the limits allow. Only once HOMED and after steps 1 to 3 are right!"],
     ["X / B", "turn to 45° left / right (same warning)"],
     ["Dpad UP / DOWN", "hood up / down a little"],
-    ["LEFT light GREEN", "turret is at HOME (the switch, or within HOME_TOLERANCE_COUNTS of 0)"],
+    ["LEFT light GREEN", "turret is at HOME: the switch at the REAR, or within HOME_TOLERANCE_COUNTS of it"],
 ])
 story += steps([
     ["1", "Hold dpad LEFT", "turret turns LEFT (counter-clockwise from above)", "", c("SERVO_REVERSED = true")],
     ["2", "Turn left, watch \"Turret angle\"", "angle goes UP", "", c("ENCODER_REVERSED = true")],
     ["3", "Y (mark), then turn exactly 90° left (use a square or tape marks)", "\"Since mark\" reads about 90", "",
      "new " + c("ENCODER_REVS_PER_TURRET_REV") + " = old value x (what it read) / 90 = ______"],
-    ["4", "Turn slowly left until just before anything hits. Read the angle. Same to the right", "left: ____°, right: ____°",
+    ["4", "Home it. Turn slowly left until just before anything hits. Read the angle. Same to the right",
+     "left (over 180): ____° right: ____°",
      "", "set " + c("MAX_LEFT_DEGREES") + " / " + c("MAX_RIGHT_DEGREES") + " a few degrees inside those"],
-    ["5", "Turn past forward once (homes). Press A, then X, then B", "turns to 0, 45 left, 45 right, stops without wobbling", "",
+    ["5", "Turn past the REAR once (homes). Press A, then X, then B",
+     "turns toward 0, 45 L, 45 R (within limits), no wobble", "",
      "wobbles: lower " + c("AIM_GAIN") + ". Too slow: raise it. Runs away: steps 1 or 2 are wrong"],
-    ["6", "Turn through forward slowly, watch \"Forward switch raw\"", "reading flips at the magnet", "",
-     "flips the other way: " + c("FORWARD_SWITCH_TRIGGERED_STATE") + " to the other value"],
+    ["6", "Turn through the REAR slowly, watch \"Switch raw reading\"", "reading flips at the magnet", "",
+     "flips the other way: " + c("HOME_SWITCH_TRIGGERED_STATE") + " to the other value"],
     ["7", "Dpad DOWN until the hood is flattest, read the position. Then UP to steepest",
      "lowest: ____, highest: ____", "", "set " + c("HOOD_LOWEST_POSITION") + " / " + c("HOOD_HIGHEST_POSITION") +
      " just inside the hard stops"],
@@ -294,9 +296,10 @@ story += constants([
     [c("SERVO_REVERSED"), "false", "", ""],
     [c("ENCODER_REVERSED"), "false", "", ""],
     [c("ENCODER_REVS_PER_TURRET_REV"), "1.0", "", ""],
-    [c("MAX_LEFT_DEGREES") + " / " + c("MAX_RIGHT_DEGREES"), "90 / -90", "", ""],
+    [c("HOME_ANGLE_DEGREES"), "180", "", ""],
+    [c("MAX_LEFT_DEGREES") + " / " + c("MAX_RIGHT_DEGREES"), "270 / 90", "", ""],
     [c("AIM_GAIN"), "0.02", "", ""],
-    [c("FORWARD_SWITCH_TRIGGERED_STATE"), "false", "", ""],
+    [c("HOME_SWITCH_TRIGGERED_STATE"), "false", "", ""],
     [c("HOOD_LOWEST_POSITION") + " / " + c("HOOD_HIGHEST_POSITION"), "0.0 / 1.0", "", ""],
     [c("HOME_TOLERANCE_COUNTS"), "200", "", ""],
 ], "subsystems/Turret.java")

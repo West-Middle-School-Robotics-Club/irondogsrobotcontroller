@@ -38,7 +38,7 @@ DEVICES = [
     ("Launcher", "launcherTriggerServo", "Servo", "Servo", "Servo", "", "", "REST / FIRE"),
     ("Turret", "turretRotateServo", "goBILDA 2000 25-3 Speed (continuous)", "Continuous Rotation Servo", "Servo", "", "", "Signal 1000-2000 us"),
     ("Turret", "turretEncoder", "ELC Encoder V2, \"D\" cable", "Motor (never powered)", "Encoder", "EH", "", "Motor port # must match; keep that motor port empty"),
-    ("Turret", "turretForwardSwitch", "REV Magnetic Limit Switch", "Digital Device", "Digital", "", "", "Usually the ODD channel (n+1)"),
+    ("Turret", "turretHomeSwitch", "REV Magnetic Limit Switch", "Digital Device", "Digital", "", "", "At the REAR. Usually ODD channel"),
     ("Turret", "turretHoodServo", "Servo", "Servo", "Servo", "", "", "Tilts the launch up/down"),
     ("Camera", "limelight", "Limelight 3A", "Limelight 3A", "USB", "CH", "USB 3.0", "Must be the USB 3.0 port"),
     ("FlowerFlipper", "flowerFlipperServo", "Servo", "Servo", "Servo", "", "", "Shakes back and forth"),

@@ -11,10 +11,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  *     Light rightLight = new Light(hardwareMap, Light.RIGHT_LIGHT_NAME);
  *
  * It plugs into a SERVO port. The "servo position" we send picks the color. It doesn't move anything,
- * so it's OK to use during INIT (handy for showing drivers that the turret faces forward before the match).
+ * so it's OK to use during INIT (handy for showing drivers that the turret is at home before the match).
  *
  * This class only knows colors. The OpMode decides WHAT each color means,
- * for example: GREEN = turret facing forward.
+ * for example: GREEN = turret at home.
  */
 public class Light {
 

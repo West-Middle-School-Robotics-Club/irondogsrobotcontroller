@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.Robot;
  *   Left trigger  HOLD to EJECT: water wheel DOWN + intake OUT, to push out stored balls.
  *                 Eject beats the toggles. When you let go, the intake and water wheel are OFF.
  *   Left stick    push LEFT / RIGHT to turn the turret by hand (further = faster). Let go = stop.
- *                 Slow until the turret is homed (turn it past forward once). Stops at its limits.
+ *                 Slow until the turret is homed (turn it past the home switch at the REAR once). Stops at its limits.
  * The flywheel (launcherMotor) isn't on a button: Main TeleOp runs it the whole match.
  *
  * Printable diagram: TeamCode/docs/worksheets/controller-layout.pdf
