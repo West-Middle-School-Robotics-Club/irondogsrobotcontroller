@@ -45,7 +45,7 @@ public class Odometry {
     public static final GoBildaPinpointDriver.EncoderDirection X_POD_DIRECTION =
             GoBildaPinpointDriver.EncoderDirection.FORWARD;
     public static final GoBildaPinpointDriver.EncoderDirection Y_POD_DIRECTION =
-            GoBildaPinpointDriver.EncoderDirection.FORWARD;
+            GoBildaPinpointDriver.EncoderDirection.REVERSED;
 
     private final GoBildaPinpointDriver pinpoint;
 

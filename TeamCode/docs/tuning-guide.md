@@ -73,8 +73,8 @@ Worksheet: `pinpoint-test.pdf`. Test with **Pinpoint Test**. Issues #6, #21.
 | `POD_TYPE` | `goBILDA_4_BAR_POD` | Which pods we have (sets ticks per inch) | Push the robot 48 in: Pinpoint Test must read ~48 | ✅ |
 | `X_POD_OFFSET_MM` | `0.0` | X pod (wheel rolls front-back): how far **sideways** from the turning center. Left = +, right = − | Measure from the **wheelbase center**, then the spin test | ✅ measured, 🔧 spin test to confirm |
 | `Y_POD_OFFSET_MM` | `0.0` | Y pod (wheel rolls side-side): how far **forward** from the turning center. Front = +, back = − | Same as above | ✅ measured, 🔧 spin test to confirm |
-| `X_POD_DIRECTION` | `FORWARD` | Push the robot forward: X must go UP. If not, `REVERSED` | Pinpoint Test | 🔧 |
-| `Y_POD_DIRECTION` | `FORWARD` | Push the robot left: Y must go UP. If not, `REVERSED` | Pinpoint Test | 🔧 |
+| `X_POD_DIRECTION` | `FORWARD` | Push the robot forward: X must go UP. If not, `REVERSED` | Pinpoint Test | ✅ |
+| `Y_POD_DIRECTION` | `REVERSED` | Push the robot left: Y must go UP. If not, `REVERSED` | Pinpoint Test | ✅ |
 
 ## Basic Auton: `opmodes/auto/BasicAuton.java`
 Guide: `basic-auton-guide.pdf`, routes: `docs/game/diagrams/basic-auton-near.pdf` / `far.pdf`. Issue #22, decision 026.
