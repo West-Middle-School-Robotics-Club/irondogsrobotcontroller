@@ -24,26 +24,26 @@ OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hardware-map.pdf
 # Leave hub/port "" to print a blank to fill in. Only fill them for ports that can't change.
 # ------------------------------------------------------------------------------------------------
 DEVICES = [
-    ("Drivetrain", "frontLeftDrive", "goBILDA 5203 Yellow Jacket", "goBILDA 5203 Series", "Motor", "", "", "Direction REVERSE"),
-    ("Drivetrain", "backLeftDrive", "goBILDA 5203 Yellow Jacket", "goBILDA 5203 Series", "Motor", "", "", "Direction REVERSE"),
-    ("Drivetrain", "frontRightDrive", "goBILDA 5203 Yellow Jacket", "goBILDA 5203 Series", "Motor", "", "", ""),
-    ("Drivetrain", "backRightDrive", "goBILDA 5203 Yellow Jacket", "goBILDA 5203 Series", "Motor", "", "", ""),
-    ("Odometry", "pinpoint", "goBILDA Pinpoint + 2 pods", "goBILDA Pinpoint", "I2C bus", "", "", "Not bus 0 (built-in IMU)"),
+    ("Drivetrain", "frontLeftDrive", "goBILDA 5203 Yellow Jacket", "goBILDA 5203 Series", "Motor", "CH", "0", "Direction REVERSE"),
+    ("Drivetrain", "backLeftDrive", "goBILDA 5203 Yellow Jacket", "goBILDA 5203 Series", "Motor", "CH", "1", "Direction REVERSE"),
+    ("Drivetrain", "frontRightDrive", "goBILDA 5203 Yellow Jacket", "goBILDA 5203 Series", "Motor", "EH", "0", ""),
+    ("Drivetrain", "backRightDrive", "goBILDA 5203 Yellow Jacket", "goBILDA 5203 Series", "Motor", "EH", "1", ""),
+    ("Odometry", "pinpoint", "goBILDA Pinpoint + 2 pods", "goBILDA Pinpoint", "I2C bus", "EH", "3", "Not bus 0 (built-in IMU)"),
     ("Odometry", "imu", "Control Hub built-in IMU", "(built in)", "I2C bus", "CH", "0", "Built in, can't move"),
-    ("Intake", "intakeServo", "Servo (continuous)", "Continuous Rotation Servo", "Servo", "", "", "Pulls game elements in"),
-    ("Intake", "waterWheelServo", "Servo (continuous)", "Continuous Rotation Servo", "Servo", "", "", "Water wheel: up to the launcher"),
-    ("Intake", "nectarDetectorLeftSwitch", "goBILDA micro limit switch", "Digital Device", "Digital", "", "", "Either one = next ball is NECTAR"),
-    ("Intake", "nectarDetectorRightSwitch", "goBILDA micro limit switch", "Digital Device", "Digital", "", "", "Either one = next ball is NECTAR"),
-    ("Launcher", "launcherMotor", "goBILDA 5203 Yellow Jacket", "goBILDA 5203 Series", "Motor", "", "", "The flywheel"),
-    ("Launcher", "launcherTriggerServo", "Servo", "Servo", "Servo", "", "", "REST / FIRE"),
-    ("Turret", "turretRotateServo", "goBILDA 2000 25-3 Speed (continuous)", "Continuous Rotation Servo", "Servo", "", "", "Signal 1000-2000 us"),
-    ("Turret", "turretEncoder", "ELC Encoder V2, \"D\" cable", "Motor (never powered)", "Encoder", "EH", "", "Motor port # must match; keep that motor port empty"),
-    ("Turret", "turretHomeSwitch", "REV Magnetic Limit Switch", "Digital Device", "Digital", "", "", "At the REAR. Usually ODD channel"),
+    ("Intake", "intakeServo", "Servo (continuous)", "Continuous Rotation Servo", "Servo", "EH", "2", "Pulls game elements in"),
+    ("Intake", "waterWheelServo", "Servo (continuous)", "Continuous Rotation Servo", "Servo", "EH", "1", "Water wheel: up to the launcher"),
+    ("Intake", "nectarDetectorLeftSwitch", "goBILDA micro limit switch", "Digital Device", "Digital", "EH", "0-1", "Either one = NECTAR. Check ch 0 or 1"),
+    ("Intake", "nectarDetectorRightSwitch", "goBILDA micro limit switch", "Digital Device", "Digital", "EH", "2-3", "Either one = NECTAR. Check ch 2 or 3"),
+    ("Launcher", "launcherMotor", "goBILDA 5203 Yellow Jacket", "goBILDA 5203 Series", "Motor", "CH", "2", "The flywheel"),
+    ("Launcher", "launcherTriggerServo", "Servo", "Servo", "Servo", "EH", "4", "REST / FIRE"),
+    ("Turret", "turretRotateServo", "goBILDA 2000 25-3 Speed (continuous)", "Continuous Rotation Servo", "Servo", "EH", "0", "Signal 1000-2000 us"),
+    ("Turret", "turretEncoder", "ELC Encoder V2, \"D\" cable", "Motor (never powered)", "Encoder", "EH", "2", "Motor port 2 must stay empty"),
+    ("Turret", "turretHomeSwitch", "REV Magnetic Limit Switch", "Digital Device", "Digital", "CH", "0-1", "At the REAR. Check ch 0 or 1"),
     ("Turret", "turretHoodServo", "Servo", "Servo", "Servo", "", "", "Tilts the launch up/down"),
     ("Camera", "limelight", "Limelight 3A", "Limelight 3A", "USB", "CH", "USB 3.0", "Must be the USB 3.0 port"),
     ("FlowerFlipper", "flowerFlipperServo", "Servo", "Servo", "Servo", "", "", "Shakes back and forth"),
-    ("Lights", "leftIndicatorLight", "goBILDA RGB Indicator Light", "Servo", "Servo", "", "", "Black wire to ground mark"),
-    ("Lights", "rightIndicatorLight", "goBILDA RGB Indicator Light", "Servo", "Servo", "", "", "Black wire to ground mark"),
+    ("Lights", "leftIndicatorLight", "goBILDA RGB Indicator Light", "Servo", "Servo", "CH", "3", "Black wire to ground mark"),
+    ("Lights", "rightIndicatorLight", "goBILDA RGB Indicator Light", "Servo", "Servo", "EH", "3", "Black wire to ground mark"),
 ]
 
 # Colors per subsystem, so rows and the hub diagrams are easy to match up
@@ -107,7 +107,7 @@ def device_table():
 
 story = [
     p("Robot Hardware Map", TITLE),
-    p("Every device, the subsystem that owns it, and where it plugs in. <b>Fill the blanks in pencil</b> as you wire: "
+    p("Every device, the subsystem that owns it, and where it plugs in. Ports shown are as wired on 11/5 and are <b>still being checked on the robot</b>. <b>Fill any blanks in pencil</b> as you wire: "
       "circle <b>CH</b> (Control Hub) or <b>EH</b> (Expansion Hub) and write the <b>Port #</b>. The <b>config name</b> must "
       "match the Driver Station config <b>exactly</b> (capital letters too). Then copy the ports into "
       "<font face='Courier'>hardware-config.md</font>.", BODY),
@@ -120,7 +120,7 @@ story = [
       "Driver Station when adding the device.", SMALL),
     Spacer(1, 3),
     p("<b>Reminders:</b> the Expansion Hub connects with the RS485 <b>3-pin</b> cable plus XT30 power. "
-      "The turret encoder goes on an Expansion Hub encoder port whose motor port (same number) is <b>empty</b>. "
+      "The turret encoder goes on Expansion Hub encoder port 2, so motor port 2 must stay <b>empty</b>. "
       "Drive motor encoders and the flywheel encoder use their own motor's encoder port. "
       "Nothing may move during INIT (G304.H).", SMALL),
 ]

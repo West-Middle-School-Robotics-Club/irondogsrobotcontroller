@@ -7,6 +7,8 @@ If a name doesn't match, the OpMode crashes on INIT with an error like `Unable t
 
 🖨️ **Printable hardware map:** `TeamCode/docs/worksheets/hardware-map.pdf` is one page listing every device by subsystem, with blanks for the hub and port. Regenerate it with `make_hardware_map.py` when hardware changes.
 
+⚠️ **Ports below are as wired on 2026-11-05 and are still being checked on the robot.** They may change. Items marked **check** need a test to see which channel the code should use.
+
 ## Naming rules (decisions 009, 024)
 
 **Pattern: `<subsystem><Job><Type>`**, in camelCase.
@@ -47,6 +49,8 @@ If a name doesn't match, the OpMode crashes on INIT with an error like `Unable t
 | `frontRightDrive` | Motor | Expansion Hub / motor 0 | FORWARD | Bench bot (10/24)     |
 | `backRightDrive`  | Motor | Expansion Hub / motor 1 | FORWARD | Bench bot (10/24) |
 
+**Mecanum wheel layout:** looking down at the robot, the rollers on top of each wheel must form an **X**, every roller pointing toward the robot's center: front left `\`, front right `/`, back left `/`, back right `\`. If they form a diamond instead, strafing is reversed and the robot can't turn properly (found 11/6 on the new build). Fix by swapping the front and back wheels on each side, not in code.
+
 Randy suggests keeping 2 motors per hub (left on control hub, and right on expansion hub) since the hubs have current limits, so this is just to be safe. 
 Motor cabling (goBILDA): the motor has **3.5 mm bullet** power plugs → goBILDA adaptor **3801-0613-0100** (2-Pos JST VH to 3.5 mm bullet) → hub motor port.
 Bullets aren't keyed: red to red, black to black, or the motor spins backwards. Encoder: 4-pin JST PH on the hub, black 4-pin 0.1" (TJC8) housing on the motor.
@@ -59,8 +63,8 @@ A wrong type can make the robot much slower. Drive motor model / ratio: TBA
 
 | Hub | Notes |
 |---|---|
-| Control Hub | Drive motors (all 4 motor ports, planned; bench bot has the left side only), Limelight (USB 3.0), Pinpoint (I2C), `leftIndicatorLight` (servo 0, was `indicatorLight`) |
-| Expansion Hub | `launcherMotor` (flywheel, #5), `turretEncoder` (motor-encoder port, decision 019). Bench bot (10/24): right drive motors on motors 0 and 1. Connected by: REV JST PH **3-pin** Communication Cable (RS485 → RS485, REV-31-1417) + XT30 Extension Cable for power (REV-31-1392). Without the 3-pin cable the hub has power (LED blinks blue) but the Driver Station can't find its devices |
+| Control Hub | Left drive motors (motors 0, 1), `launcherMotor` (motor 2), `imu` (I2C 0), Limelight (USB 3.0), `leftIndicatorLight` (servo 3), `turretHomeSwitch` (digital 0-1) |
+| Expansion Hub | Right drive motors (motors 0, 1), `pinpoint` (I2C 3), `turretEncoder` (encoder port 2, decision 019), `turretRotateServo` (servo 0), `waterWheelServo` (servo 1), `intakeServo` (servo 2), `launcherTriggerServo` (servo 4), `rightIndicatorLight` (servo 3), `nectarDetectorLeftSwitch` (digital 0-1), `nectarDetectorRightSwitch` (digital 2-3). Connected by: REV JST PH **3-pin** Communication Cable (RS485 → RS485, REV-31-1417) + XT30 Extension Cable for power (REV-31-1392). Without the 3-pin cable the hub has power (LED blinks blue) but the Driver Station can't find its devices |
 
 Each motor port has a matching **encoder port** with the same number. Ports on the Expansion Hub count from 0 again.
 
@@ -76,23 +80,23 @@ Each motor port has a matching **encoder port** with the same number. Ports on t
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| `pinpoint` | goBILDA Pinpoint Odometry Computer | Control Hub / I2C bus __ | `subsystems/Odometry.java`. Pod type, offsets and directions are tuned with the Pinpoint Test OpMode (#6) |
+| `pinpoint` | goBILDA Pinpoint Odometry Computer | Expansion Hub / I2C bus 3 (as wired 11/5, still being checked) | `subsystems/Odometry.java`. Pod type, offsets and directions are tuned with the Pinpoint Test OpMode (#6) |
 
 ## Intake (`subsystems/Intake.java`, issue #4)
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| `intakeServo` | Continuous Rotation Servo | ___ / servo port ___ | Pulls game elements in |
-| `waterWheelServo` | Continuous Rotation Servo | ___ / servo port ___ | The "water wheel": moves game elements up to the launcher (was `intakeLoaderServo`) |
-| `nectarDetectorLeftSwitch` | Digital Device | ___ / digital port ___ | (was `intakeNectarLeftSwitch`) goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**, left side of the ball path. Either switch pressed = the **next ball to launch is a NECTAR** (lights turn purple in Main TeleOp). Pressed by a **NECTAR** (~3.6 in), not by POLLEN (~2.8 in). Code: `intake.isNectarDetected()`. Wiring set by `Intake.NECTAR_SWITCH_WIRING` (normally open / closed); check with Intake Test. Digital ports have 2 channels (n, n+1): if it never changes, try the other |
-| `nectarDetectorRightSwitch` | Digital Device | ___ / digital port ___ | (was `intakeNectarRightSwitch`) goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**, right side of the ball path. Either switch pressed = the **next ball to launch is a NECTAR** (lights turn purple in Main TeleOp). Pressed by a **NECTAR** (~3.6 in), not by POLLEN (~2.8 in). Code: `intake.isNectarDetected()`. Wiring set by `Intake.NECTAR_SWITCH_WIRING` (normally open / closed); check with Intake Test. Digital ports have 2 channels (n, n+1): if it never changes, try the other |
+| `intakeServo` | Continuous Rotation Servo | Expansion Hub / servo port 2 | Pulls game elements in |
+| `waterWheelServo` | Continuous Rotation Servo | Expansion Hub / servo port 1 | The "water wheel": moves game elements up to the launcher (was `intakeLoaderServo`) |
+| `nectarDetectorLeftSwitch` | Digital Device | Expansion Hub / digital port 0-1 (**check:** with one wire plugged in, is it channel 0 or 1?) | (was `intakeNectarLeftSwitch`) goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**, left side of the ball path. Either switch pressed = the **next ball to launch is a NECTAR** (lights turn purple in Main TeleOp). Pressed by a **NECTAR** (~3.6 in), not by POLLEN (~2.8 in). Code: `intake.isNectarDetected()`. Wiring set by `Intake.NECTAR_SWITCH_WIRING` (normally open / closed); check with Intake Test. Digital ports have 2 channels (n, n+1): if it never changes, try the other |
+| `nectarDetectorRightSwitch` | Digital Device | Expansion Hub / digital port 2-3 (**check:** channel 2 or 3?) | (was `intakeNectarRightSwitch`) goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**, right side of the ball path. Either switch pressed = the **next ball to launch is a NECTAR** (lights turn purple in Main TeleOp). Pressed by a **NECTAR** (~3.6 in), not by POLLEN (~2.8 in). Code: `intake.isNectarDetected()`. Wiring set by `Intake.NECTAR_SWITCH_WIRING` (normally open / closed); check with Intake Test. Digital ports have 2 channels (n, n+1): if it never changes, try the other |
 
 ## Launcher (`subsystems/Launcher.java`, issue #5)
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| `launcherMotor` | Motor (DcMotorEx) | Expansion Hub / motor port ___ | The flywheel. **goBILDA 5203 Series Yellow Jacket Motor**, gear ratio ___ (write the exact model here). Configure the exact goBILDA type in the Driver Station. Runs at a fixed power in `RUN_WITHOUT_ENCODER` (decision 032); the encoder is read for "READY" and telemetry |
-| `launcherTriggerServo` | Servo | ___ / servo port ___ | Positional **gate** in front of the flywheel (decision 029): REST = in the way (blocks balls), FIRE = moved clear so the water wheel feeds balls through. Operator holds **Y**. Positions in `Launcher.java` |
+| `launcherMotor` | Motor (DcMotorEx) | Control Hub / motor port 2 | The flywheel. **goBILDA 5203 Series Yellow Jacket Motor**, gear ratio ___ (write the exact model here). Configure the exact goBILDA type in the Driver Station. Runs at a fixed power in `RUN_WITHOUT_ENCODER` (decision 032); the encoder is read for "READY" and telemetry |
+| `launcherTriggerServo` | Servo | Expansion Hub / servo port 4 | Positional **gate** in front of the flywheel (decision 029): REST = in the way (blocks balls), FIRE = moved clear so the water wheel feeds balls through. Operator holds **Y**. Positions in `Launcher.java` |
 
 ## Camera (`subsystems/Camera.java`, issue #7, decisions 015, 016)
 
@@ -104,20 +108,20 @@ Each motor port has a matching **encoder port** with the same number. Ports on t
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| `turretRotateServo` | **Continuous Rotation Servo** | ___ / servo port ___ | **goBILDA 2000 Series Dual Mode Servo, 25-3 Speed (2000-0025-0003)**, set to **continuous mode** with the goBILDA Servo Programmer (decision 021). Code sets its signal range to **1000–2000 µs** (goBILDA's continuous range). History: goBILDA 25-2 Torque → Axon MAX (10/14) → this (10/20) |
-| `turretEncoder` | Motor (encoder only, never powered) | **Expansion Hub** / motor-encoder port ___ | ELC Encoder V2, **quadrature** output (decision 019): use the encoder's **"D" connector** (not "A" = analog). Configure the motor port with this name; the code only reads its encoder. Data sheet: 3.3–3.6 V (the hub's encoder port gives 3.3 V ✅), JST-PH 4-pin (same as the hub ✅), 4000 counts per revolution. ⚠️ Pin order isn't on the data sheet: use the cable that came with it and check "Encoder counts" changes when you turn it |
-| `turretHomeSwitch` | Digital Device | ___ / digital port ___ | (was `turretForwardSwitch`) REV Magnetic Limit Switch: the turret's **home** sensor, not a stop (decisions 017, 033). The turret is mounted reversed, so it triggers when the turret faces the **REAR** (`Turret.HOME_ANGLE_DEGREES = 180`). Digital ports have 2 channels (n, n+1): if it never changes, try the other channel number |
-| `turretHoodServo` | Servo | ___ / servo port ___ | Positional. Tilts the hood to aim the launch up/down. Limits in `Turret.java` (`HOOD_LOWEST/HIGHEST_POSITION`); find them with Turret Test (dpad up/down) |
+| `turretRotateServo` | **Continuous Rotation Servo** | Expansion Hub / servo port 0 | **goBILDA 2000 Series Dual Mode Servo, 25-3 Speed (2000-0025-0003)**, set to **continuous mode** with the goBILDA Servo Programmer (decision 021). Code sets its signal range to **1000–2000 µs** (goBILDA's continuous range). History: goBILDA 25-2 Torque → Axon MAX (10/14) → this (10/20) |
+| `turretEncoder` | Motor (encoder only, never powered) | **Expansion Hub** / motor-encoder port 2 (motor port 2 stays empty) | ELC Encoder V2, **quadrature** output (decision 019): use the encoder's **"D" connector** (not "A" = analog). Configure the motor port with this name; the code only reads its encoder. Data sheet: 3.3–3.6 V (the hub's encoder port gives 3.3 V ✅), JST-PH 4-pin (same as the hub ✅), 4000 counts per revolution. ⚠️ Pin order isn't on the data sheet: use the cable that came with it and check "Encoder counts" changes when you turn it |
+| `turretHomeSwitch` | Digital Device | Control Hub / digital port 0-1 (**check:** channel 0 or 1?) | (was `turretForwardSwitch`) REV Magnetic Limit Switch: the turret's **home** sensor, not a stop (decisions 017, 033). The turret is mounted reversed, so it triggers when the turret faces the **REAR** (`Turret.HOME_ANGLE_DEGREES = 180`). Digital ports have 2 channels (n, n+1): if it never changes, try the other channel number |
+| `turretHoodServo` | Servo | ___ / servo port ___ (not wired yet) | Positional. Tilts the hood to aim the launch up/down. Limits in `Turret.java` (`HOOD_LOWEST/HIGHEST_POSITION`); find them with Turret Test (dpad up/down) |
 
 ## Flower Flipper (`subsystems/FlowerFlipper.java`, decision 024)
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| `flowerFlipperServo` | Servo | ___ / servo port ___ | Positional. Shakes back and forth between two positions. Positions and speed in `FlowerFlipper.java`; find them with Flower Flipper Test |
+| `flowerFlipperServo` | Servo | ___ / servo port ___ (not wired yet) | Positional. Shakes back and forth between two positions. Positions and speed in `FlowerFlipper.java`; find them with Flower Flipper Test |
 
 ## Lights (`subsystems/Light.java`, decisions 018, 024)
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| `leftIndicatorLight` | Servo | ___ / servo port ___ | goBILDA RGB Indicator Light (3-pin servo plug; black wire toward the hub's ground mark). The "servo position" picks the color (see `Light.Color`). Was `indicatorLight` (Control Hub servo port 0, tested 10/24) |
-| `rightIndicatorLight` | Servo | ___ / servo port ___ | Second goBILDA RGB Indicator Light |
+| `leftIndicatorLight` | Servo | Control Hub / servo port 3 | goBILDA RGB Indicator Light (3-pin servo plug; black wire toward the hub's ground mark). The "servo position" picks the color (see `Light.Color`). Was `indicatorLight` (Control Hub servo port 0, tested 10/24; moved to servo 3 on 11/5) |
+| `rightIndicatorLight` | Servo | Expansion Hub / servo port 3 | Second goBILDA RGB Indicator Light |
