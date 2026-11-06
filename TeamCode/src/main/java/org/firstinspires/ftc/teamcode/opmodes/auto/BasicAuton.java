@@ -153,6 +153,9 @@ public abstract class BasicAuton extends LinearOpMode {
             boolean reached = driveTo(robot, odometry, target, autoTimer, "Waypoint " + (i + 1) + " of " + path.length);
             allReached &= reached;
             if (autoTimer.seconds() >= STOP_BY_S) {
+                if (i < path.length - 1) {
+                    allReached = false;   // out of time with waypoints left: YELLOW, not GREEN
+                }
                 break;
             }
         }
