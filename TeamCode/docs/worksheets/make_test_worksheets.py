@@ -260,7 +260,7 @@ story = header_block(
     c("turretRotateServo") + " (Continuous Rotation Servo), " + c("turretEncoder") + " (Motor port, encoder only), " +
     c("turretHomeSwitch") + " (Digital Device), " + c("turretHoodServo") + " (Servo)")
 story += [warn("<b>Nothing physical stops the turret.</b> Until step 4 is done it can turn into wires or the frame. "
-               "Keep a hand near STOP and turn in small moves. Angles: 0 = forward, + = LEFT, home switch = 90 (LEFT). Limits: -45 to +45.")]
+               "Keep a hand near STOP and turn in small moves. Angles: 0 = forward, + = LEFT, home switch = 90 (LEFT). Limits: -60 to +90 (the hard stops are at -33 and +56 until moved, decision 037).")]
 story += [p("Part A: Turret Servo Raw Test (servo alone)", H2),
           table([["#", "Do this", "Expected", "Actual", "If wrong"],
                  ["A1", "Push the left stick left and hold", "turret KEEPS turning while held, stops when let go", "",
@@ -270,7 +270,7 @@ story += [p("Part A: Turret Servo Raw Test (servo alone)", H2),
 story += controls([
     ["HOLD dpad LEFT / RIGHT", "turn left / right (half speed). + right trigger = full speed (once homed). + bumper = slow"],
     ["Y", "set a MARK: \"Since mark\" counts degrees from here"],
-    ["A", "turn to 0° (forward), as far as the limits allow. Only once HOMED and after steps 1 to 3 are right!"],
+    ["A", "turn to the REST spot (dead forward on the robot). Not homed yet? It turns LEFT to find the home switch first. Do steps 1 to 3 first!"],
     ["X / B", "turn to 45° left / right (same warning)"],
     ["Dpad UP / DOWN", "hood up / down a little"],
     ["LEFT light GREEN", "turret is at HOME: the switch at 90° LEFT, or within HOME_TOLERANCE_COUNTS of it"],
@@ -297,7 +297,7 @@ story += constants([
     [c("ENCODER_REVERSED"), "false", "", ""],
     [c("ENCODER_REVS_PER_TURRET_REV"), "1.0", "", ""],
     [c("HOME_ANGLE_DEGREES"), "90", "", ""],
-    [c("MAX_LEFT_DEGREES") + " / " + c("MAX_RIGHT_DEGREES"), "45 / -45", "", ""],
+    [c("MAX_LEFT_DEGREES") + " / " + c("MAX_RIGHT_DEGREES"), "90 / -60", "", ""],
     [c("AIM_GAIN"), "0.02", "", ""],
     [c("HOME_SWITCH_TRIGGERED_STATE"), "false", "", ""],
     [c("HOOD_LOWEST_POSITION") + " / " + c("HOOD_HIGHEST_POSITION"), "0.0 / 1.0", "", ""],

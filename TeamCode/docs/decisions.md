@@ -393,3 +393,69 @@ Decision:
 - Earlier on 11/7 the limits were set to 205 / 155 from a test where the turret stopped about 30° from home. That stop was most likely the old placeholder limit plus the turret coasting, not a real hard stop, so those numbers were dropped
 - The turret coasts a few degrees past a limit, so check on the robot that ±45° stays clear of the real stops
 Who: Team / mentor
+
+## 035 – Intake and water wheel run together; operator can reverse them and send the turret home  (2026-11-07)
+Status: Accepted (turret home direction not tested on the robot yet). Changes the X / B / A buttons from 029; the rest of 029 stands
+Issue: #3, #4, #31
+Context: In testing, the intake and the water wheel are always needed together, so separate buttons for each were awkward. The operator also needs a way to send the turret back to its home spot from wherever it is, and to push balls back out.
+Decision:
+- **A = intake system on / off (toggle):** the intake and the water wheel run **together**
+- **B = direction (toggle), IN or OUT:** IN = intake in + water wheel UP. OUT = intake out + water wheel DOWN, to take balls out. Starts as IN. It works whether the system is on or off
+- **Left trigger (hold) = EJECT stays** as a quick push-out (beats the toggles; everything off when let go)
+- **X = TURRET HOME (press):** `Turret.goHome()` turns the turret to the home switch (90° left) from wherever it is. If the turret isn't homed yet it doesn't know where home is, so it turns LEFT (home is the left end, 034). **Moving the left stick cancels it**, so the operator can always take over. It gives up after `HOME_SEARCH_TIMEOUT_S` (6 s) or when homed and `HOME_OVERSHOOT_DEGREES` (10°) past home, and telemetry says "HOME NOT FOUND". While going home the ±45° limits are skipped (home is outside them on purpose); those two stops are the safety instead. At the switch it re-sets home from the encoder, which fixes any drift
+- **Water wheel up/down on their own are gone** from the buttons. `Intake` still has `waterWheelUp()` / `waterWheelDown()` / `stopWaterWheel()`, and Intake Test still uses them
+Who: Team (buttons chosen by the programmer; the students can change them, 029 is "a first version")
+
+## 036 – The X button turns the turret FORWARD, not to the home switch  (2026-11-07)
+Status: Accepted (not tested on the robot yet). Replaces the X-button part of 035; the rest of 035 stands
+Issue: #3, #31
+Context: 035 made X turn the turret to the home switch (90° left). But the switch is only a sensor for the code: the spot the operator wants is **forward**, which is 90° to the RIGHT of the switch.
+Decision:
+- **X = TURRET FORWARD (press):** `Turret.goForward()` turns the turret to 0° (forward) from wherever it is. Moving the left stick cancels it
+- **Already homed:** it turns straight to forward (`turnForward()`), inside the ±45° limits, so the normal limits stay on
+- **Not homed yet:** the code doesn't know where forward is, so it first turns **LEFT** slowly (`NOT_HOMED_MAX_SPEED`) to find the home switch (home is the left end, 034), then turns to forward. It gives up after `HOME_SEARCH_TIMEOUT_S` (6 s) and telemetry says "HOME NOT FOUND". Test the search direction on the robot
+- `Turret.goHome()` and `HOME_OVERSHOOT_DEGREES` from 035 are removed. After it arrives, the turret holds forward until the stick moves
+Who: Team
+
+## 037 – Turret limits: left 90 (the home switch), right -60  (2026-11-07)
+Status: Accepted, but **the physical stops must be moved first** (not tested). Replaces the ±45° limits in 034; the rest of 034 stands
+Issue: #31
+Context: After homing, the team measured the hard stops: **-33.1°** on the right and **+55.9°** on the left, from forward. With the turret mounted sideways, the home switch (90° left) was past the left limit, so the turret could not return to the magnet to home. The team wants to reach the magnet and will move the stops a little.
+Decision:
+- **`MAX_LEFT_DEGREES = 90`** (the home switch, `HOME_ANGLE_DEGREES`) and **`MAX_RIGHT_DEGREES = -60`**
+- **Warning:** both limits are PAST the measured stops (left by 34°, right by 27°). The software limits only protect the turret if they are inside the real stops, so **move the stops before using the full range**. Until then, the turret can drive into a stop and stall the servo or strip the gears: turn it slowly by hand, and use the left trigger, A or the stick only a little at first
+- After the stops are moved, measure them again and set the limits a few degrees inside (the turret coasts a few degrees after we stop the servo)
+Who: Team
+
+## 038 – Home angle fine-tuned to 88.2°  (2026-11-07)
+Status: Accepted (re-check on the robot). Changes the number in 034; the rest of 034 stands
+Issue: #31
+Context: Turret Test A (`goForward()`) stopped at a reading of 0° but the turret faced about 1.8° too far RIGHT of forward.
+Decision: **`HOME_ANGLE_DEGREES = 88.2`** (was 90): the magnet is about 88.2° left of forward. Check it by sending the turret to 45° left and right. If those are also off by about 1.8°, the home angle is right. If they are off by about half of that, the gear ratio (`ENCODER_REVS_PER_TURRET_REV = 4.69`, teeth counted by hand) is slightly off, because an error in the ratio grows with the distance from home
+Who: Team
+
+## 039 – The turret's rest spot is 10.5° left of forward  (2026-11-07)
+Status: Accepted (re-check on the robot). Replaces the "turns to forward (0°)" part of 036; the rest of 036 stands
+Issue: #31
+Context: The home switch isn't repeatable to better than about 1°, so chasing 0° exactly wasn't worth it. The team chose a fixed rest spot instead.
+Decision: **`Turret.REST_ANGLE_DEGREES = 10.5`** (+ = left of forward). The operator's X button and Turret Test's A button now call **`Turret.goToRestAngle()`** (was `goForward()`), which turns the turret to +10.5°. Homed: straight there. Not homed: turn left to find the switch first, then go there. `turnForward()` (0°) still exists for other uses. `HOME_ANGLE_DEGREES = 88.2` (038) is unchanged
+Who: Team
+
+## 040 – The rest spot is dead forward; the code's angle scale is about 10.5° off  (2026-11-07)
+Status: Accepted (checked on the robot). Corrects the wording of 039; the number in 039 stands
+Issue: #31
+Context: With `HOME_ANGLE_DEGREES = 86.2` and `REST_ANGLE_DEGREES = 10.5`, the turret faces **dead forward** (checked 11/7). So 039's "10.5° left of forward" was only the number that works, not the real direction
+Decision: **X (operator) and A (Turret Test) turn the turret to dead forward.** In the code's own angle scale that spot is **+10.5**, so the code's **0 is really about 10.5° to the RIGHT of forward**. Home angle (86.2) and rest angle (10.5) were set by testing, not measured, so they also absorb any small gear-ratio error. Anything that needs the TRUE angle (the ±limits, `turnTo(0)`, `turnForward()`, camera aiming later) must remember this: use `REST_ANGLE_DEGREES` for "forward", or fix the angle scale first (home angle and gear ratio) and then set the rest angle back to 0
+Who: Team
+
+## 041 – What Main TeleOp does at START  (2026-11-07)
+Status: Accepted (not tested on the robot yet)
+Issue: #3, #4, #5, #31
+Context: The team described how the robot should start a match: trigger blocking balls, a slow flywheel, intake running, turret facing forward, and lights that show what is happening.
+Decision: When START is pressed in Main TeleOp:
+- **Launcher trigger** goes to REST, so it **blocks balls** (already true). **Flywheel** runs at `Launcher.DEFAULT_SPIN_POWER = 0.45` (40-50%, was 0.8)
+- **Intake and water wheel run together** at 65% (`INTAKE_SPEED`, `WATER_WHEEL_SPEED`, were 80%): `OperatorControls.INTAKE_ON_AT_START = true`, direction IN. The operator's A button still turns them off, B switches direction
+- **Turret** turns to forward (`goToRestAngle()`, 040) by itself **if it is already homed**. If not, it waits for the operator's X button. `MainTeleOp.TURRET_FIND_HOME_AT_START` (false) can make it find the magnet first, but until the turret's hard stops are moved the left stop is before the magnet, so searching would drive the turret into the stop. Turn it on after the stops move
+- **Lights:** the alliance color, as before. **GREEN while the turret is homed and turning to forward**, then back to the alliance color when it arrives. **PURPLE (NECTAR) still wins** over green
+- Nothing moves during INIT (G304.H). The turret still homes in INIT if it is pointed at the magnet
+Who: Team

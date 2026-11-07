@@ -30,11 +30,11 @@ DRIVER = {
     "RS": ("TURN", "push left / right"),
     "A": ("STRAIGHT ASSIST on/off", "rumble: 1 blip = ON, 2 = OFF. Starts ON"),
 }
-OPERATOR = {  # decision 029
+OPERATOR = {  # decisions 029, 035
     "Y": ("LAUNCH (hold)", "trigger moves out of the way; let go = blocked"),
-    "X": ("WATER WHEEL UP (toggle)", "press = on, press again = off"),
-    "B": ("WATER WHEEL DOWN (toggle)", "press = on, again = off. X and B cancel"),
-    "A": ("INTAKE (toggle)", "press = on, press again = off"),
+    "X": ("TURRET REST SPOT (press)", "faces dead forward; stick cancels"),
+    "B": ("DIRECTION (toggle)", "IN (intake in + wheel UP) or OUT (balls leave)"),
+    "A": ("INTAKE SYSTEM (toggle)", "intake + water wheel together, on / off"),
     "LT": ("EJECT (hold)", "water wheel DOWN + intake OUT; then all off"),
     "LS": ("TURRET (left / right)", "further = faster; let go = stop. Slow until homed"),
 }
@@ -268,8 +268,8 @@ else:
     box(c, 0.45, 0.55, 5.6, 1.85, "How it works", [
         [("Flywheel: ", True), ("starts when START is pressed and runs the whole match.", False)],
         "It is NOT on a button. Watch \"Launcher Status\" for READY.",
-        [("Toggles ", True), ("(A, X, B): press once = on, press again = off.", False)],
-        [("X and B ", True), ("cancel each other: press B while going UP = going DOWN.", False)],
+        [("A ", True), ("= intake + water wheel on / off.  ", False), ("B ", True), ("= switch IN / OUT.", False)],
+        [("X ", True), ("= turret to dead FORWARD (rest spot). Left stick = take over.", False)],
         [("EJECT ", True), ("beats everything; let go and the intake + water wheel are OFF.", False)],
         [("Lights: ", True), ("PURPLE = the next ball to launch is a NECTAR.", False)],
     ], size=8.6)
