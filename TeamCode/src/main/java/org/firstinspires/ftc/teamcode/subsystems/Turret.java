@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -73,16 +74,21 @@ public class Turret {
     // 11/7: servo gear 18 teeth, turret gear about 84-85 teeth: 84.5 / 18 = 4.69 (counted by hand, so approximate).
     public static final double ENCODER_REVS_PER_TURRET_REV = 4.69;
 
-    // Where the turret points when the home switch triggers (decision 034): 90 degrees to the LEFT of robot
-    // forward. Home only tells us what angle we're at. If the turret is remounted, change only this number.
-    public static final double HOME_ANGLE_DEGREES = 90.0;
+    // Where the turret points when the home switch triggers (decisions 034, 038): about 90 degrees to the LEFT of
+    // robot forward. Home only tells us what angle we're at. If the turret is remounted, change only this number.
+    // 11/7: goToRestAngle() ended about 1.8 degrees too far RIGHT, so the magnet is 1.8 closer to forward: 90 - 1.8.
+    // (If a move to 45 is also off by about 1.8, it's this number. If it's off by about half of that, the gear
+    // ratio is slightly wrong: check ENCODER_REVS_PER_TURRET_REV.)
+    // Later 11/7: still about 1.1 too far right at 88.2, so the team set it to 86.2 by hand (decisions 038, 039).
+    public static final double HOME_ANGLE_DEGREES = 86.2;
 
-    // Turn limits (decision 034): the turret may turn 45 degrees each way from FORWARD (0), so -45 to +45.
-    // Home (90, left) is OUTSIDE this range on purpose: the limits only apply once homed, and from home the
-    // turret can only turn RIGHT (toward forward). Limits are software only, so keep them inside the real stops.
-    // The turret coasts a little after we stop the servo, so it can go a few degrees past a limit.
-    public static final double MAX_LEFT_DEGREES = 45.0;
-    public static final double MAX_RIGHT_DEGREES = -45.0;
+    // Turn limits (decision 037), measured from FORWARD (0): left up to the HOME switch (90), right to -60.
+    // Left = 90 so the turret can always reach the magnet and home. Limits are software only, so keep them
+    // inside the real stops. The turret coasts a little after we stop the servo, so it can go a few degrees past.
+    // 11/7 measured hard stops: -33.1 (right) and +55.9 (left). The team will MOVE the stops to match these limits;
+    // until they are moved, the turret will hit them before it reaches these limits, so test slowly.
+    public static final double MAX_LEFT_DEGREES = 90.0;
+    public static final double MAX_RIGHT_DEGREES = -60.0;
 
     // TODO(#31) step 5: tune the aiming. Speed = AIM_GAIN x (degrees away from the target).
     // Example: 0.02 means 10 degrees away = speed 0.2. Bigger = faster but may wobble past the target.
@@ -91,6 +97,14 @@ public class Turret {
     public static final double TOLERANCE_DEGREES = 1.0;    // "close enough" to the target: stop here
     public static final double NOT_HOMED_MAX_SPEED = 0.35; // slower, for moving before the turret is homed
                                                            // (0.15 was too slow to move the Axon turret, 10/15)
+
+    // goToRestAngle(): the turret's REST spot (decisions 039, 040) is code angle 10.5, which points DEAD FORWARD on the robot. If the turret is already
+    // homed it turns straight there. If it is NOT homed it doesn't know where anything is, so it first turns LEFT at
+    // NOT_HOMED_MAX_SPEED to find the home switch (home is the LEFT end, about 90 degrees left, decision 034),
+    // then turns to the rest spot. Nothing physical stops the
+    // turret, so the search gives up after HOME_SEARCH_TIMEOUT_S. TODO: test the search direction on the robot.
+    public static final double HOME_SEARCH_TIMEOUT_S = 6.0;
+    public static final double REST_ANGLE_DEGREES = 10.5;   // Where goToRestAngle() stops. Dead forward on the robot (checked 11/7), so code angle 0 is really about 10.5 right of forward
 
     // Safety: if the turret ends up this much FARTHER from the target than when it started,
     // something is backwards (step 1 or 2), so we stop instead of spinning away.
@@ -128,6 +142,9 @@ public class Turret {
     private double manualSpeed = 0.0;
     private double startErrorDegrees = 0.0;
     private boolean runawayStopped = false;
+    private boolean findingHome = false;        // true while goToRestAngle() is turning left to find the home switch
+    private boolean homeSearchFailed = false;   // true if the last goToRestAngle() gave up without finding the switch
+    private final ElapsedTime homeTimer = new ElapsedTime();
     private boolean commanded = false;          // false until the first command: never move during INIT
     private double speedSent = 0.0;
 
@@ -170,8 +187,16 @@ public class Turret {
             return; // nothing asked yet: send nothing, so the turret can't move during INIT
         }
 
+        // goToRestAngle() was started while not homed, and the switch has now triggered: turn to the rest spot.
+        if (findingHome && homed) {
+            findingHome = false;
+            turnTo(REST_ANGLE_DEGREES);
+        }
+
         double speed;
-        if (!Double.isNaN(targetDegrees)) {
+        if (findingHome) {
+            speed = speedToFindHome();
+        } else if (!Double.isNaN(targetDegrees)) {
             speed = speedToTarget();
         } else {
             speed = manualSpeed;
@@ -190,6 +215,16 @@ public class Turret {
 
         speedSent = speed;
         turretRotateServo.setPower(speed);
+    }
+
+    /** Not homed yet: turn LEFT, slowly, until the home switch triggers (update() notices it). Give up on a timeout. */
+    private double speedToFindHome() {
+        if (homeTimer.seconds() > HOME_SEARCH_TIMEOUT_S) {
+            findingHome = false;
+            homeSearchFailed = true;
+            return 0.0;
+        }
+        return NOT_HOMED_MAX_SPEED;
     }
 
     /** Proportional control: faster when far from the target, slower when close, stop when close enough. */
@@ -214,6 +249,7 @@ public class Turret {
      */
     public void turnTo(double degrees) {
         commanded = true;
+        findingHome = false;
         if (!homed) {
             return;
         }
@@ -244,8 +280,43 @@ public class Turret {
      */
     public void setManualSpeed(double speed) {
         commanded = true;
+        findingHome = false;
         targetDegrees = Double.NaN;
         manualSpeed = clamp(speed, 1.0);
+    }
+
+    /**
+     * Turn the turret to its REST spot (REST_ANGLE_DEGREES = 10.5, dead forward on the robot) from wherever it is.
+     * Call after START, never during INIT.
+     *   Homed:     turns straight there.
+     *   Not homed: first turns LEFT to find the home switch (about 90 degrees left), then turns to the rest spot.
+     *              It gives up after HOME_SEARCH_TIMEOUT_S (check wasHomeSearchFailed()).
+     * setManualSpeed(), turnTo() and stop() cancel it, so the operator can always take over with the stick.
+     */
+    public void goToRestAngle() {
+        if (!connected) {
+            return;
+        }
+        homeSearchFailed = false;
+        if (homed) {
+            turnTo(REST_ANGLE_DEGREES);
+            return;
+        }
+        commanded = true;
+        targetDegrees = Double.NaN;
+        manualSpeed = 0.0;
+        homeTimer.reset();
+        findingHome = true;
+    }
+
+    /** True while the turret is moving by itself: finding the home switch, or turning to a target angle. */
+    public boolean isAutoMoving() {
+        return findingHome || !Double.isNaN(targetDegrees);
+    }
+
+    /** True if the last goToRestAngle() gave up without finding the home switch (timeout). */
+    public boolean wasHomeSearchFailed() {
+        return homeSearchFailed;
     }
 
     /**
@@ -271,6 +342,7 @@ public class Turret {
 
     /** Stop turning and forget the target. The hood stays where it is. */
     public void stop() {
+        findingHome = false;
         targetDegrees = Double.NaN;
         manualSpeed = 0.0;
         speedSent = 0.0;
@@ -362,7 +434,11 @@ public class Turret {
         telemetry.addData("Turret at home", "%s  (%d counts from home, zone ±%d)",
                 isAtHome() ? "YES" : "no", getCountsFromHome(), HOME_TOLERANCE_COUNTS);
         telemetry.addData("Turret angle (°)  +left", homed ? String.format("%.1f", getAngle()) : "unknown");
-        telemetry.addData("Turret target (°)", Double.isNaN(targetDegrees) ? "none (manual)" : String.format("%.1f", targetDegrees));
+        telemetry.addData("Turret target (°)", findingHome ? "looking for the home switch..."
+                : Double.isNaN(targetDegrees) ? "none (manual)" : String.format("%.1f", targetDegrees));
+        if (homeSearchFailed) {
+            telemetry.addLine("⚠️ HOME NOT FOUND: the turret turned left for the switch and gave up. Check the home switch and the search direction");
+        }
         telemetry.addData("Turret speed sent", "%.2f  (+ = left)", speedSent);
         if (turretHoodServo == null) {
             telemetry.addData("Turret hood", "OFFLINE ('%s' not in DS config)", HOOD_SERVO_NAME);

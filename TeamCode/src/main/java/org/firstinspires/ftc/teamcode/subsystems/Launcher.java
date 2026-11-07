@@ -41,7 +41,8 @@ public class Launcher {
     public static final double TRIGGER_FIRE_POSITION = 1.0;
 
     // Flywheel power (0 to 1), decision 032. TODO(#5): tune with "Launcher Test" and a hit-rate test.
-    public static final double DEFAULT_SPIN_POWER = 0.8;
+    public static final double DEFAULT_SPIN_POWER = 0.45;
+    // Note 11/7: the team wants 40-50% for now (decision 041). It was 0.8 on 11/6.
     // Note 11/6: tuned to 0.8, needs to be checked again once we are actually able to launch a ball
     // TODO(#5): confirm on the robot. true = the flywheel spins the right way with REVERSE set.
     public static final boolean MOTOR_REVERSED = true;
