@@ -381,3 +381,15 @@ Decision:
 - **Turn limits are placeholders: rear ±90** (`MAX_RIGHT_DEGREES = 90`, `MAX_LEFT_DEGREES = 270`): the same 180° of travel as before, centered on the switch, which we know the turret can reach. With these, the turret can't point forward yet. Measure the real range with Turret Test step 4
 - Servo and encoder directions should not change (the turret turned around, it didn't flip over), but re-check Turret Test steps 1 and 2
 Who: Team / mentor
+
+## 034 – Turret home is 90° LEFT; the turret turns 45° each way from forward  (2026-11-07)
+Status: Accepted (limits not tested on the robot yet). Replaces the home angle and the limits in 033 (the rest of 033 still stands)
+Issue: #31
+Context: With the switch working and the magnet checked, the team found the home switch triggers when the turret faces **90° to the LEFT** of robot forward, not the rear. Forward is 90° to the right of home. The team wants the turret to turn only 45° each way from forward.
+Decision:
+- **`Turret.HOME_ANGLE_DEGREES = 90`**: the switch spot is 90° (left). Home only tells the code what angle it is at
+- **`MAX_LEFT_DEGREES = 45`, `MAX_RIGHT_DEGREES = -45`**: forward ±45°. Home (90) is outside this range on purpose. Limits only apply once homed, so the turret can still reach the switch. After homing it can only turn RIGHT from home (toward forward)
+- **`ENCODER_REVS_PER_TURRET_REV = 4.69`**: servo gear 18 teeth, turret gear about 84.5 teeth (counted by hand)
+- Earlier on 11/7 the limits were set to 205 / 155 from a test where the turret stopped about 30° from home. That stop was most likely the old placeholder limit plus the turret coasting, not a real hard stop, so those numbers were dropped
+- The turret coasts a few degrees past a limit, so check on the robot that ±45° stays clear of the real stops
+Who: Team / mentor
