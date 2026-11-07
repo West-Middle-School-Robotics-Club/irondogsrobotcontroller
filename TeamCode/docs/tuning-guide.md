@@ -27,7 +27,7 @@ Most of these have a **printable worksheet** in `TeamCode/docs/worksheets/` (see
 | `SLOW_MODE_SCALE` | `opmodes/teleop/DriverControls.java` | `0.4` | Hold a bumper: slow, for lining up |
 | `TURBO_SCALE` | `opmodes/teleop/DriverControls.java` | `1.0` | Hold a trigger: full speed |
 | `SNAP_ANGLE_DEGREES` | `opmodes/teleop/DriverControls.java` | `15.0` | Straight-line assist: how forgiving it is |
-| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `1.0` | Flywheel power (it runs the whole match) |
+| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `0.8` | Flywheel power (it runs the whole match) |
 | `X_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the X odometry pod is, sideways from the turning center |
 | `Y_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the Y odometry pod is, forward from the turning center |
 
@@ -74,7 +74,7 @@ Worksheet: `pinpoint-test.pdf`. Test with **Pinpoint Test**. Issues #6, #21.
 | `X_POD_OFFSET_MM` | `0.0` | X pod (wheel rolls front-back): how far **sideways** from the turning center. Left = +, right = − | Measure from the **wheelbase center**, then the spin test | ✅ measured, 🔧 spin test to confirm |
 | `Y_POD_OFFSET_MM` | `0.0` | Y pod (wheel rolls side-side): how far **forward** from the turning center. Front = +, back = − | Same as above | ✅ measured, 🔧 spin test to confirm |
 | `X_POD_DIRECTION` | `FORWARD` | Push the robot forward: X must go UP. If not, `REVERSED` | Pinpoint Test | ✅ |
-| `Y_POD_DIRECTION` | `REVERSED` | Push the robot left: Y must go UP. If not, `REVERSED` | Pinpoint Test | ✅ |
+| `Y_POD_DIRECTION` | `FORWARD` | Push the robot left: Y must go UP. If not, `REVERSED` | Pinpoint Test | ✅ |
 
 ## Basic Auton: `opmodes/auto/BasicAuton.java`
 Guide: `basic-auton-guide.pdf`, routes: `docs/game/diagrams/basic-auton-near.pdf` / `far.pdf`. Issue #22, decision 026.
@@ -103,22 +103,22 @@ Worksheet: `intake-test.pdf`. Test with **Intake Test**. Issue #4.
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `INTAKE_SPEED` | `1.0` | Intake servo speed (0 to 1) | Lower it if balls bounce off | 🔧 |
-| `WATER_WHEEL_SPEED` | `1.0` | Water wheel speed (0 to 1) | Lower it if balls jam at the top | 🔧 |
+| `INTAKE_SPEED` | `0.8` | Intake servo speed (0 to 1) | Lower it if balls bounce off | 🔧 |
+| `WATER_WHEEL_SPEED` | `0.8` | Water wheel speed (0 to 1) | Lower it if balls jam at the top | 🔧 |
 | `INTAKE_REVERSED` | `false` | Set `true` if "intake IN" pushes balls OUT | Intake Test, A button | 🔧 |
 | `WATER_WHEEL_REVERSED` | `false` | Set `true` if "water wheel UP" moves balls DOWN | Intake Test, X button | 🔧 |
-| `NECTAR_SWITCH_WIRING` | `NORMALLY_OPEN` | How the NECTAR switches are wired. If "PRESSED" shows when NOT pressed, use `NORMALLY_CLOSED` | Intake Test: press each lever | 🔧 |
+| `NECTAR_SWITCH_WIRING` | `NORMALLY_CLOSED` | How the NECTAR switches are wired. If "PRESSED" shows when NOT pressed, use `NORMALLY_CLOSED` | Intake Test: press each lever | ✅ |
 
 ## Launcher (flywheel + trigger gate): `subsystems/Launcher.java`
 Worksheet: `launcher-test.pdf`. Test with **Launcher Test**. Issue #5, decision 032.
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `DEFAULT_SPIN_POWER` | `1.0` | Flywheel power (0 to 1). Runs the whole match | Hit-rate test at a few powers; pick the most accurate | 🔧 |
+| `DEFAULT_SPIN_POWER` | `0.8` | Flywheel power (0 to 1). Runs the whole match | Hit-rate test at a few powers; pick the most accurate | 🔧 |
 | `MOTOR_REVERSED` | `true` | Flywheel direction | Launcher Test: balls must go OUT | 🔧 |
 | `READY_VELOCITY_THRESHOLD` | `1000.0` | The flywheel counts as READY at this speed (ticks/second) | Launcher Test: read "Launcher Velocity" once settled; use ~90% of it | 🔧 placeholder |
 | `TRIGGER_REST_POSITION` | `0.0` | Trigger gate position that **blocks** the balls (0 to 1) | Launcher Test, left bumper | 🔧 |
-| `TRIGGER_FIRE_POSITION` | `0.5` | Trigger gate position that **lets balls through** | Launcher Test, left bumper | 🔧 |
+| `TRIGGER_FIRE_POSITION` | `1.0` | Trigger gate position that **lets balls through** | Launcher Test, left bumper | 🔧 |
 
 ## Turret and hood: `subsystems/Turret.java`
 Worksheet: `turret-test.pdf`. Test with **Turret Test**, **in this order** (steps 1 to 5). Issue #31.
@@ -127,10 +127,10 @@ Worksheet: `turret-test.pdf`. Test with **Turret Test**, **in this order** (step
 |---|---|---|---|---|
 | `SERVO_REVERSED` | `false` | Step 1: set `true` if a + (left) speed turns the turret RIGHT | Turret Test, dpad left | 🔧 |
 | `ENCODER_REVERSED` | `false` | Step 2: set `true` if "Turret angle" goes DOWN when turning left | Turret Test | 🔧 |
-| `ENCODER_REVS_PER_TURRET_REV` | `1.0` | Step 3: encoder turns per one turret turn (gear ratio) | Turn exactly 90°; angle must read ~90. Or count gear teeth | 🔧 (changes if the encoder moves to the big gear) |
-| `HOME_ANGLE_DEGREES` | `180.0` | Where the turret points when the home switch triggers. Mounted reversed, so the switch is at the REAR (decision 033). Change only if the turret is remounted | Where the magnet is | ✅ |
-| `MAX_LEFT_DEGREES` | `270.0` | Step 4: farthest the turret may turn left. Angles don't wrap: from the rear (180), left counts up | Home it, turn slowly left until wires/frame get close; back off. Must be over 180 | 🔧 placeholder (rear ±90) |
-| `MAX_RIGHT_DEGREES` | `90.0` | Step 4: farthest right. From the rear, right counts down | Same, turning right. Must be under 180 | 🔧 placeholder (rear ±90) |
+| `ENCODER_REVS_PER_TURRET_REV` | `4.69` | Step 3: encoder turns per one turret turn (gear ratio) | Turn exactly 90°; angle must read ~90. Or count gear teeth | ✅ 18-tooth servo gear, about 84.5-tooth turret gear (11/7). Changes if the encoder moves to the big gear |
+| `HOME_ANGLE_DEGREES` | `90.0` | Where the turret points when the home switch triggers: 90° LEFT of robot forward (decision 034). Change only if the turret or the magnet is remounted | Where the magnet is | ✅ |
+| `MAX_LEFT_DEGREES` | `45.0` | Step 4: farthest the turret may turn left, measured from FORWARD (0). Home (90) is outside the range on purpose (decision 034) | Chosen by the team: 45° each way from forward. The turret coasts a few degrees past a limit, so check it clears the real stops | ✅ chosen 11/7, not tested yet |
+| `MAX_RIGHT_DEGREES` | `-45.0` | Step 4: farthest right, from forward (0). Negative = right of forward | Same, turning right | ✅ chosen 11/7, not tested yet |
 | `AIM_GAIN` | `0.02` | Step 5: speed per degree away from a target. Bigger = faster, may wobble | Turret Test X / B (±45°) | 🔧 |
 | `MAX_SPEED` | `0.6` | Fastest the turret turns to a target | | 🔧 |
 | `TOLERANCE_DEGREES` | `1.0` | "Close enough" to a target | | 🔧 |
@@ -151,7 +151,7 @@ Test with **Camera Test** / **Red/Blue Camera Test**. Issue #7 (the other mentor
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
 | `CAMERA_HEIGHT_INCHES` | `13.0` | Lens height above the floor | Tape measure on the robot | 🔧 placeholder |
-| `CAMERA_MOUNT_TILT_DEGREES` | `0.0` | Camera tilt up from level | Angle finder; change when the mount changes | ✅ (flat mount) |
+| `CAMERA_MOUNT_TILT_DEGREES` | `60.0` | Camera tilt up from level | Angle finder; change when the mount changes | 🔧 (about 60, estimated 11/6) |
 | `TAG_HEIGHT_INCHES` | `44.0` | AprilTag height above the floor | Measure on a real HIVE | 🔧 |
 | `APRILTAG_PIPELINE` | `0` | Which Limelight pipeline slot has our AprilTag setup | Limelight web page | ✅ |
 | `TAG_SIZE_INCHES` | `3.25` | AprilTag size; the Limelight "marker size" must be 82.55 mm | Game manual | 🔒 |
