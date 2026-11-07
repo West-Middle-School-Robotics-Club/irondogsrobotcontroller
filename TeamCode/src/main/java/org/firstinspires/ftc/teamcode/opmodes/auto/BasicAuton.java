@@ -84,6 +84,7 @@ public abstract class BasicAuton extends LinearOpMode {
     static final double WAYPOINT_TIMEOUT_S = 8.0;    // give up on one waypoint after this long
     static final double STOP_BY_S = 28.0;            // stop everything by this time (AUTO is 30 s)
     static final int MAX_DELAY_S = 10;               // start delay the drive team can choose in INIT
+    static final double PINPOINT_READY_TIMEOUT_S = 3.0; // after START, wait this long for the Pinpoint to be READY, else don't drive
 
     // What the lights mean in Basic Auton. Colors are in Light.Color.
     static final Light.Color RED_ALLIANCE_COLOR = Light.Color.RED;   // during INIT
@@ -138,6 +139,31 @@ public abstract class BasicAuton extends LinearOpMode {
 
         // ---------- AUTO ----------
         ElapsedTime autoTimer = new ElapsedTime();
+
+        // Wait for the Pinpoint to be READY before telling it where we are. If it is still calibrating,
+        // setPose could be ignored or overwritten, and the robot would drive from a wrong position.
+        // If it never gets READY, we do NOT drive: a robot that sits still is safer than one that drives blind.
+        while (opModeIsActive() && autoTimer.seconds() < PINPOINT_READY_TIMEOUT_S) {
+            odometry.update();
+            if (odometry.isReady()) {
+                break;
+            }
+            showStatus("Waiting for Pinpoint (" + odometry.getStatus() + ")", autoTimer, odometry, null);
+        }
+        if (!opModeIsActive()) {
+            return;
+        }
+        odometry.update();
+        if (!odometry.isReady()) {
+            leftLight.setColor(STOPPED_EARLY_COLOR);
+            rightLight.setColor(STOPPED_EARLY_COLOR);
+            while (opModeIsActive()) {
+                odometry.update();
+                showStatus("NOT DRIVING: Pinpoint not READY (" + odometry.getStatus() + ")", autoTimer, odometry, null);
+            }
+            robot.stop();
+            return;
+        }
         odometry.setPose(start);   // the Pinpoint now reports FIELD positions
 
         // Start delay, for when our partner's route crosses ours
