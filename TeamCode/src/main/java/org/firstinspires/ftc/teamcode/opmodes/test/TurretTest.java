@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *   any dpad left/right      cancels A / X / B
  *   dpad up / down           tilt the HOOD up / down a little (find HOOD_LOWEST / HIGHEST_POSITION)
  *
- * The turret is mounted reversed (decision 033): the home switch is at the REAR. The first time it triggers,
- * the encoder is HOMED (that spot = HOME_ANGLE_DEGREES = 180).
+ * The home switch is at 90 degrees LEFT of forward (decision 034). The first time it triggers,
+ * the encoder is HOMED (that spot = HOME_ANGLE_DEGREES = 90).
  * The LEFT light turns GREEN whenever the turret is at HOME: at the switch, or within ±HOME_TOLERANCE_COUNTS of it.
  * Until then, the turret only moves slowly.
  *
@@ -125,7 +125,7 @@ public class TurretTest extends LinearOpMode {
             telemetry.addLine("HOLD dpad L/R = turn (+R trigger = FULL, +bumper = slow)   dpad U/D = hood");
             telemetry.addLine("Y = mark   A = forward   X/B = 45° L/R");
             if (!turret.isHomed()) {
-                telemetry.addData("Speed capped", "%.2f until homed: turn past the REAR (home switch) once", Turret.NOT_HOMED_MAX_SPEED);
+                telemetry.addData("Speed capped", "%.2f until homed: turn past the home switch (90° left) once", Turret.NOT_HOMED_MAX_SPEED);
             }
             telemetry.addLine();
             addReadings(turret, turretEncoder, homeSwitch, markCounts, sinceMarkSet);
@@ -147,7 +147,7 @@ public class TurretTest extends LinearOpMode {
         int counts = turret.getEncoderCounts();
         int sinceMark = counts - markCounts;
 
-        telemetry.addLine("--- Home switch (at the REAR) ---");
+        telemetry.addLine("--- Home switch (at 90° left) ---");
         telemetry.addData("Home switch (magnet)", turret.isAtHomeSwitch() ? "YES" : "no");
         telemetry.addData("Switch raw reading", "%b  (should FLIP when the magnet passes)", homeSwitch.getState());
         telemetry.addLine("  Never flips? Try the other channel of that digital port (REV switch: usually the odd one, n+1).");
@@ -155,7 +155,7 @@ public class TurretTest extends LinearOpMode {
         telemetry.addLine("--- Turret ---");
         turret.addTelemetry(telemetry);
         if (!turret.isHomed()) {
-            telemetry.addLine("A / X / B do nothing until homed. Turn past the REAR (home switch) with the dpad first.");
+            telemetry.addLine("A / X / B do nothing until homed. Turn past the home switch (90° left) with the dpad first.");
         }
 
         telemetry.addLine("--- ELC encoder (on the servo) ---");

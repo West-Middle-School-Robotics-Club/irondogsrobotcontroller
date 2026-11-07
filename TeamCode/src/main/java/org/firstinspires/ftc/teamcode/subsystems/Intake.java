@@ -45,11 +45,13 @@ public class Intake {
 
     // TODO(#4): check with "Intake Test": press a lever and "Nectar left/right" must say PRESSED.
     // If it says PRESSED when NOT pressed, change this to the other wiring.
-    public static final SwitchWiring NECTAR_SWITCH_WIRING = SwitchWiring.NORMALLY_OPEN;
+    // Note 11/6: said PRESSED when not pressed, so changed to NORMALLY_CLOSED
+    public static final SwitchWiring NECTAR_SWITCH_WIRING = SwitchWiring.NORMALLY_CLOSED;
 
     // Speeds, from 0 to 1. TODO(#4): tune on the robot with "Intake Test".
-    public static final double INTAKE_SPEED = 1.0;
-    public static final double WATER_WHEEL_SPEED = 1.0;
+    //Note 11/6: changed from 1.0 to 0.8 for intake and water wheel
+    public static final double INTAKE_SPEED = 0.8;
+    public static final double WATER_WHEEL_SPEED = 0.8;
 
     // TODO(#4): set to true if "in" / "waterWheelUp" spins the wrong way.
     public static final boolean INTAKE_REVERSED = false;
@@ -114,6 +116,7 @@ public class Intake {
     }
 
     /** True when the NEXT ball to be launched is a NECTAR: either nectar detector switch is pressed. */
+    // Note 11/6, have noticed for nectars it only ever really presses one of the detector switches which is fine, but noting it down
     public boolean isNectarDetected() {
         return isPressed(nectarDetectorLeftSwitch) || isPressed(nectarDetectorRightSwitch);
     }

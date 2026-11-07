@@ -36,11 +36,13 @@ public class Launcher {
 
     // Trigger (gate) servo positions (0.0 to 1.0). REST blocks the ball path, FIRE opens it.
     // TODO(#5): find these with "Launcher Test" (hold left bumper = FIRE).
+    // Note 11/6: changed firing position to move farther back
     public static final double TRIGGER_REST_POSITION = 0.0;
-    public static final double TRIGGER_FIRE_POSITION = 0.5;
+    public static final double TRIGGER_FIRE_POSITION = 1.0;
 
     // Flywheel power (0 to 1), decision 032. TODO(#5): tune with "Launcher Test" and a hit-rate test.
-    public static final double DEFAULT_SPIN_POWER = 1.0;
+    public static final double DEFAULT_SPIN_POWER = 0.8;
+    // Note 11/6: tuned to 0.8, needs to be checked again once we are actually able to launch a ball
     // TODO(#5): confirm on the robot. true = the flywheel spins the right way with REVERSE set.
     public static final boolean MOTOR_REVERSED = true;
 
