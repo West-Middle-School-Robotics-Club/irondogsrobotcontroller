@@ -63,8 +63,8 @@ A wrong type can make the robot much slower. Drive motor model / ratio: TBA
 
 | Hub | Notes |
 |---|---|
-| Control Hub | Left drive motors (motors 0, 1), `launcherMotor` (motor 2), `imu` (I2C 0), Limelight (USB 3.0), `leftIndicatorLight` (servo 3), `turretHomeSwitch` (digital 0-1) |
-| Expansion Hub | Right drive motors (motors 0, 1), `pinpoint` (I2C 3), `turretEncoder` (encoder port 2, decision 019), `turretRotateServo` (servo 0), `waterWheelServo` (servo 1), `intakeServo` (servo 2), `launcherTriggerServo` (servo 4), `rightIndicatorLight` (servo 3), `nectarDetectorLeftSwitch` (digital 0-1), `nectarDetectorRightSwitch` (digital 2-3). Connected by: REV JST PH **3-pin** Communication Cable (RS485 → RS485, REV-31-1417) + XT30 Extension Cable for power (REV-31-1392). Without the 3-pin cable the hub has power (LED blinks blue) but the Driver Station can't find its devices |
+| Control Hub | Left drive motors (motors 0, 1), `launcherMotor` (motor 2), `imu` (I2C 0), Limelight (USB 3.0), `turretHoodServo` (servo 0, planned, not wired yet), `leftIndicatorLight` (servo 3), `turretHomeSwitch` (digital channel 1) |
+| Expansion Hub | Right drive motors (motors 0, 1), `pinpoint` (I2C 3), `turretEncoder` (encoder port 2, decision 019), `turretRotateServo` (servo 0), `waterWheelServo` (servo 1), `intakeServo` (servo 2), `launcherTriggerServo` (servo 4), `flowerFlipperServo` (servo 5), `rightIndicatorLight` (servo 3), `nectarDetectorLeftSwitch` (digital channel 1), `nectarDetectorRightSwitch` (digital channel 3). Connected by: REV JST PH **3-pin** Communication Cable (RS485 → RS485, REV-31-1417) + XT30 Extension Cable for power (REV-31-1392). Without the 3-pin cable the hub has power (LED blinks blue) but the Driver Station can't find its devices |
 
 Each motor port has a matching **encoder port** with the same number. Ports on the Expansion Hub count from 0 again.
 
@@ -88,8 +88,8 @@ Each motor port has a matching **encoder port** with the same number. Ports on t
 |---|---|---|---|
 | `intakeServo` | Continuous Rotation Servo | Expansion Hub / servo port 2 | Pulls game elements in |
 | `waterWheelServo` | Continuous Rotation Servo | Expansion Hub / servo port 1 | The "water wheel": moves game elements up to the launcher (was `intakeLoaderServo`) |
-| `nectarDetectorLeftSwitch` | Digital Device | Expansion Hub / digital port 0-1 (**check:** with one wire plugged in, is it channel 0 or 1?) | (was `intakeNectarLeftSwitch`) goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**, left side of the ball path. Either switch pressed = the **next ball to launch is a NECTAR** (lights turn purple in Main TeleOp). Pressed by a **NECTAR** (~3.6 in), not by POLLEN (~2.8 in). Code: `intake.isNectarDetected()`. Wiring set by `Intake.NECTAR_SWITCH_WIRING` (normally open / closed); check with Intake Test. Digital ports have 2 channels (n, n+1): if it never changes, try the other |
-| `nectarDetectorRightSwitch` | Digital Device | Expansion Hub / digital port 2-3 (**check:** channel 2 or 3?) | (was `intakeNectarRightSwitch`) goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**, right side of the ball path. Either switch pressed = the **next ball to launch is a NECTAR** (lights turn purple in Main TeleOp). Pressed by a **NECTAR** (~3.6 in), not by POLLEN (~2.8 in). Code: `intake.isNectarDetected()`. Wiring set by `Intake.NECTAR_SWITCH_WIRING` (normally open / closed); check with Intake Test. Digital ports have 2 channels (n, n+1): if it never changes, try the other |
+| `nectarDetectorLeftSwitch` | Digital Device | Expansion Hub / digital port 0-1, **channel 1** (tested 11/6; channel 0 did not read) | (was `intakeNectarLeftSwitch`) goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**, left side of the ball path. Either switch pressed = the **next ball to launch is a NECTAR** (lights turn purple in Main TeleOp). Pressed by a **NECTAR** (~3.6 in), not by POLLEN (~2.8 in). Code: `intake.isNectarDetected()`. Wiring set by `Intake.NECTAR_SWITCH_WIRING` (normally open / closed); check with Intake Test. Digital ports have 2 channels (n, n+1): if it never changes, try the other |
+| `nectarDetectorRightSwitch` | Digital Device | Expansion Hub / digital port 2-3, **channel 3** (tested 11/6; channel 2 did not read) | (was `intakeNectarRightSwitch`) goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**, right side of the ball path. Either switch pressed = the **next ball to launch is a NECTAR** (lights turn purple in Main TeleOp). Pressed by a **NECTAR** (~3.6 in), not by POLLEN (~2.8 in). Code: `intake.isNectarDetected()`. Wiring set by `Intake.NECTAR_SWITCH_WIRING` (normally open / closed); check with Intake Test. Digital ports have 2 channels (n, n+1): if it never changes, try the other |
 
 ## Launcher (`subsystems/Launcher.java`, issue #5)
 
@@ -110,14 +110,14 @@ Each motor port has a matching **encoder port** with the same number. Ports on t
 |---|---|---|---|
 | `turretRotateServo` | **Continuous Rotation Servo** | Expansion Hub / servo port 0 | **goBILDA 2000 Series Dual Mode Servo, 25-3 Speed (2000-0025-0003)**, set to **continuous mode** with the goBILDA Servo Programmer (decision 021). Code sets its signal range to **1000–2000 µs** (goBILDA's continuous range). History: goBILDA 25-2 Torque → Axon MAX (10/14) → this (10/20) |
 | `turretEncoder` | Motor (encoder only, never powered) | **Expansion Hub** / motor-encoder port 2 (motor port 2 stays empty) | ELC Encoder V2, **quadrature** output (decision 019): use the encoder's **"D" connector** (not "A" = analog). Configure the motor port with this name; the code only reads its encoder. Data sheet: 3.3–3.6 V (the hub's encoder port gives 3.3 V ✅), JST-PH 4-pin (same as the hub ✅), 4000 counts per revolution. ⚠️ Pin order isn't on the data sheet: use the cable that came with it and check "Encoder counts" changes when you turn it |
-| `turretHomeSwitch` | Digital Device | Control Hub / digital port 0-1 (**check:** channel 0 or 1?) | (was `turretForwardSwitch`) REV Magnetic Limit Switch: the turret's **home** sensor, not a stop (decisions 017, 033). The turret is mounted reversed, so it triggers when the turret faces the **REAR** (`Turret.HOME_ANGLE_DEGREES = 180`). Digital ports have 2 channels (n, n+1): if it never changes, try the other channel number |
-| `turretHoodServo` | Servo | ___ / servo port ___ (not wired yet) | Positional. Tilts the hood to aim the launch up/down. Limits in `Turret.java` (`HOOD_LOWEST/HIGHEST_POSITION`); find them with Turret Test (dpad up/down) |
+| `turretHomeSwitch` | Digital Device | Control Hub / digital port 0-1, **channel 1** (tested 11/6) | (was `turretForwardSwitch`) REV Magnetic Limit Switch: the turret's **home** sensor, not a stop (decisions 017, 033). It triggers when the turret faces **90° to the LEFT** of robot forward (`Turret.HOME_ANGLE_DEGREES = 90`, decision 034). The turret's own magnet was too weak to trigger it reliably, so a second magnet is fixed on the screw holding the first one (11/6). If it stops triggering, check that magnet and the gap to the switch |
+| `turretHoodServo` | Servo | Control Hub / servo port 0 (planned, not wired yet) | Positional. Tilts the hood to aim the launch up/down. Limits in `Turret.java` (`HOOD_LOWEST/HIGHEST_POSITION`); find them with Turret Test (dpad up/down) |
 
 ## Flower Flipper (`subsystems/FlowerFlipper.java`, decision 024)
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| `flowerFlipperServo` | Servo | ___ / servo port ___ (not wired yet) | Positional. Shakes back and forth between two positions. Positions and speed in `FlowerFlipper.java`; find them with Flower Flipper Test |
+| `flowerFlipperServo` | Servo | Expansion Hub / servo port 5 | Positional. Shakes back and forth between two positions. Positions and speed in `FlowerFlipper.java`; find them with Flower Flipper Test |
 
 ## Lights (`subsystems/Light.java`, decisions 018, 024)
 
