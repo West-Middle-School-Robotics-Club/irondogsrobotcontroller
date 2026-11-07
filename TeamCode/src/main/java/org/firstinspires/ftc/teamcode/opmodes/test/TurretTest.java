@@ -19,8 +19,11 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *     + hold RIGHT TRIGGER   FULL speed (only once homed; before that, everything is capped at NOT_HOMED_MAX_SPEED)
  *     + hold a bumper        SLOW, fine moves
  *   Y                        set a MARK: "Since mark" counts from here. Use it to measure a move
- *   A                        turn to forward (0°)      } these use the encoder to aim, so they only work once
- *   X / B                    turn to 45° left / right  } HOMED, and only as far as MAX_LEFT / MAX_RIGHT allow
+ *   A                        turn to the REST spot (dead forward, code angle 10.5), the same as X on the operator's
+ *                            gamepad (decision 039). Homed: turns straight there. Not homed: first turns LEFT
+ *                            to find the home switch, then goes there (gives up after HOME_SEARCH_TIMEOUT_S)
+ *   X / B                    turn to 45° left / right: use the encoder to aim, so they only work once HOMED,
+ *                            and only as far as MAX_LEFT / MAX_RIGHT allow
  *   any dpad left/right      cancels A / X / B
  *   dpad up / down           tilt the HOOD up / down a little (find HOOD_LOWEST / HIGHEST_POSITION)
  *
@@ -110,7 +113,7 @@ public class TurretTest extends LinearOpMode {
                 sinceMarkSet.reset();
             }
             if (gamepad1.aWasPressed()) {
-                turret.turnForward();
+                turret.goToRestAngle();   // homed: straight to the rest spot. Not homed: finds the home switch first (039)
             }
             if (gamepad1.xWasPressed()) {
                 turret.turnTo(45);
@@ -123,7 +126,7 @@ public class TurretTest extends LinearOpMode {
             showHome(turret, light);
 
             telemetry.addLine("HOLD dpad L/R = turn (+R trigger = FULL, +bumper = slow)   dpad U/D = hood");
-            telemetry.addLine("Y = mark   A = forward   X/B = 45° L/R");
+            telemetry.addLine("Y = mark   A = rest spot (forward)   X/B = 45° L/R");
             if (!turret.isHomed()) {
                 telemetry.addData("Speed capped", "%.2f until homed: turn past the home switch (90° left) once", Turret.NOT_HOMED_MAX_SPEED);
             }
@@ -155,7 +158,7 @@ public class TurretTest extends LinearOpMode {
         telemetry.addLine("--- Turret ---");
         turret.addTelemetry(telemetry);
         if (!turret.isHomed()) {
-            telemetry.addLine("A / X / B do nothing until homed. Turn past the home switch (90° left) with the dpad first.");
+            telemetry.addLine("X / B do nothing until homed. A turns left to find the home switch first, then goes to the rest spot.");
         }
 
         telemetry.addLine("--- ELC encoder (on the servo) ---");
