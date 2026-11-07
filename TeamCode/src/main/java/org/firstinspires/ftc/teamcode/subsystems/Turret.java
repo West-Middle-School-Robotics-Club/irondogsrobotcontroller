@@ -22,8 +22,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  *   turretEncoder        ELC Encoder V2, "D" (quadrature) connector, on an Expansion Hub MOTOR ENCODER port
  *                        (decision 019). This is how the turret knows where it is.
  *   turretHomeSwitch     REV Magnetic Limit Switch: our HOME sensor (decisions 017, 033). It is NOT a stop.
- *                        The turret is mounted reversed, so the switch triggers when the turret faces the REAR
- *                        (HOME_ANGLE_DEGREES = 180). Was called turretForwardSwitch.
+ *                        The switch triggers when the turret faces 90 degrees to the LEFT of robot forward
+ *                        (HOME_ANGLE_DEGREES = 90, decision 034). Was called turretForwardSwitch.
  *   turretHoodServo      POSITIONAL servo: tilts the hood to aim the launch UP or DOWN (decision 024).
  *                        Optional: if it's not in the config, the turret still works and the hood shows OFFLINE.
  * Turning needs ALL THREE of turretRotateServo, turretEncoder and turretHomeSwitch. If any is missing from
@@ -34,8 +34,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  *     Call update() EVERY loop. It compares where the turret IS (encoder) with where we WANT it (target),
  *     and spins the servo faster when far away and slower when close ("proportional control").
  *   - HOMING: the encoder counts from 0 at power-on. The first time the home switch triggers, that spot
- *     becomes HOME_ANGLE_DEGREES (180 = facing the REAR). Before a match, point the turret at the rear
- *     (the light turns GREEN in Turret Test) and it homes during INIT.
+ *     becomes HOME_ANGLE_DEGREES (90 = facing LEFT). Before a match, point the turret at its home spot, 90 degrees
+ *     left (the light turns GREEN in Turret Test), and it homes during INIT.
  *   - Until it's homed, turnTo() does nothing and manual moves are SLOW. After homing, nothing moves past
  *     MAX_LEFT / MAX_RIGHT. Nothing physical stops the turret, so these limits matter!
  *
@@ -70,20 +70,19 @@ public class Turret {
     public static final boolean ENCODER_REVERSED = false;
     // TODO(#31) step 3: encoder turns per ONE turret turn (the gear ratio between the servo and the turret).
     // The encoder is on the servo. Example: servo gear 20 teeth, turret gear 100 teeth = 100 / 20 = 5.0
-    public static final double ENCODER_REVS_PER_TURRET_REV = 1.0;
+    // 11/7: servo gear 18 teeth, turret gear about 84-85 teeth: 84.5 / 18 = 4.69 (counted by hand, so approximate).
+    public static final double ENCODER_REVS_PER_TURRET_REV = 4.69;
 
-    // Where the turret points when the home switch triggers (decision 033). The turret is mounted reversed,
-    // so the magnet is at the REAR: 180. If the turret is remounted, change only this number.
-    public static final double HOME_ANGLE_DEGREES = 180.0;
+    // Where the turret points when the home switch triggers (decision 034): 90 degrees to the LEFT of robot
+    // forward. Home only tells us what angle we're at. If the turret is remounted, change only this number.
+    public static final double HOME_ANGLE_DEGREES = 90.0;
 
-    // TODO(#31) step 4: how far the turret may turn each way. Nothing physical stops the turret,
-    // so these keep it from turning too far (into wires or the frame).
-    // PLACEHOLDERS (11/5, not measured yet): the rear +/- 90 degrees. From pointing LEFT (90), around the
-    // back (180), to pointing RIGHT (270, the same direction as -90). Same amount of turning as before
-    // (180 degrees in all), centered on the switch. With these, the turret can't point forward yet.
-    // MAX_LEFT must be bigger than HOME_ANGLE_DEGREES and MAX_RIGHT smaller, or the turret can't home.
-    public static final double MAX_LEFT_DEGREES = 270.0;
-    public static final double MAX_RIGHT_DEGREES = 90.0;
+    // Turn limits (decision 034): the turret may turn 45 degrees each way from FORWARD (0), so -45 to +45.
+    // Home (90, left) is OUTSIDE this range on purpose: the limits only apply once homed, and from home the
+    // turret can only turn RIGHT (toward forward). Limits are software only, so keep them inside the real stops.
+    // The turret coasts a little after we stop the servo, so it can go a few degrees past a limit.
+    public static final double MAX_LEFT_DEGREES = 45.0;
+    public static final double MAX_RIGHT_DEGREES = -45.0;
 
     // TODO(#31) step 5: tune the aiming. Speed = AIM_GAIN x (degrees away from the target).
     // Example: 0.02 means 10 degrees away = speed 0.2. Bigger = faster but may wobble past the target.
@@ -281,7 +280,7 @@ public class Turret {
     }
 
     /**
-     * True when the turret is at HOME (the switch, now at the REAR): the switch is triggered, or (once homed)
+     * True when the turret is at HOME (the switch, 90 degrees LEFT): the switch is triggered, or (once homed)
      * the encoder is within HOME_TOLERANCE_COUNTS of the switch spot.
      * The OpMode can show this on the light: light.setColor(GREEN) (decision 018).
      */
@@ -335,7 +334,7 @@ public class Turret {
     }
 
     /**
-     * True when the magnet is at the home switch (the turret faces HOME_ANGLE_DEGREES: the rear).
+     * True when the magnet is at the home switch (the turret faces HOME_ANGLE_DEGREES: 90 degrees left).
      * This is the exact magnet spot. For the light, use isAtHome() (a wider zone).
      */
     public boolean isAtHomeSwitch() {
@@ -359,7 +358,7 @@ public class Turret {
                     ROTATE_SERVO_NAME, ENCODER_NAME, HOME_SWITCH_NAME);
             return;
         }
-        telemetry.addData("Turret homed", homed ? "yes" : "NO: turn the turret past the home switch (REAR) once (slow until then)");
+        telemetry.addData("Turret homed", homed ? "yes" : "NO: turn the turret past the home switch (90° left) once (slow until then)");
         telemetry.addData("Turret at home", "%s  (%d counts from home, zone ±%d)",
                 isAtHome() ? "YES" : "no", getCountsFromHome(), HOME_TOLERANCE_COUNTS);
         telemetry.addData("Turret angle (°)  +left", homed ? String.format("%.1f", getAngle()) : "unknown");
