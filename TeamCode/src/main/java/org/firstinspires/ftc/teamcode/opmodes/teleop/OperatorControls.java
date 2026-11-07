@@ -6,16 +6,20 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot;
 
 /**
- * The ONE place that turns the OPERATOR's buttons (gamepad 2) into mechanism commands (decision 029).
+ * The ONE place that turns the OPERATOR's buttons (gamepad 2) into mechanism commands (decisions 029, 035).
  * DriverControls does the same job for the DRIVER (gamepad 1).
  *
  * Operator buttons:
  *   Y             HOLD to launch: the launcher trigger moves out of the way. Let go = back to rest (blocks launching)
- *   X             water wheel UP   on / off (toggle)
- *   B             water wheel DOWN on / off (toggle). X and B cancel each other: press B while going UP = DOWN
- *   A             intake on / off (toggle)
- *   Left trigger  HOLD to EJECT: water wheel DOWN + intake OUT, to push out stored balls.
- *                 Eject beats the toggles. When you let go, the intake and water wheel are OFF.
+ *   A             INTAKE SYSTEM on / off (toggle): the intake AND the water wheel run together.
+ *                 Starts ON when the match starts (INTAKE_ON_AT_START)
+ *   B             DIRECTION (toggle): IN (intake in + water wheel UP) or OUT (intake out + water wheel DOWN, to
+ *                 push balls out). Starts as IN. Works whether the system is on or off
+ *   Left trigger  HOLD to EJECT: water wheel DOWN + intake OUT, for a quick push out. Eject beats the toggles.
+ *                 When you let go, the intake and water wheel are OFF.
+ *   X             TURRET REST SPOT: turn the turret to its rest spot, dead forward (decisions 039, 040), from
+ *                 wherever it is. If it isn't homed yet it first turns left to find the home switch, then goes there.
+ *                 Moving the left stick cancels it, so you can always take over.
  *   Left stick    push LEFT / RIGHT to turn the turret by hand (further = faster). Let go = stop.
  *                 Slow until the turret is homed (turn it past the home switch, 90° left, once). Stops at its limits.
  * The flywheel (launcherMotor) isn't on a button: Main TeleOp runs it the whole match.
@@ -27,47 +31,47 @@ import org.firstinspires.ftc.teamcode.Robot;
  */
 public class OperatorControls {
 
-    /** What the water wheel is doing. */
-    public enum WaterWheel { OFF, UP, DOWN }
-
     // The triggers are analog (0 = released, 1 = all the way down). Pressed past this = "held".
     public static final double TRIGGER_HELD = 0.5;
+
+    // Does the intake system (intake + water wheel) start ON when the match starts? (A toggles it, decision 041)
+    public static final boolean INTAKE_ON_AT_START = true;
 
     // Turret stick: ignore tiny stick movement, and the fastest the stick can turn it (0 to 1).
     public static final double TURRET_STICK_DEADZONE = 0.05;
     public static final double TURRET_MAX_STICK_SPEED = 1.0;
 
-    private WaterWheel waterWheel = WaterWheel.OFF;
-    private boolean intakeOn = false;
+    private boolean intakeSystemOn = INTAKE_ON_AT_START;  // intake + water wheel, running together
+    private boolean directionOut = false;    // false = IN (intake in, water wheel up), true = OUT (balls leave)
     private boolean ejecting = false;
 
     /** Read the operator's buttons and run the mechanisms. Call this once per loop. */
     public void update(Robot robot, Gamepad gamepad) {
-        // --- Toggles. xWasPressed() is true only ONCE per press, so holding X doesn't flicker on/off ---
-        if (gamepad.xWasPressed()) {
-            waterWheel = (waterWheel == WaterWheel.UP) ? WaterWheel.OFF : WaterWheel.UP;
+        // --- Toggles. aWasPressed() is true only ONCE per press, so holding A doesn't flicker on/off ---
+        if (gamepad.aWasPressed()) {
+            intakeSystemOn = !intakeSystemOn;
         }
         if (gamepad.bWasPressed()) {
-            waterWheel = (waterWheel == WaterWheel.DOWN) ? WaterWheel.OFF : WaterWheel.DOWN;
-        }
-        if (gamepad.aWasPressed()) {
-            intakeOn = !intakeOn;
+            directionOut = !directionOut;
         }
 
         // --- Eject (hold left trigger) beats the toggles ---
         ejecting = gamepad.left_trigger > TRIGGER_HELD;
         if (ejecting) {
-            waterWheel = WaterWheel.OFF;  // so both are OFF when the trigger is let go
-            intakeOn = false;
+            intakeSystemOn = false;  // so both are OFF when the trigger is let go
             robot.intake.waterWheelDown();
             robot.intake.out();
-        } else {
-            runWaterWheel(robot);
-            if (intakeOn) {
-                robot.intake.in();
+        } else if (intakeSystemOn) {
+            // The intake and the water wheel always go the same way: both IN/UP, or both OUT/DOWN.
+            if (directionOut) {
+                robot.intake.out();
+                robot.intake.waterWheelDown();
             } else {
-                robot.intake.stopIntake();
+                robot.intake.in();
+                robot.intake.waterWheelUp();
             }
+        } else {
+            robot.intake.stop();
         }
 
         // --- Turret (left stick, left / right) ---
@@ -76,7 +80,15 @@ public class OperatorControls {
         if (Math.abs(turretSpeed) < TURRET_STICK_DEADZONE) {
             turretSpeed = 0.0;
         }
-        robot.turret.setManualSpeed(turretSpeed * TURRET_MAX_STICK_SPEED);
+        // Moving the stick takes over from "turret rest spot". An idle stick must NOT cancel it, so we only send
+        // "speed 0" when the turret is not moving by itself.
+        if (turretSpeed != 0.0 || !robot.turret.isAutoMoving()) {
+            robot.turret.setManualSpeed(turretSpeed * TURRET_MAX_STICK_SPEED);
+        }
+        // X = turn the turret to its rest spot (a press starts it; the turret stops itself there)
+        if (gamepad.xWasPressed()) {
+            robot.turret.goToRestAngle();
+        }
 
         // --- Launch (hold Y) ---
         if (gamepad.y) {
@@ -86,23 +98,10 @@ public class OperatorControls {
         }
     }
 
-    private void runWaterWheel(Robot robot) {
-        switch (waterWheel) {
-            case UP:
-                robot.intake.waterWheelUp();
-                break;
-            case DOWN:
-                robot.intake.waterWheelDown();
-                break;
-            default:
-                robot.intake.stopWaterWheel();
-                break;
-        }
-    }
-
     /** Show what the operator has switched on. */
     public void addTelemetry(Telemetry telemetry) {
-        telemetry.addData("Operator", ejecting ? "EJECTING" : "intake %s, water wheel %s",
-                intakeOn ? "ON" : "off", waterWheel);
+        telemetry.addData("Operator", ejecting ? "EJECTING"
+                : String.format("intake system %s, direction %s", intakeSystemOn ? "ON" : "off",
+                directionOut ? "OUT (balls leave)" : "IN"));
     }
 }
