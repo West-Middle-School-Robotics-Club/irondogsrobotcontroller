@@ -36,7 +36,7 @@ public class Odometry {
     // Y pod (wheel rolls side-side) offset:  how far FORWARD it is.      In front of center = +, behind = -
     // A pod sitting AT the turning center has offset 0.
     // Measured 11/3 on the competition robot: both pods sit at the wheelbase center, so both are ~0.
-    // TODO(#21): confirm with the spin test (step 5) once the robot drives again.
+    // Spin test 11/7: one 360 turn read 360.4 deg, heading 0.4 deg after, X drift 1.0 in, Y drift 2.11 in. Close enough.
     public static final double X_POD_OFFSET_MM = 0.0;  // X pod is at the wheelbase center
     public static final double Y_POD_OFFSET_MM = 0.0;  // Y pod is in line with the X pod (front-back)
 
@@ -44,9 +44,11 @@ public class Odometry {
     // If one goes down instead, change that pod to REVERSED.
     public static final GoBildaPinpointDriver.EncoderDirection X_POD_DIRECTION =
             GoBildaPinpointDriver.EncoderDirection.FORWARD;
-    //Note 11/6: Left one was going backwards, changed to FORWARD
+    // Note 11/6: Left one was going backwards, changed to FORWARD.
+    // Note 11/7: 48 in push test: Y went UP when the robot moved RIGHT, but +Y must be LEFT, so changed to REVERSED.
+    // Confirmed 11/7: pushing the robot LEFT makes Y go UP.
     public static final GoBildaPinpointDriver.EncoderDirection Y_POD_DIRECTION =
-            GoBildaPinpointDriver.EncoderDirection.FORWARD;
+            GoBildaPinpointDriver.EncoderDirection.REVERSED;
 
     private final GoBildaPinpointDriver pinpoint;
 
@@ -83,6 +85,11 @@ public class Odometry {
     /** READY when it's working. CALIBRATING right after a reset. FAULT_... means a problem. */
     public GoBildaPinpointDriver.DeviceStatus getStatus() {
         return pinpoint.getDeviceStatus();
+    }
+
+    /** True when the Pinpoint is READY (done calibrating, no fault). Call update() first so the status is fresh. */
+    public boolean isReady() {
+        return getStatus() == GoBildaPinpointDriver.DeviceStatus.READY;
     }
 
     /** Show this subsystem's status on the Driver Station. */
