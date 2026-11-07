@@ -52,7 +52,7 @@ public class Camera {
     // Upward tilt of the camera, in degrees from level: 0 = looking straight ahead, 90 = straight up.
     // The HIVE cells are ~44 in above the floor with AprilTags facing DOWN, so the camera tilts UP.
     // 10/25: bench bot camera stands upright on a flat surface looking straight ahead = 0.
-    public static final double CAMERA_MOUNT_TILT_DEGREES = 0.0; // <-- EDIT when the mount changes (e.g. 25.0)
+    public static final double CAMERA_MOUNT_TILT_DEGREES = 60.0; // <-- EDIT when the mount changes. 11/6: camera fixed at the front, about 60 up (estimated, measure with an angle finder)
 
     // Height of the camera LENS above the floor, in inches. TODO(#7): measure on the robot (placeholder).
     public static final double CAMERA_HEIGHT_INCHES = 13.0;
