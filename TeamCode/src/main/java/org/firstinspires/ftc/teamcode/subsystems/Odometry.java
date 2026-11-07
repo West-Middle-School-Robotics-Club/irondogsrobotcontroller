@@ -44,8 +44,9 @@ public class Odometry {
     // If one goes down instead, change that pod to REVERSED.
     public static final GoBildaPinpointDriver.EncoderDirection X_POD_DIRECTION =
             GoBildaPinpointDriver.EncoderDirection.FORWARD;
+    //Note 11/6: Left one was going backwards, changed to FORWARD
     public static final GoBildaPinpointDriver.EncoderDirection Y_POD_DIRECTION =
-            GoBildaPinpointDriver.EncoderDirection.REVERSED;
+            GoBildaPinpointDriver.EncoderDirection.FORWARD;
 
     private final GoBildaPinpointDriver pinpoint;
 
