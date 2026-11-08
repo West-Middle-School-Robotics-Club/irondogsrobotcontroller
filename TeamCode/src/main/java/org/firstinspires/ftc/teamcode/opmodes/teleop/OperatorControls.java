@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.Robot;
  *                 wherever it is. If it isn't homed yet it first turns left to find the home switch, then goes there.
  *                 Moving the left stick cancels it, so you can always take over.
  *   Left stick    push LEFT / RIGHT to turn the turret by hand (further = faster). Let go = stop.
- *                 Slow until the turret is homed (turn it past the home switch, 90° left, once). Stops at its limits.
+ *                 Slow until the turret is homed (turn it past the home switch, at forward, once). Stops at its limits.
  * The flywheel (launcherMotor) isn't on a button: Main TeleOp runs it the whole match.
  *
  * Printable diagram: TeamCode/docs/worksheets/controller-layout.pdf

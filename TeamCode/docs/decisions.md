@@ -510,3 +510,13 @@ Decision:
 - `turnForward()` now really points forward (-90). Turret Test X / B turn to 45° left / right of forward (90° left of the magnet would now be past the left limit)
 - The rest spot (the magnet), homing (043, 044) and minimum aim speed (045) are unchanged
 Who: Team / mentor (11/8)
+
+## 048 – Correction: at the magnet the turret faces FORWARD (no 90° offset)  (2026-11-08)
+Status: Accepted. Corrects the forward angle and limits in 047; the rest of 047 stands
+Issue: #31
+Context: 047 put robot forward at turret angle -90, because the magnet sits 90° to the left of the robot's front. But at the home switch the turret (launcher) itself faces forward. Turret Test showed it: X / B aimed 90° off, and the turret could turn past the intended limits.
+Decision:
+- **`FORWARD_ANGLE_DEGREES = 0`**: magnet = turret angle 0 = robot forward. No offset
+- **Limits ±135 from forward = `MAX_LEFT_DEGREES = 135`, `MAX_RIGHT_DEGREES = -135`**
+- Keep `robotToTurret()` / `turretToRobot()` and the constant: today they change nothing, but a future remount only changes `FORWARD_ANGLE_DEGREES`
+Who: Team / mentor (11/8)

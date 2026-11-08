@@ -27,8 +27,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *   any dpad left/right      cancels A / X / B
  *   dpad up / down           tilt the HOOD up / down a little (find HOOD_LOWEST / HIGHEST_POSITION)
  *
- * The home switch (magnet) is 90 degrees LEFT of forward. When it triggers, the encoder is HOMED: the magnet is
- * turret angle 0 and robot forward is -90 (FORWARD_ANGLE_DEGREES, decision 047).
+ * At the home switch (magnet) the turret faces robot FORWARD. When it triggers, the encoder is HOMED: the magnet
+ * is turret angle 0 = forward (decisions 047, 048).
  * BOTH lights turn GREEN whenever the turret is at HOME: at the switch, or within ±HOME_TOLERANCE_COUNTS of it.
  * Until then, the turret only moves slowly.
  *
@@ -129,7 +129,7 @@ public class TurretTest extends LinearOpMode {
             telemetry.addLine("HOLD dpad L/R = turn (+R trigger = FULL, +bumper = slow)   dpad U/D = hood");
             telemetry.addLine("Y = mark   A = rest spot (magnet)   X/B = 45° L/R of forward");
             if (!turret.isHomed()) {
-                telemetry.addData("Speed capped", "%.2f until homed: turn past the home switch (90° left) once", Turret.NOT_HOMED_MAX_SPEED);
+                telemetry.addData("Speed capped", "%.2f until homed: turn past the home switch (forward) once", Turret.NOT_HOMED_MAX_SPEED);
             }
             telemetry.addLine();
             addReadings(turret, turretEncoder, homeSwitch, markCounts, sinceMarkSet);
@@ -154,7 +154,7 @@ public class TurretTest extends LinearOpMode {
         int counts = turret.getEncoderCounts();
         int sinceMark = counts - markCounts;
 
-        telemetry.addLine("--- Home switch (at 90° left) ---");
+        telemetry.addLine("--- Home switch (at forward) ---");
         telemetry.addData("Home switch (magnet)", turret.isAtHomeSwitch() ? "YES" : "no");
         telemetry.addData("Switch raw reading", "%b  (should FLIP when the magnet passes)", homeSwitch.getState());
         telemetry.addLine("  Never flips? Try the other channel of that digital port (REV switch: usually the odd one, n+1).");

@@ -23,8 +23,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  *   turretEncoder        ELC Encoder V2, "D" (quadrature) connector, on an Expansion Hub MOTOR ENCODER port
  *                        (decision 019). This is how the turret knows where it is.
  *   turretHomeSwitch     REV Magnetic Limit Switch: our HOME sensor (decisions 017, 033). It is NOT a stop.
- *                        The switch (magnet) is 90 degrees to the LEFT of robot forward. It is turret angle 0
- *                        (decision 047). Was called turretForwardSwitch.
+ *                        At the switch (magnet) the turret faces ROBOT FORWARD. It is turret angle 0
+ *                        (decisions 047, 048). Was called turretForwardSwitch.
  *   turretHoodServo      POSITIONAL servo: tilts the hood to aim the launch UP or DOWN (decision 024).
  *                        Optional: if it's not in the config, the turret still works and the hood shows OFFLINE.
  * Turning needs ALL THREE of turretRotateServo, turretEncoder and turretHomeSwitch. If any is missing from
@@ -42,10 +42,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  *
  * TURRET ANGLES (decision 047), in degrees:
  *   0 = the HOME MAGNET.   + = LEFT (counter-clockwise, decision 007),  - = RIGHT.
- *   Robot FORWARD is FORWARD_ANGLE_DEGREES = -90 (the magnet is 90 degrees left of forward).
- *     magnet 0  |  forward -90  |  straight right of the robot -180  |  straight left of the robot +90
- *   Thinking "degrees from robot forward" (the camera, field aiming, autonomous)? Don't add 90 by hand:
- *   use robotToTurret(...) and turretToRobot(...). Then a remount only changes FORWARD_ANGLE_DEGREES.
+ *   At the magnet the turret faces robot FORWARD, so FORWARD_ANGLE_DEGREES = 0 (decision 048).
+ *     magnet = forward 0  |  straight left of the robot +90  |  straight right of the robot -90
+ *   Thinking "degrees from robot forward" (the camera, field aiming, autonomous)? Use robotToTurret(...) and
+ *   turretToRobot(...). Today they change nothing (forward = 0), but if the turret or magnet is ever remounted,
+ *   only FORWARD_ANGLE_DEGREES changes and everything that uses them stays right.
  *   Angles don't wrap around. turnTo() picks whichever way of writing an angle is inside the limits.
  *
  * Calibrate the TODO constants with the "Turret Test" OpMode, IN ORDER (issue #31):
@@ -81,18 +82,18 @@ public class Turret {
     // The angle the code calls the HOME MAGNET (decisions 042, 047): 0. Keep it 0; everything is measured from here.
     public static final double HOME_ANGLE_DEGREES = 0;
 
-    // Where ROBOT FORWARD is, in turret angles (decision 047): the magnet is 90 degrees LEFT of forward, so forward is
-    // 90 degrees to the RIGHT of the magnet = -90. This is the ONE place the magnet offset lives: if the turret or the
-    // magnet is ever remounted, change only this number. TODO(#31): fine-tune if turnForward() isn't dead forward.
-    public static final double FORWARD_ANGLE_DEGREES = -90.0;
+    // Where ROBOT FORWARD is, in turret angles (decisions 047, 048). At the magnet the turret faces forward, so 0:
+    // there is NO offset. This is the ONE place an offset would live: if the turret or the magnet is ever remounted,
+    // change only this number. (11/8: it was -90 by mistake, which aimed X/B and the limits 90 degrees off.)
+    public static final double FORWARD_ANGLE_DEGREES = 0.0;
 
     // Turn limits (decision 047): 135 degrees each way from ROBOT FORWARD, for the wiring.
-    //   left:  forward + 135 = -90 + 135 =   45  (45 degrees past the magnet)
-    //   right: forward - 135 = -90 - 135 = -225
+    //   left:  forward + 135 = 0 + 135 =  135
+    //   right: forward - 135 = 0 - 135 = -135
     // Limits are software only, so keep them inside anything the turret could hit. The turret coasts a few degrees
     // past a limit after we stop the servo. TODO(#31): turn slowly to both limits once and check the wiring.
-    public static final double MAX_LEFT_DEGREES = 45.0;
-    public static final double MAX_RIGHT_DEGREES = -225.0;
+    public static final double MAX_LEFT_DEGREES = 135.0;
+    public static final double MAX_RIGHT_DEGREES = -135.0;
 
     // TODO(#31) step 5: tune the aiming. Speed = AIM_GAIN x (degrees away from the target).
     // Example: 0.02 means 10 degrees away = speed 0.2. Bigger = faster but may wobble past the target.
@@ -108,7 +109,7 @@ public class Turret {
 
     // goToRestAngle(): the turret's REST spot (decisions 039, 040) is the HOME MAGNET (HOME_ANGLE_DEGREES, decision 042). If the turret is already
     // homed it turns straight there. If it is NOT homed it doesn't know where anything is, so it first turns LEFT at
-    // NOT_HOMED_MAX_SPEED to find the home switch (the magnet is to the LEFT: 90 degrees left of forward, decision 047),
+    // NOT_HOMED_MAX_SPEED to find the home switch (the magnet is at forward, decision 048),
     // then turns to the rest spot. Nothing physical stops the
     // turret, so the search gives up after HOME_SEARCH_TIMEOUT_S. TODO: test the search direction on the robot.
     public static final double HOME_SEARCH_TIMEOUT_S = 10.0;   // 11/8: was 6.0, now the search may have to turn BOTH ways (decision 044)
@@ -357,20 +358,20 @@ public class Turret {
         targetReached = false;
     }
 
-    /** Point the turret straight at ROBOT FORWARD (FORWARD_ANGLE_DEGREES = -90), as far as the limits allow. */
+    /** Point the turret straight at ROBOT FORWARD (FORWARD_ANGLE_DEGREES = 0, the magnet), as far as the limits allow. */
     public void turnForward() {
         turnTo(FORWARD_ANGLE_DEGREES);
     }
 
     /**
-     * Turn "degrees from robot forward" (+ = left) into a turret angle, e.g. robotToTurret(10) = -80.
+     * Turn "degrees from robot forward" (+ = left) into a turret angle, e.g. robotToTurret(10) = 10 (forward = 0).
      * Use this for anything measured from the robot's front: the camera (fixed on the robot), field aiming, autonomous.
      */
     public static double robotToTurret(double degreesFromForward) {
         return FORWARD_ANGLE_DEGREES + degreesFromForward;
     }
 
-    /** Turn a turret angle into "degrees from robot forward" (+ = left), e.g. turretToRobot(0) = 90 (the magnet). */
+    /** Turn a turret angle into "degrees from robot forward" (+ = left), e.g. turretToRobot(0) = 0 (the magnet = forward). */
     public static double turretToRobot(double turretDegrees) {
         return turretDegrees - FORWARD_ANGLE_DEGREES;
     }
@@ -480,7 +481,7 @@ public class Turret {
     }
 
     /**
-     * True when the turret is at HOME (the switch, 90 degrees LEFT): the switch is triggered, or (once homed)
+     * True when the turret is at HOME (the switch, facing forward): the switch is triggered, or (once homed)
      * the encoder is within HOME_TOLERANCE_COUNTS of the switch spot.
      * The OpMode can show this on the light: light.setColor(GREEN) (decision 018).
      */
@@ -508,7 +509,7 @@ public class Turret {
         return runawayStopped;
     }
 
-    /** The real turret angle from the encoder (0 = the magnet, + = left, forward = -90). NaN until homed. */
+    /** The real turret angle from the encoder (0 = the magnet = forward, + = left). NaN until homed. */
     public double getAngle() {
         if (!homed) {
             return Double.NaN;
@@ -534,7 +535,7 @@ public class Turret {
     }
 
     /**
-     * True when the magnet is at the home switch (turret angle 0: 90 degrees left of robot forward).
+     * True when the magnet is at the home switch (turret angle 0: facing robot forward).
      * This is the exact magnet spot. For the light, use isAtHome() (a wider zone).
      */
     public boolean isAtHomeSwitch() {
@@ -558,7 +559,7 @@ public class Turret {
                     ROTATE_SERVO_NAME, ENCODER_NAME, HOME_SWITCH_NAME);
             return;
         }
-        telemetry.addData("Turret homed", homed ? "yes" : "NO: turn the turret past the home switch (90° left) once (slow until then)");
+        telemetry.addData("Turret homed", homed ? "yes" : "NO: turn the turret past the home switch (forward) once (slow until then)");
         telemetry.addData("Turret at home", "%s  (%d counts from home, zone ±%d)",
                 isAtHome() ? "YES" : "no", getCountsFromHome(), HOME_TOLERANCE_COUNTS);
         if (magnetZoneWidthCounts > 0) {
