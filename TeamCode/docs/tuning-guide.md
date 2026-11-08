@@ -27,7 +27,7 @@ Most of these have a **printable worksheet** in `TeamCode/docs/worksheets/` (see
 | `SLOW_MODE_SCALE` | `opmodes/teleop/DriverControls.java` | `0.4` | Hold a bumper: slow, for lining up |
 | `TURBO_SCALE` | `opmodes/teleop/DriverControls.java` | `1.0` | Hold a trigger: full speed |
 | `SNAP_ANGLE_DEGREES` | `opmodes/teleop/DriverControls.java` | `15.0` | Straight-line assist: how forgiving it is |
-| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `0.45` | Flywheel power (it runs the whole match) |
+| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `1.0` | Flywheel power (it runs the whole match) |
 | `X_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the X odometry pod is, sideways from the turning center |
 | `Y_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the Y odometry pod is, forward from the turning center |
 
@@ -112,8 +112,8 @@ Worksheet: `intake-test.pdf`. Test with **Intake Test**. Issue #4.
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `INTAKE_SPEED` | `0.65` | Intake servo speed (0 to 1). Team wants 60-70% (decision 041) | Lower it if balls bounce off | 🔧 |
-| `WATER_WHEEL_SPEED` | `0.65` | Water wheel speed (0 to 1). Team wants 60-70% (decision 041) | Lower it if balls jam at the top | 🔧 |
+| `INTAKE_SPEED` | `1.0` | Intake servo speed (0 to 1). Team wants 60-70% (decision 041) | Intake Test: dpad up / down changes the speed of both live (0.05 steps), then copy the number here. Lower it if balls bounce off | 🔧 |
+| `WATER_WHEEL_SPEED` | `1.0` | Water wheel speed (0 to 1). Team wants 60-70% (decision 041) | Intake Test: same dpad speed as the intake; use X = water wheel only to tune it alone, then copy the number here. Lower it if balls jam at the top | 🔧 |
 | `INTAKE_REVERSED` | `true` | Set `true` if "intake IN" pushes balls OUT. 11/7: Main TeleOp ran OUT at start, so `true`. Confirmed 11/7: IN at start, eject pushes balls out | Intake Test, A button | ✅ |
 | `WATER_WHEEL_REVERSED` | `true` | Set `true` if "water wheel UP" moves balls DOWN. 11/7: set `true` with the intake. Confirmed 11/7 in Main TeleOp | Intake Test, X button | ✅ |
 | `NECTAR_SWITCH_WIRING` | `NORMALLY_CLOSED` | How the NECTAR switches are wired. If "PRESSED" shows when NOT pressed, use `NORMALLY_CLOSED` | Intake Test: press each lever | ✅ |
@@ -123,7 +123,7 @@ Worksheet: `launcher-test.pdf`. Test with **Launcher Test**. Issue #5, decision 
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `DEFAULT_SPIN_POWER` | `0.45` | Flywheel power (0 to 1). Runs the whole match. Team wants 40-50% for now (decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
+| `DEFAULT_SPIN_POWER` | `1.0` | Flywheel power (0 to 1). Runs the whole match. Team wants 40-50% for now (decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
 | `MOTOR_REVERSED` | `true` | Flywheel direction | Launcher Test: balls must go OUT | 🔧 |
 | `READY_VELOCITY_THRESHOLD` | `1000.0` | The flywheel counts as READY at this speed (ticks/second) | Launcher Test: read "Launcher Velocity" once settled; use ~90% of it | 🔧 placeholder |
 | `TRIGGER_REST_POSITION` | `0.0` | Trigger gate position that **blocks** the balls (0 to 1) | Launcher Test, left bumper | 🔧 |
