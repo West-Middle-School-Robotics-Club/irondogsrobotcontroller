@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  * The flywheel (launcherMotor) starts when START is pressed and runs the whole match (not in INIT: G304.H).
  * When START is pressed (decision 041): the launcher trigger goes to REST (blocks balls), the flywheel runs at
  * Launcher.DEFAULT_SPIN_POWER, the intake + water wheel run (OperatorControls.INTAKE_ON_AT_START), and the turret
- * turns to forward (if it is homed). The lights turn GREEN while the turret is homed and turning to forward.
+ * turns to its rest spot, the home magnet (if it is homed). The lights turn GREEN while the turret is homed and turning there.
  * Camera, Light and Power are created here, not in Robot.java, until they're configured on every robot
  * (see code-structure.md).
  */
@@ -35,9 +35,9 @@ public abstract class MainTeleOp extends LinearOpMode {
     public static final Light.Color RED_ALLIANCE_COLOR = Light.Color.RED;
     public static final Light.Color BLUE_ALLIANCE_COLOR = Light.Color.BLUE;
     public static final Light.Color NECTAR_COLOR = Light.Color.VIOLET; // "purple": the next ball to launch is a NECTAR
-    public static final Light.Color TURRET_MOVING_COLOR = Light.Color.GREEN; // the turret is homed and turning to forward
+    public static final Light.Color TURRET_MOVING_COLOR = Light.Color.GREEN; // the turret is homed and turning to its rest spot (the magnet)
 
-    // At START the turret turns to forward by itself. That is only safe if it is already HOMED (we pointed it at the
+    // At START the turret turns to its rest spot (the home magnet) by itself. That is only safe if it is already HOMED (we pointed it at the
     // magnet in INIT). Set this to true to let it also FIND the magnet by turning LEFT. Keep it false until the
     // turret's hard stops are moved: today the left stop is before the magnet, so searching drives into the stop.
     public static final boolean TURRET_FIND_HOME_AT_START = false;
@@ -86,7 +86,7 @@ public abstract class MainTeleOp extends LinearOpMode {
         // START pressed: the flywheel runs the whole match, and the trigger goes to rest (blocks launching).
         robot.launcher.spinUp();
         robot.launcher.resetTrigger();
-        // The turret turns to forward on its own. Not homed yet? Then it waits for the operator (X button).
+        // The turret turns to its rest spot (the magnet) on its own. Not homed yet? Then it waits for the operator (X button).
         if (robot.turret.isHomed() || TURRET_FIND_HOME_AT_START) {
             robot.turret.goToRestAngle();
         }
@@ -99,7 +99,7 @@ public abstract class MainTeleOp extends LinearOpMode {
             robot.turret.update(); // every loop: turns the turret and keeps it inside its limits
 
             // Lights: PURPLE = the next ball to launch is a NECTAR (it matters most, so it wins).
-            // GREEN = the turret is homed and turning to forward. Otherwise our alliance color.
+            // GREEN = the turret is homed and turning to its rest spot. Otherwise our alliance color.
             Light.Color lightColor = allianceColor(alliance);
             if (robot.turret.isHomed() && robot.turret.isAutoMoving() && !robot.turret.isAtTarget()) {
                 lightColor = TURRET_MOVING_COLOR;
