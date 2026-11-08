@@ -133,7 +133,8 @@ public class Camera {
      * Horizontal angle offset to OUR target in degrees (+ = target is to the LEFT, - = RIGHT).
      * Flips Limelight's tx (+ = right) to match our team convention (+ = left, decision 007).
      * Returns 0 if none of our tags is visible.
-     * Can be added directly to Turret getAngle() or fed to Turret aiming.
+     * This is measured from where the CAMERA points. With the camera fixed on the robot's front, that is
+ * "degrees from robot forward": convert with Turret.robotToTurret(...) before using it as a turret angle.
      */
     public double getTargetDegreesLeft() {
         LLResultTypes.FiducialResult tag = getOurTag(limelight.getLatestResult());
