@@ -137,25 +137,17 @@ Worksheet: `turret-test.pdf`. Test with **Turret Test**, **in this order** (step
 | `SERVO_REVERSED` | `false` | Step 1: set `true` if a + (left) speed turns the turret RIGHT | Turret Test, dpad left | 🔧 |
 | `ENCODER_REVERSED` | `false` | Step 2: set `true` if "Turret angle" goes DOWN when turning left | Turret Test | 🔧 |
 | `ENCODER_REVS_PER_TURRET_REV` | `4.69` | Step 3: encoder turns per one turret turn (gear ratio) | Turn exactly 90°; angle must read ~90. Or count gear teeth | ✅ 18-tooth servo gear, about 84.5-tooth turret gear (11/7). Changes if the encoder moves to the big gear |
-| `HOME_ANGLE_DEGREES` | `90.0` | Where the **middle** of the home switch zone is: 90° LEFT of robot forward (decision 042). Change only if the turret or the magnet is remounted | Home it (Turret Test, left stick in), then press A: if the turret stops a little RIGHT of dead forward, make this SMALLER by that many degrees; LEFT, make it BIGGER. (It was 86.2 with the old edge-based homing) | 🔧 re-tune with the new homing |
-| `MAX_LEFT_DEGREES` | `135.0` | Step 4: farthest the turret may turn left, from FORWARD (0). The switch (90) is inside, with 45° to spare | Set by the team for the wiring (11/8). The turret coasts a few degrees past a limit | ✅ team's number |
-| `MAX_RIGHT_DEGREES` | `-135.0` | Step 4: farthest right, from forward (0). Negative = right of forward | Same | ✅ team's number |
+| `HOME_ANGLE_DEGREES` | `86.2` | Where the turret points when the home switch triggers: about 90° LEFT of robot forward (decisions 034, 038). Change only if the turret or the magnet is remounted | Press X / Turret Test A: forward must look straight. 11/7: it ended 1.8° too far right (90 → 88.2), then still 1.1° too far right; the team set it to 86.2 by hand | 🔧 re-check after the change |
+| `MAX_LEFT_DEGREES` | `90.0` | Step 4: farthest the turret may turn left, measured from FORWARD (0). 90 = the home switch, so the turret can always reach the magnet (decision 037) | Chosen by the team. Measured hard stop on the left: 55.9° (11/7), the team will move it. The turret coasts a few degrees past a limit | 🔧 stop must be moved first |
+| `MAX_RIGHT_DEGREES` | `-60.0` | Step 4: farthest right, from forward (0). Negative = right of forward | Chosen by the team. Measured hard stop on the right: -33.1° (11/7), the team will move it | 🔧 stop must be moved first |
 | `AIM_GAIN` | `0.02` | Step 5: speed per degree away from a target. Bigger = faster, may wobble | Turret Test X / B (±45°) | 🔧 |
 | `MAX_SPEED` | `0.6` | Fastest the turret turns to a target | | 🔧 |
 | `TOLERANCE_DEGREES` | `1.0` | "Close enough" to a target | | 🔧 |
-| `NOT_HOMED_MAX_SPEED` | `0.35` | Speed cap for moving by hand until the turret is homed | 0.15 was too slow (10/15) | ✅ |
+| `NOT_HOMED_MAX_SPEED` | `0.35` | Speed cap until the turret has passed forward once | 0.15 was too slow (10/15) | ✅ |
 | `RUNAWAY_DEGREES` | `20.0` | Safety: stop if it moves this much the WRONG way | Leave it | ✅ |
-| `HOME_TOLERANCE_COUNTS` | `200` | How close to home (the middle of the switch zone) counts as "at home" (lights green) | Smaller = stricter | ✅ |
-| `REST_ANGLE_DEGREES` | `0.0` | Where X (operator) and A (Turret Test) turn the turret: dead forward. With the new homing (042) this is 0; it was 10.5 to make up for the old homing. Fix "not quite forward" with `HOME_ANGLE_DEGREES`, not this | | ✅ |
-| `HOME_SEARCH_SPEED` | `0.35` | Homing step 1: speed while looking for the switch zone (decision 042) | Turret Test, left stick in | 🔧 |
-| `HOME_PASS_SPEED` | `0.25` | Homing steps 2-4: the slow passes through the zone. Slower = more precise edges | Lower until homing says "stopped moving", then go back up a little | 🔧 |
-| `HOME_PASS_EXTRA_DEGREES` | `8.0` | How far past each zone edge to turn before coming back | Leave it | ✅ |
-| `HOME_SEARCH_MAX_DEGREES` | `135.0` | Homing step 1 never turns farther than this from where it started. From forward it finds the switch (90 left) even starting 45° right of forward | Only change if the switch moves | ✅ |
-| `HOME_PASS_MAX_DEGREES` | `60.0` | Homing steps 2-4 never turn farther than this each. Must be more than the zone width + 2 × `HOME_PASS_EXTRA_DEGREES` | Turret Test shows the zone width | ✅ |
-| `HOME_SEARCH_TIMEOUT_S` | `12.0` | Homing gives up after this many seconds in total | Time a homing from forward, add a margin | 🔧 |
-| `STALL_CHECK_S` | `0.3` | While homing, every this many seconds... | Leave it | ✅ |
-| `STALL_MIN_COUNTS` | `30` | ...the encoder must move at least this much, or homing stops ("stopped moving") | Leave it | ✅ |
-| `HOME_CHECK_DEGREES` | `10.0` | When the turret passes through the zone, if the middle is this far from the known home, the home was wrong (e.g. the Expansion Hub lost power) and is corrected | Leave it | ✅ |
+| `HOME_TOLERANCE_COUNTS` | `200` | How close to forward counts as "home" (light green) | Smaller = stricter | ✅ |
+| `REST_ANGLE_DEGREES` | `10.5` | Where X (operator) and A (Turret Test) turn the turret: dead forward on the robot (decisions 039, 040). In the code's angle scale that is +10.5 | Turret Test A: the turret must face dead forward | ✅ checked 11/7 |
+| `HOME_SEARCH_TIMEOUT_S` | `6.0` | Operator X (turret forward) when the turret is NOT homed yet: it turns left to find the home switch, and gives up after this many seconds | Time a full left turn to the switch, then add a margin | 🔧 not tested yet |
 | `HOME_SWITCH_TRIGGERED_STATE` | `false` | What the home switch reads at the magnet | Turret Test: "Home switch (magnet)" says YES at the magnet | ✅ |
 | `HOOD_LOWEST_POSITION` | `0.0` | Hood's flattest position (0 to 1). Keeps it off its hard stop | Turret Test dpad down | 🔧 |
 | `HOOD_HIGHEST_POSITION` | `1.0` | Hood's steepest position | Turret Test dpad up | 🔧 |

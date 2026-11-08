@@ -459,17 +459,3 @@ Decision: When START is pressed in Main TeleOp:
 - **Lights:** the alliance color, as before. **GREEN while the turret is homed and turning to forward**, then back to the alliance color when it arrives. **PURPLE (NECTAR) still wins** over green
 - Nothing moves during INIT (G304.H). The turret still homes in INIT if it is pointed at the magnet
 Who: Team
-
-## 042 – Turret homing uses the MIDDLE of the switch zone, both ways, and is remembered  (2026-11-08)
-Status: Accepted (not tested on the robot yet). Replaces how homing works in 017/019/034, the limits in 037, and the 10.5° rest-spot workaround in 039/040; the rest of those stands
-Issue: #31
-Context: Home wasn't repeatable. The magnetic switch is ON over a **zone** several degrees wide (wider with the second magnet), and the code homed at the **first moment** it turned on. So home depended on which side the turret came from and how fast (the code only checks once per loop). The team also can't spin the turret around in one direction (wiring), so any search has to work out which way to go.
-Decision:
-- **Home = the middle of the zone, measured both ways.** `Turret.findHome()`: (1) turn toward the switch until it's ON, (2) back off until it's OFF, (3) pass slowly through the zone, (4) pass back the other way. Home = the average of the two middles. Averaging cancels the "which side / how fast" error and the switch's ON/OFF difference
-- **Which way to turn:** if home is already known, math decides (the switch is at `HOME_ANGLE_DEGREES`). After a fresh power-on it isn't known, so it turns LEFT: **the turret must start roughly facing forward** (drive team rule). It can't tell which side of the switch it is on without a known home
-- **Safety:** every homing move is capped by distance (`HOME_SEARCH_MAX_DEGREES` 135, `HOME_PASS_MAX_DEGREES` 60), by time (`HOME_SEARCH_TIMEOUT_S`), stops if the encoder stops moving (stall), and stays inside the limits once home is roughly known
-- **Remembered:** home is kept in `static` variables, so it survives from one OpMode to the next while the robot stays on (the encoder keeps counting). Power off or restart the app = home again. Every pass through the zone checks home (`HOME_CHECK_DEGREES`) and corrects it if it's far off (e.g. the Expansion Hub lost power and reset its count). Turning through the zone by hand also homes it roughly
-- **Numbers:** `HOME_ANGLE_DEGREES = 90` (the switch is 90° left; re-tune once), `REST_ANGLE_DEGREES = 0` (dead forward; the 10.5 workaround came from the old homing), limits **±135° from forward** (team, 11/8)
-- **Buttons:** Turret Test: **left stick in = find home**, A = rest spot (homes first if needed). Operator X = rest spot, as before (homes first if needed)
-- Turret Test shows the **zone width** (narrower = better magnet setup) and how far apart the two passes were
-Who: Team / mentor (11/8)
