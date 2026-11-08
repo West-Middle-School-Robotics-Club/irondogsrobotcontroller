@@ -61,16 +61,19 @@ public abstract class BasicAuton extends LinearOpMode {
     static final Pose2D RED_NEAR_START = redPose(60, 72 - ROBOT_LENGTH_IN / 2, -90);
     static final Pose2D[] RED_NEAR_PATH = {
             redPose(60, 50, -90),  // LEAVE: drive straight forward, off the red wall
-            redPose(40, 60, -90),  // PARK: slide toward the audience, partly into the LOADING ZONE, off the wall
+            redPose(48, 60, -90),  // PARK: slide toward the audience, into the FAR-WALL third of the LOADING ZONE
     };
-    // (LOADING ZONE: x 24.5 to 47.5, y 61 to 72. PARK = partly in it; LEAVE = not touching the wall at the end.)
+    // LOADING ZONE: x 24.5 (audience end) to 47.5 (far-wall end), y 61 to 72. PARK only needs the robot PARTLY in it,
+    // so the two alliance robots split it (11/8): NEAR parks in the far-wall third (robot x 40-56), FAR in the
+    // audience third (robot x 15-33), about 7 in apart. Both end 3-4 in off the wall, so LEAVE still counts.
+    // TODO(#22): calibrate both on a real practice field.
 
     // FAR: start in tile B1, BACK touching the AUDIENCE wall (x = -72), facing the far wall.
     static final Pose2D RED_FAR_START = redPose(-72 + ROBOT_LENGTH_IN / 2, 36, 0);
     static final Pose2D[] RED_FAR_PATH = {
             redPose(-48, 40, 0),  // LEAVE: drive forward, off the audience wall
             redPose(24, 40, 0),   // drive up column B, clear of the HIVE (column C, y < 24)
-            redPose(30, 58, 0),   // PARK: in the field end of the LOADING ZONE
+            redPose(24, 60, 0),   // PARK: slide left into the AUDIENCE third of the LOADING ZONE
     };
 
     // ------------------------------------------------------------------------------------------------
