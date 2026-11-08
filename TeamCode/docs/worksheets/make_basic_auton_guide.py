@@ -99,14 +99,15 @@ story = [
       "<font face='Courier'>basic-auton-far.pdf</font>."),
 
     p("1. Pick the right OpMode", H2),
-    p("On the Driver Station, open the <b>Basic Auton</b> group. Pick our alliance color and starting spot:"),
+    p("On the Driver Station, open the <b>Basic Auton</b> group. Pick our alliance color and starting spot. "
+      "<b>Every start is the same: the robot's BACK touches the wall.</b>"),
     Spacer(1, 4),
     grid_table([["OpMode", "Set the robot up...", "Pick it when..."],
-                ["Basic Auton RED NEAR", "Tile A6, LEFT side against the RED wall, facing the far wall",
+                ["Basic Auton RED NEAR", "Tile A6, BACK against the RED wall, facing into the field",
                  "We're red, and our partner starts somewhere else"],
                 ["Basic Auton RED FAR", "Tile B1, BACK against the AUDIENCE wall, facing the far wall",
                  "We're red, and our partner wants the NEAR spot"],
-                ["Basic Auton BLUE NEAR", "Tile F1, LEFT side against the BLUE wall, facing the audience",
+                ["Basic Auton BLUE NEAR", "Tile F1, BACK against the BLUE wall, facing into the field",
                  "We're blue, and our partner starts somewhere else"],
                 ["Basic Auton BLUE FAR", "Tile E6, BACK against the FAR wall, facing the audience",
                  "We're blue, and our partner wants the NEAR spot"]],
@@ -120,15 +121,17 @@ story = [
       "until the match starts. You'll see something like this:"),
     Spacer(1, 4),
     screen(["BASIC AUTON : RED  NEAR  (lights are RED)",
+            "SET UP: tile A6, BACK touching the RED wall, FRONT facing into the field",
             "Wrong one? Stop and pick the right Basic Auton.",
             "Start delay : 3 s   (dpad up/down to change)",
-            "Start position : x 60.0  y 63.0  heading 0°",
+            "Start position : x 60.0  y 63.0  heading -90°",
             "Pinpoint : READY  (keep the robot STILL until READY)",
             "Battery : 12.9 V"]),
     Spacer(1, 4),
     grid_table([["Line", "What to check"],
                 ["BASIC AUTON + the <b>lights</b>", "Both lights show our alliance color (red or blue). Wrong color or "
                  "wrong NEAR/FAR? Press STOP and pick the right OpMode."],
+                ["<b>SET UP</b>", "Exactly how to place the robot. Check the robot matches it: right tile, BACK on the wall."],
                 ["<b>Start delay</b>", "How long the robot waits after START before it moves. See section 3."],
                 ["<b>Pinpoint</b>", "Must say <b>READY</b> before START. It's measuring where \"still\" is, so "
                  "<b>don't touch or bump the robot</b> during INIT."],
@@ -146,7 +149,7 @@ story = [
     timeline(0, label="Delay 0 s"),
     Spacer(1, 3),
     timeline(5, label="Delay 5 s"),
-    Spacer(1, 3),
+    Spacer(1, 1),
     p("Grey = waiting (delay).  Orange = driving the route (a few seconds; we'll time it in testing).  "
       "Green = parked.  Black = the code stops everything by 28 s, before AUTO ends at 30 s.", SMALL),
     Spacer(1, 6),
@@ -158,8 +161,7 @@ story = [
                [3.0, 4.0]),
     Spacer(1, 3),
     p("The delay goes back to <b>0</b> every time you press INIT. Set it again for each match.", SMALL),
-    Spacer(1, 6),
-    Spacer(1, 0),
+    Spacer(1, 2),
     p("<b>How to choose the number:</b>"),
     p("&bull; <b>0 s</b>: our partner's route doesn't cross ours (most matches).<br/>"
       "&bull; <b>A few seconds</b>: our partner drives through our path, or parks in the LOADING ZONE first. "
@@ -167,19 +169,20 @@ story = [
       "&bull; Write the agreed delay on the alliance sheet (\"Our start delay\")."),
 
     p("4. After START", H2),
-    p("The robot waits for the delay, then drives each waypoint. The <b>Pinpoint</b> tells it where it is, so it "
-      "slows down as it gets close and stops on the spot (no guessing with timers)."),
+    p("First the robot checks the <b>Pinpoint</b> is READY (up to 3 s). If it isn't, the robot <b>does not drive</b> "
+      "(YELLOW lights), because driving without knowing where it is would be worse. Then it waits for the delay and "
+      "drives each waypoint, slowing down as it gets close and stopping on the spot (no guessing with timers)."),
     Spacer(1, 4),
     grid_table([["Lights at the end", "Means", "Do this"],
                 ["<font color='#16a34a'><b>GREEN</b></font>", "Parked where planned", "Nothing. Nice!"],
                 ["<font color='#ca8a04'><b>YELLOW</b></font>", "Stopped early: a waypoint took too long "
-                 "(bumped, blocked, or slipping)", "Tell the coders. Write it in the test log."]],
+                 "(bumped, blocked, slipping), or the Pinpoint wasn't READY", "Tell the coders. Write it in the test log."]],
                [1.5, 2.9, 2.6]),
 
     p("5. Quick checklist", H2),
     grid_table([["", "Before every AUTO"],
                 ["[  ]", "Right OpMode: alliance color + NEAR/FAR agreed with our partner"],
-                ["[  ]", "Robot on the right tile, touching the right wall, facing the right way (see the route picture)"],
+                ["[  ]", "Robot on the right tile, its BACK touching the wall (the SET UP line on the screen)"],
                 ["[  ]", "Press INIT. Both lights show our alliance color"],
                 ["[  ]", "Start delay set (dpad up/down) and checked on the screen"],
                 ["[  ]", "Pinpoint says READY. Hands off the robot"],

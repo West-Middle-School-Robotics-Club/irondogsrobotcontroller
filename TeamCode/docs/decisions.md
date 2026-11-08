@@ -487,3 +487,13 @@ Issue: #31
 Context: The turret always stopped 4-5° away from its target (the magnet, or the ±90° moves). Aiming speed was `AIM_GAIN x error`, so near the target it asked for only 0.06-0.1, which is inside the servo's dead zone: the servo stopped moving before it got there.
 Decision: `Turret.MIN_AIM_SPEED = 0.15`. While the turret is outside `TOLERANCE_DEGREES`, it never asks for less than this. If it goes PAST the target (it coasts), it stops there instead of chasing back and forth. `isAtTarget()` is true once it has reached or passed the target.
 Who: Team
+
+## 046 – Every Basic Auton starts with the robot's BACK against the wall  (2026-11-08)
+Status: Accepted (NEAR not tested on the floor yet). Changes the NEAR start in 026; the rest of 026 stands
+Issue: #22
+Context: NEAR started with the robot's LEFT side on the alliance wall, FAR with its BACK on the audience wall. Students could easily put the back against the wall for NEAR too. Then the robot is turned 90° from what the code tells the Pinpoint, and every move goes the wrong way.
+Decision:
+- **One rule for every start: BACK against the wall.** NEAR (RED) starts in A6 with its back on the red wall, facing into the field (heading -90): `redPose(60, 72 - ROBOT_LENGTH_IN / 2, -90)`
+- NEAR route: LEAVE = drive straight forward off the wall to (60, 50); PARK = slide toward the audience to (40, 60), still facing into the field (no turning). That is partly in the LOADING ZONE (PARK) and about 3 in off the wall (LEAVE). BLUE is still RED rotated 180°. FAR is unchanged (it was already back to the wall)
+- The **INIT screen shows a plain "SET UP:" line** for each program (tile, which wall the back touches, which way the front faces), so the drive team doesn't need the route sheet to place the robot
+Who: Mentor (11/8)

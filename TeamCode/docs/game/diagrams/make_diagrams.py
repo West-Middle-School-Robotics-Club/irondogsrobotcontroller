@@ -55,9 +55,12 @@ BLUE_GARDEN = (70.0, 72.0, -72.0, -49.0)         # along far wall from corner F6
 HIVE_FRAME = (-24.7, 24.7, -19.5, 19.5)          # frame base ~49.5 x 39 in, field center
 CELL_W_Y = 20.0                                  # CELL opening ~20 in wide
 CELL_D_X = 13.0                                  # drawn depth (top-down view, approximate)
-CELL_CENTERS = [                                 # (x, y, alliance)
-    (12.0, 11.0, "red"), (-12.0, 11.0, "red"),
-    (12.0, -11.0, "blue"), (-12.0, -11.0, "blue"),
+# (x, y, alliance, UP at match start?, AprilTag IDs). At match start the CELL that points at a FLOWER is DOWN
+# (Competition Manual p. 83, field.md): Red's AUDIENCE-side CELL and Blue's FAR-side CELL start UP.
+# Every HIVE TIP flips which CELL is up, so this is only the STARTING position.
+CELL_CENTERS = [
+    (12.0, 11.0, "red", False, "30-33"), (-12.0, 11.0, "red", True, "34-37"),
+    (12.0, -11.0, "blue", True, "42-45"), (-12.0, -11.0, "blue", False, "38-41"),
 ]
 
 FLOWERS = [(-24.0, 69.0), (69.0, 24.0), (24.0, -69.0), (-69.0, -24.0)]  # on the walls
@@ -147,9 +150,16 @@ class Field:
 
         # HIVE structure and CELLS (approximate, top-down)
         out.append(self.rect(HIVE_FRAME, "#f3f4f6", GREY, 1.5))
-        for (cx, cy, color) in CELL_CENTERS:
+        for (cx, cy, color, up, tags) in CELL_CENTERS:
             r = (cx - CELL_D_X / 2, cx + CELL_D_X / 2, cy - CELL_W_Y / 2, cy + CELL_W_Y / 2)
-            out.append(self.rect(r, "white", RED if color == "red" else BLUE, 2.5))
+            c = RED if color == "red" else BLUE
+            if up:   # UP at match start: filled with the alliance color
+                out.append(self.rect(r, c, c, 2.5, 'fill-opacity="0.35"'))
+                out.append(self.text(self.px(cy), self.py(cx) + 0.05 * small, "UP", 1.15 * small, c, "middle", bold=True))
+            else:
+                out.append(self.rect(r, "white", c, 2.5))
+                out.append(self.text(self.px(cy), self.py(cx) + 0.05 * small, "down", 0.85 * small, GREY, "middle"))
+            out.append(self.text(self.px(cy), self.py(cx) + 1.05 * small, "tags " + tags, 0.6 * small, GREY, "middle"))
         out.append(self.text(self.px(0), self.py(HIVE_FRAME[1]) + 1.05 * small, "HIVE", small, INK, "middle", bold=True))
 
         # FLOWERS
@@ -236,7 +246,8 @@ def legend(x, y, size=11, vertical=False):
         (f'<circle cx="{{cx}}" cy="{{cy}}" r="{size * 0.45}" fill="#fde68a" stroke="#a16207" stroke-width="1.2"/>', "FLOWER"),
         (f'<rect x="{{x0}}" y="{{y0}}" width="{size * 1.1}" height="{size * 0.8}" fill="#f6b3b3" stroke="{RED}" stroke-width="1.5"/>', "LOADING ZONE (PARK)"),
         (f'<rect x="{{x0}}" y="{{y1}}" width="{size * 1.1}" height="{size * 0.3}" fill="{RED}"/>', "GARDEN"),
-        (f'<rect x="{{x0}}" y="{{y0}}" width="{size * 1.1}" height="{size * 0.8}" fill="white" stroke="{BLUE}" stroke-width="2"/>', "CELL (in HIVE)"),
+        (f'<rect x="{{x0}}" y="{{y0}}" width="{size * 1.1}" height="{size * 0.8}" fill="{BLUE}" fill-opacity="0.35" stroke="{BLUE}" stroke-width="2"/>', "UP CELL at start"),
+        (f'<rect x="{{x0}}" y="{{y0}}" width="{size * 1.1}" height="{size * 0.8}" fill="white" stroke="{BLUE}" stroke-width="2"/>', "CELL down"),
         (f'<line x1="{{x0}}" y1="{{cy}}" x2="{{x2}}" y2="{{cy}}" stroke="{GREY}" stroke-width="1.5" stroke-dasharray="4,3"/>', "Center line"),
     ]
     out, cx_, cy_ = [], x, y
@@ -273,7 +284,10 @@ def field_template():
     out.append(Field.text(60, 150 + f.size() + 82,
                           "Coordinates (decision 011): origin = field center, +X toward far wall, +Y toward red wall, in inches. "
                           "Blue = Red rotated 180\u00b0. Stay on your own side in AUTO (G402).", 10, GREY))
-    y = 150 + f.size() + 115
+    out.append(Field.text(60, 150 + f.size() + 97,
+                          "HIVE: the UP CELLS shown are at MATCH START (Red: audience side, Blue: far side). "
+                          "Every TIP flips which CELL of that HIVE is up.", 10, GREY))
+    y = 150 + f.size() + 125
     out.append(Field.text(60, y, "Notes", 15, INK, bold=True))
     for i in range(3):
         out.append(f'<line x1="60" y1="{y + 30 + i * 28}" x2="{PAGE_W - 60}" y2="{y + 30 + i * 28}" '
@@ -332,8 +346,8 @@ def alliance_sheet():
     out.append(blank(62, ay + 78, 340, "Our start delay (s):", 12.5))
     out.append(blank(430, ay + 78, 345, "Partner delay (s):", 12.5))
     out.append(Field.text(62, ay + 108, "LOADING ZONE park:", 12.5, INK))
-    out.append(checkbox(200, ay + 108, "We take wall end", False, 12.5))
-    out.append(checkbox(380, ay + 108, "We take field end", False, 12.5))
+    out.append(checkbox(200, ay + 108, "We park far-wall third", False, 12.5))
+    out.append(checkbox(380, ay + 108, "We park audience third", False, 12.5))
     out.append(Field.text(62, ay + 136, "SWARM RP: both robots LEAVE + PARK in AUTO = 16 pts", 12.5, RED, bold=True))
     out.append(footer())
     return svg_page("\n".join(out))
@@ -372,6 +386,9 @@ def read_basic_auton():
                 note = line.split("//", 1)[1].strip() if "//" in line else ""
                 path.append((tuple(ev(g) for g in m.groups()), note))
         routes[route] = (start, path)
+    # The plain-words setup from BasicAuton.setupText(): NEAR first, then FAR, each as (red, blue)
+    setups = re.findall(r'red \?\s*"([^"]+)"\s*:\s*"([^"]+)"', src)
+    consts["SETUP"] = {"NEAR": setups[0], "FAR": setups[1]}
     return consts, routes
 
 
@@ -381,8 +398,8 @@ def to_blue(pose):
     return (-x, -y, (h + 180) % 360)
 
 
-def robot_outline(f, pose, length, width, color, dashed=False, fill="none", label=""):
-    """The robot's footprint, with an arrow showing which way it faces."""
+def robot_outline(f, pose, length, width, color, dashed=False, fill="none", label="", mark_back=False):
+    """The robot's footprint, with an arrow showing which way it faces. mark_back = thick black bar on its BACK edge."""
     import math
     x, y, h = pose
     hr = math.radians(h)
@@ -398,6 +415,10 @@ def robot_outline(f, pose, length, width, color, dashed=False, fill="none", labe
            f'stroke-width="2.5"{dash}/>']
     tip = (x + length * 0.45 * fx, y + length * 0.45 * fy)
     out.append(f.arrow(f.px(y), f.py(x), f.px(tip[1]), f.py(tip[0]), color, 2))
+    if mark_back:  # corners 2 and 3 are the back corners (a = -1)
+        (bx0, by0), (bx1, by1) = [tuple(float(v) for v in c.split(",")) for c in corners[2:4]]
+        out.append(f'<line x1="{bx0:.1f}" y1="{by0:.1f}" x2="{bx1:.1f}" y2="{by1:.1f}" stroke="{INK}" '
+                   f'stroke-width="5" stroke-linecap="round"/>')
     if label:
         out.append(Field.text(f.px(y), f.py(x) + 0.5 * f.s * 3, label, 2.6 * f.s, color, "middle", bold=True))
     return "\n".join(out)
@@ -405,7 +426,7 @@ def robot_outline(f, pose, length, width, color, dashed=False, fill="none", labe
 
 def draw_route(f, start, path, length, width, color):
     """Start footprint, numbered waypoints joined by arrows, and the park footprint (dashed)."""
-    out = [robot_outline(f, start, length, width, color, fill=color, label="START")]
+    out = [robot_outline(f, start, length, width, color, fill=color, label="START", mark_back=True)]
     prev = start
     for i, (wp, _note) in enumerate(path, start=1):
         out.append(f.arrow(f.px(prev[1]), f.py(prev[0]), f.px(wp[1]), f.py(wp[0]), color, 3))
@@ -417,30 +438,76 @@ def draw_route(f, start, path, length, width, color):
     return "\n".join(out)
 
 
+def setup_panel(x0, y0, w, route, red_text, blue_text):
+    """Big, simple SET UP instructions with a close-up: the robot's BACK on the wall (decision 046)."""
+    import textwrap
+    out = [f'<rect x="{x0}" y="{y0}" width="{w}" height="490" fill="#fef9c3" stroke="#a16207" stroke-width="2" rx="8"/>',
+           Field.text(x0 + w / 2, y0 + 30, "SET UP", 24, INK, "middle", bold=True),
+           Field.text(x0 + w / 2, y0 + 52, "BACK against the wall", 15, INK, "middle", bold=True)]
+
+    def closeup(cx, top, good):
+        """A wall (left) and a robot seen from above. good = back on the wall; else its side (wrong)."""
+        parts = [f'<rect x="{cx - 70}" y="{top}" width="12" height="80" fill="#9ca3af"/>',
+                 Field.text(cx - 64, top + 94, "WALL", 9, GREY, "middle", bold=True)]
+        if good:
+            rx, ry, rw, rh = cx - 58, top + 16, 64, 48           # robot: back (left edge) on the wall
+            parts.append(f'<rect x="{rx}" y="{ry}" width="{rw}" height="{rh}" fill="#fecaca" stroke="{INK}" stroke-width="2"/>')
+            parts.append(f'<line x1="{rx}" y1="{ry}" x2="{rx}" y2="{ry + rh}" stroke="{INK}" stroke-width="6"/>')
+            parts.append(Field.text(rx + 6, ry + rh / 2 + 4, "BACK", 10, INK, "start", bold=True))
+            parts.append(Field.arrow(rx + rw - 8, ry + rh / 2, rx + rw + 40, ry + rh / 2, INK, 3))
+            parts.append(Field.text(rx + rw + 22, ry + rh / 2 - 8, "FRONT", 10, INK, "middle", bold=True))
+        else:
+            rx, ry, rw, rh = cx - 58, top + 8, 48, 64            # robot sideways: its SIDE on the wall
+            parts.append(f'<rect x="{rx}" y="{ry}" width="{rw}" height="{rh}" fill="#e5e7eb" stroke="{GREY}" stroke-width="2"/>')
+            parts.append(Field.arrow(rx + rw / 2, ry + rh - 6, rx + rw / 2, ry + 4, GREY, 3))
+            parts.append(f'<line x1="{cx - 75}" y1="{top}" x2="{cx + 20}" y2="{top + 80}" stroke="{RED}" stroke-width="6"/>')
+            parts.append(f'<line x1="{cx + 20}" y1="{top}" x2="{cx - 75}" y2="{top + 80}" stroke="{RED}" stroke-width="6"/>')
+        return parts
+
+    out += closeup(x0 + w / 2, y0 + 70, good=True)
+    out.append(Field.text(x0 + w / 2, y0 + 190, "YES: back on the wall", 12, "#15803d", "middle", bold=True))
+    out += closeup(x0 + w / 2 + 25, y0 + 205, good=False)
+    out.append(Field.text(x0 + w / 2, y0 + 318, "NO: side on the wall", 12, RED, "middle", bold=True))
+
+    y = y0 + 348
+    for color, label, text in ((RED, "RED", red_text), (BLUE, "BLUE", blue_text)):
+        out.append(Field.text(x0 + 12, y, label + ":", 12, color, bold=True))
+        for line in textwrap.wrap(text, 27):
+            y += 15
+            out.append(Field.text(x0 + 12, y, escape(line), 11.5, INK))
+        y += 22
+    out.append(Field.text(x0 + w / 2, y0 + 480, "Same as the SET UP line on the INIT screen", 9, GREY, "middle"))
+    return "\n".join(out)
+
+
 def route_sheet(route, consts, routes):
     """One printable page per route: the field with RED and BLUE drawn, the steps, and a test log."""
     start, path = routes[route]
     length, width = consts["ROBOT_LENGTH_IN"], consts["ROBOT_WIDTH_IN"]
-    where = {"NEAR": "against our alliance wall, next to the LOADING ZONE",
-             "FAR": "against the audience wall (Red) / far wall (Blue)"}[route]
+    where = {"NEAR": "our alliance wall, next to the LOADING ZONE",
+             "FAR": "the audience wall (Red) / far wall (Blue)"}[route]
     out = [Field.text(50, 48, f"Basic Auton {route}: LEAVE + PARK  ({TEAM_NAME})", 21, INK, bold=True),
-           Field.text(50, 72, f"Start {where}. OpModes: \"Basic Auton RED {route}\" and \"Basic Auton BLUE {route}\".",
-                      12, GREY)]
+           Field.text(50, 72, f"Robot's BACK against {where}. OpModes: \"Basic Auton RED {route}\" and "
+                      f"\"Basic Auton BLUE {route}\".", 12, GREY)]
 
-    f = Field(left=150, top=120, scale=3.85)  # 554 units
+    f = Field(left=95, top=120, scale=3.3)  # 475 units, leaves room for the SET UP panel on the right
+    red_setup, blue_setup = consts["SETUP"][route]
+    out.append(setup_panel(620, 105, 200, route, red_setup, blue_setup))
     out.append(f.draw(show_axes=False))
     out.append(draw_route(f, start, path, length, width, RED))
     out.append(draw_route(f, to_blue(start), [(to_blue(p), n) for p, n in path], length, width, BLUE))
 
     # Key
     ky = 120 + f.size() + 50
-    out.append(Field.text(50, ky, "Filled box = START (arrow = front of robot).  Numbered circles = waypoints, driven in order.  "
+    out.append(Field.text(50, ky, "Filled box = START (arrow = FRONT, black bar = BACK on the wall).  Numbered circles = waypoints.  "
                           "Dashed box = where it PARKS.", 10.5, INK))
     out.append(Field.text(50, ky + 16, f"Robot size used: {length:g} x {width:g} in (BasicAuton.ROBOT_LENGTH_IN / ROBOT_WIDTH_IN). "
                           "Blue = Red rotated 180° (decision 011).", 10.5, GREY))
+    out.append(Field.text(50, ky + 32, "HIVE: the UP CELLS shown are at MATCH START (Red: audience side, Blue: far side). "
+                          "Every TIP flips which CELL is up.", 10.5, GREY))
 
     # Steps table, straight from the code
-    ty = ky + 46
+    ty = ky + 60
     out.append(Field.text(50, ty, "The steps (from BasicAuton.java, in inches)", 14, INK, bold=True))
     cols = [50, 105, 250, 395]
     heads = ["Step", "RED x, y, heading", "BLUE x, y, heading", "What happens"]
