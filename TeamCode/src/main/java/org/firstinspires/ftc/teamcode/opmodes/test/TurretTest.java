@@ -19,18 +19,22 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *     + hold RIGHT TRIGGER   FULL speed (only once homed; before that, everything is capped at NOT_HOMED_MAX_SPEED)
  *     + hold a bumper        SLOW, fine moves
  *   Y                        set a MARK: "Since mark" counts from here. Use it to measure a move
- *   A                        turn to the REST spot (dead forward, code angle 10.5), the same as X on the operator's
- *                            gamepad (decision 039). Homed: turns straight there. Not homed: first turns LEFT
- *                            to find the home switch, then goes there (gives up after HOME_SEARCH_TIMEOUT_S)
+ *   A                        turn to the REST spot (dead forward), the same as X on the operator's gamepad.
+ *                            Homed: turns straight there. Not homed: homes first (below), then goes there
+ *   press the LEFT STICK in  FIND HOME precisely (decision 042), even if already homed: finds the switch zone,
+ *                            passes slowly through it both ways, and uses the average of the two middles.
+ *                            Not homed yet? It turns LEFT first, so START WITH THE TURRET ROUGHLY FORWARD
  *   X / B                    turn to 45° left / right: use the encoder to aim, so they only work once HOMED,
  *                            and only as far as MAX_LEFT / MAX_RIGHT allow
- *   any dpad left/right      cancels A / X / B
+ *   any dpad left/right      cancels A / X / B / homing
  *   dpad up / down           tilt the HOOD up / down a little (find HOOD_LOWEST / HIGHEST_POSITION)
  *
- * The home switch is at 90 degrees LEFT of forward (decision 034). The first time it triggers,
- * the encoder is HOMED (that spot = HOME_ANGLE_DEGREES = 90).
+ * The home switch is at 90 degrees LEFT of forward. It is ON over a ZONE several degrees wide, so home is the
+ * MIDDLE of the zone (HOME_ANGLE_DEGREES = 90). Turning through the zone by hand (dpad) also homes it roughly.
+ * Home is REMEMBERED in the next OpModes until the robot powers off (check: home, STOP, run this again: still homed).
+ * Telemetry shows the zone WIDTH (narrower = better magnet setup) and how far apart the left and right passes were.
  * BOTH lights turn GREEN whenever the turret is at HOME: at the switch, or within ±HOME_TOLERANCE_COUNTS of it.
- * Until then, the turret only moves slowly.
+ * Until it's homed, the turret only moves slowly.
  *
  * Calibrate IN ORDER (steps in issue #31). Don't try A / X / B until steps 1 and 2 are right!
  *   1. Dpad LEFT must turn the turret LEFT. If not: SERVO_REVERSED = true in Turret.java
@@ -114,7 +118,10 @@ public class TurretTest extends LinearOpMode {
                 sinceMarkSet.reset();
             }
             if (gamepad1.aWasPressed()) {
-                turret.goToRestAngle();   // homed: straight to the rest spot. Not homed: finds the home switch first (039)
+                turret.goToRestAngle();   // homed: straight to the rest spot. Not homed: homes first (042)
+            }
+            if (gamepad1.leftStickButtonWasPressed()) {
+                turret.findHome();        // precise homing, both ways (042)
             }
             if (gamepad1.xWasPressed()) {
                 turret.turnTo(45);
@@ -127,9 +134,9 @@ public class TurretTest extends LinearOpMode {
             showHome(turret, leftLight, rightLight);
 
             telemetry.addLine("HOLD dpad L/R = turn (+R trigger = FULL, +bumper = slow)   dpad U/D = hood");
-            telemetry.addLine("Y = mark   A = rest spot (forward)   X/B = 45° L/R");
+            telemetry.addLine("Y = mark   A = rest spot (forward)   X/B = 45° L/R   LEFT STICK in = find home");
             if (!turret.isHomed()) {
-                telemetry.addData("Speed capped", "%.2f until homed: turn past the home switch (90° left) once", Turret.NOT_HOMED_MAX_SPEED);
+                telemetry.addData("Speed capped", "%.2f until homed: press the LEFT STICK in to find home", Turret.NOT_HOMED_MAX_SPEED);
             }
             telemetry.addLine();
             addReadings(turret, turretEncoder, homeSwitch, markCounts, sinceMarkSet);
@@ -162,7 +169,7 @@ public class TurretTest extends LinearOpMode {
         telemetry.addLine("--- Turret ---");
         turret.addTelemetry(telemetry);
         if (!turret.isHomed()) {
-            telemetry.addLine("X / B do nothing until homed. A turns left to find the home switch first, then goes to the rest spot.");
+            telemetry.addLine("X / B do nothing until homed. LEFT STICK in = find home (turret roughly forward first). A = home, then rest spot.");
         }
 
         telemetry.addLine("--- ELC encoder (on the servo) ---");
