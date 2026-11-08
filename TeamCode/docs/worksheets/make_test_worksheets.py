@@ -273,7 +273,7 @@ story += controls([
     ["A", "turn to the REST spot (dead forward on the robot). Not homed yet? It turns LEFT to find the home switch first. Do steps 1 to 3 first!"],
     ["X / B", "turn to 45° left / right (same warning)"],
     ["Dpad UP / DOWN", "hood up / down a little"],
-    ["LEFT light GREEN", "turret is at HOME: the switch at 90° LEFT, or within HOME_TOLERANCE_COUNTS of it"],
+    ["BOTH lights GREEN", "turret is at HOME: the switch at 90° LEFT, or within HOME_TOLERANCE_COUNTS of it"],
 ])
 story += steps([
     ["1", "Hold dpad LEFT", "turret turns LEFT (counter-clockwise from above)", "", c("SERVO_REVERSED = true")],

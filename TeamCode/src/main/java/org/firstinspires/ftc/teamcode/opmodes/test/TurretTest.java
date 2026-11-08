@@ -29,7 +29,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *
  * The home switch is at 90 degrees LEFT of forward (decision 034). The first time it triggers,
  * the encoder is HOMED (that spot = HOME_ANGLE_DEGREES = 90).
- * The LEFT light turns GREEN whenever the turret is at HOME: at the switch, or within ±HOME_TOLERANCE_COUNTS of it.
+ * BOTH lights turn GREEN whenever the turret is at HOME: at the switch, or within ±HOME_TOLERANCE_COUNTS of it.
  * Until then, the turret only moves slowly.
  *
  * Calibrate IN ORDER (steps in issue #31). Don't try A / X / B until steps 1 and 2 are right!
@@ -58,7 +58,8 @@ public class TurretTest extends LinearOpMode {
     public void runOpMode() {
         Power power = new Power(hardwareMap); // battery voltage + current on every test
         Turret turret = new Turret(hardwareMap);
-        Light light = new Light(hardwareMap, Light.LEFT_LIGHT_NAME);
+        Light leftLight = new Light(hardwareMap, Light.LEFT_LIGHT_NAME);
+        Light rightLight = new Light(hardwareMap, Light.RIGHT_LIGHT_NAME);
         // Test-only: the same encoder, used directly to show its speed (code-structure rule 8).
         DcMotorEx turretEncoder = hardwareMap.get(DcMotorEx.class, Turret.ENCODER_NAME);
         // Test-only: the same switch, to show its RAW reading (code-structure rule 8).
@@ -71,7 +72,7 @@ public class TurretTest extends LinearOpMode {
         // INIT: nothing moves until START (game rule G304.H). Readings, homing and the light work already.
         while (opModeInInit()) {
             turret.update();
-            showHome(turret, light);
+            showHome(turret, leftLight, rightLight);
             telemetry.addLine("Press START. Nothing moves until you press a button.");
             telemetry.addLine("Don't force the turret by hand: the servo's gears can strip.");
             telemetry.addLine();
@@ -123,7 +124,7 @@ public class TurretTest extends LinearOpMode {
             }
 
             turret.update();
-            showHome(turret, light);
+            showHome(turret, leftLight, rightLight);
 
             telemetry.addLine("HOLD dpad L/R = turn (+R trigger = FULL, +bumper = slow)   dpad U/D = hood");
             telemetry.addLine("Y = mark   A = rest spot (forward)   X/B = 45° L/R");
@@ -137,12 +138,15 @@ public class TurretTest extends LinearOpMode {
         }
 
         turret.stop();
-        light.off();
+        leftLight.off();
+        rightLight.off();
     }
 
-    /** GREEN when the turret is at home, OFF otherwise. The light is OK during INIT: it doesn't move anything. */
-    private void showHome(Turret turret, Light light) {
-        light.setColor(turret.isAtHome() ? Light.Color.GREEN : Light.Color.OFF);
+    /** Both lights GREEN when the turret is at home, OFF otherwise. Lights are OK during INIT: they don't move anything. */
+    private void showHome(Turret turret, Light leftLight, Light rightLight) {
+        Light.Color color = turret.isAtHome() ? Light.Color.GREEN : Light.Color.OFF;
+        leftLight.setColor(color);
+        rightLight.setColor(color);
     }
 
     private void addReadings(Turret turret, DcMotorEx turretEncoder, DigitalChannel homeSwitch,
