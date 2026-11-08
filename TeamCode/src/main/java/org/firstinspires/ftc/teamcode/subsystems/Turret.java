@@ -103,7 +103,7 @@ public class Turret {
     // AIM_GAIN x error gets so small near the target (0.02 x 3 degrees = 0.06) that the turret STOPS 3 to 5 degrees short.
     // TODO(#31): tune. Raise it if the turret stops short of the target, lower it if it jumps past (decision 045).
     public static final double MIN_AIM_SPEED = 0.15;
-    public static final double TOLERANCE_DEGREES = 1.0;    // "close enough" to the target: stop here
+    public static final double TOLERANCE_DEGREES = 0.5;    // "close enough" to the target: stop here
     public static final double NOT_HOMED_MAX_SPEED = 0.35; // slower, for moving before the turret is homed
                                                            // (0.15 was too slow to move the Axon turret, 10/15)
 
@@ -117,7 +117,7 @@ public class Turret {
 
     // Safety: if the turret ends up this much FARTHER from the target than when it started,
     // something is backwards (step 1 or 2), so we stop instead of spinning away.
-    public static final double RUNAWAY_DEGREES = 20.0;
+    public static final double RUNAWAY_DEGREES = 10.0;
 
     // Hood (positional servo, 0.0 to 1.0). TODO(#31): find these with the hood controls in "Turret Test".
     // Keep the hood between these so it can't press into its hard stops.
@@ -132,7 +132,7 @@ public class Turret {
     // this many counts of the home switch spot. The magnet spot alone was too narrow to return to exactly.
     // 200 counts = 18 degrees of ENCODER turn (4000 counts = 360). With gears, less at the turret.
     // TODO(#31): tune. Smaller = stricter "home".
-    public static final int HOME_TOLERANCE_COUNTS = 50;
+    public static final int HOME_TOLERANCE_COUNTS = 100;
 
     // HOME SEARCH, BOTH WAYS (decision 044). The search starts by turning LEFT. If the turret stops moving for
     // SEARCH_STALL_S (it hit a hard stop: the encoder count stops changing), it turns around and goes RIGHT.
@@ -144,7 +144,7 @@ public class Turret {
     // LAST PART OF A MOVE TO THE REST SPOT: always arrive moving the SAME WAY the turret was moving when it homed.
     // Gears have a little slack (backlash), so the turret lands a degree or two different depending on which way it
     // arrives. If we are on the wrong side, we first go this many degrees PAST the rest spot, then come back to it.
-    public static final double APPROACH_OVERSHOOT_DEGREES = 8.0;
+    public static final double APPROACH_OVERSHOOT_DEGREES = 2.0;
 
     // HOMING ON THE CENTER OF THE MAGNET (decision 043). The switch turns on when the magnet ENTERS its range and off when
     // it LEAVES. The first trigger (the edge) moves 1-2 degrees depending on speed and direction. So when the turret
