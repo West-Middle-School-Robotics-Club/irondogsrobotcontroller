@@ -50,8 +50,8 @@ public class Intake {
 
     // Speeds, from 0 to 1. TODO(#4): tune on the robot with "Intake Test".
     //Note 11/6: changed from 1.0 to 0.8 for intake and water wheel
-    public static final double INTAKE_SPEED = 0.65;   // Note 11/7: 0.65 (decision 041)
-    public static final double WATER_WHEEL_SPEED = 0.65;  // Note 11/7: 0.65 (decision 041)
+    public static final double INTAKE_SPEED = 1.0;   // Note 11/7: 0.65 (decision 041)
+    public static final double WATER_WHEEL_SPEED = 1.0;  // Note 11/7: 0.65 (decision 041)
 
     // TODO(#4): set to true if "in" / "waterWheelUp" spins the wrong way.
     // Note 11/7: Main TeleOp started with the intake system going OUT instead of IN, so both changed to true.
@@ -104,6 +104,16 @@ public class Intake {
     /** Run the water wheel backwards (DOWN), to clear a jam. */
     public void waterWheelDown() {
         setWaterWheelSpeed(-WATER_WHEEL_SPEED);
+    }
+
+    /** Run the intake at any speed, from -1 (full OUT) to +1 (full IN). in() and out() use INTAKE_SPEED. */
+    public void runIntake(double speed) {
+        setIntakeSpeed(Math.max(-1.0, Math.min(1.0, speed)));
+    }
+
+    /** Run the water wheel at any speed, from -1 (full DOWN) to +1 (full UP). waterWheelUp() and waterWheelDown() use WATER_WHEEL_SPEED. */
+    public void runWaterWheel(double speed) {
+        setWaterWheelSpeed(Math.max(-1.0, Math.min(1.0, speed)));
     }
 
     /** Stop only the intake (the water wheel keeps doing what it was doing). */

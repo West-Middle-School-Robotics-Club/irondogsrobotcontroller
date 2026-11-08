@@ -163,15 +163,17 @@ story = header_block(
     c("intakeServo") + ", " + c("waterWheelServo") + " (Continuous Rotation Servo), " +
     c("nectarDetectorLeftSwitch") + ", " + c("nectarDetectorRightSwitch") + " (Digital Device)")
 story += controls([
-    ["HOLD A / B", "intake IN / OUT"],
-    ["HOLD X / Y", "water wheel UP (to the launcher) / DOWN (clear a jam)"],
+    ["A / B", "spin ON-OFF (toggle) / STOP. Starts stopped"],
+    ["DPAD up / down", "speed of BOTH +/- 0.05.  The speed is not saved: copy the final number into Intake.java"],
+    ["DPAD left / right", "direction (toggle): IN + water wheel UP, or OUT + water wheel DOWN"],
+    ["X", "which one runs: BOTH, INTAKE only, WATER WHEEL only. Use \"only\" to check one at a time"],
     ["(no button)", "the switches are read all the time, even in INIT. Watch the telemetry lines "
                     "\"NECTAR detected\", \"Nectar left switch\", \"Nectar right switch\""],
 ])
 story += steps([
-    ["1", "Hold A", "balls go IN", "", c("INTAKE_REVERSED = true")],
-    ["2", "Hold X", "balls go UP toward the launcher", "", c("WATER_WHEEL_REVERSED = true")],
-    ["3", "Hold A + X with 3 balls", "no jam, no ball flying out", "", "lower " + c("INTAKE_SPEED") + " / " +
+    ["1", "X to INTAKE only, press A (direction IN)", "balls go IN", "", c("INTAKE_REVERSED = true")],
+    ["2", "X to WATER WHEEL only, press A (direction UP)", "balls go UP toward the launcher", "", c("WATER_WHEEL_REVERSED = true")],
+    ["3", "X to BOTH, A on, 3 balls. Tune the speed with dpad up / down", "no jam, no ball flying out", "", "copy the speed from the screen into " + c("INTAKE_SPEED") + " / " +
      c("WATER_WHEEL_SPEED") + " (0 to 1)"],
     ["4", "Nothing touching the levers", "both \"not pressed\", \"NECTAR detected: no\"", "",
      "says PRESSED: switch " + c("NECTAR_SWITCH_WIRING") + " to the other value"],
