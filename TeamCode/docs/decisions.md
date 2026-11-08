@@ -497,3 +497,16 @@ Decision:
 - NEAR route: LEAVE = drive straight forward off the wall to (60, 50); PARK = slide toward the audience to (40, 60), still facing into the field (no turning). That is partly in the LOADING ZONE (PARK) and about 3 in off the wall (LEAVE). BLUE is still RED rotated 180°. FAR is unchanged (it was already back to the wall)
 - The **INIT screen shows a plain "SET UP:" line** for each program (tile, which wall the back touches, which way the front faces), so the drive team doesn't need the route sheet to place the robot
 Who: Mentor (11/8)
+
+## 047 – Turret angles: 0 = the magnet, robot forward = -90, limits ±135 from forward  (2026-11-08)
+Status: Accepted (limits not tested on the robot yet). Settles the angle scale from 042 and replaces its limits
+Issue: #31
+Context: The turret code was first written with 0 = robot forward and the magnet in front. Then the magnet moved 90° left, and 042 made the magnet angle 0, but some comments and `turnForward()` still assumed 0 = forward. Future features (camera aiming, field aiming in Advanced Auton) think in "degrees from robot forward", so a hidden 90° offset would be an easy bug.
+Decision:
+- **Turret angle 0 = the home magnet** (team choice). + = left (decision 007)
+- **Robot forward = `Turret.FORWARD_ANGLE_DEGREES = -90`**: the magnet is 90° left of forward. This constant is the **only** place the offset lives; a remount changes only it
+- **Helpers:** `Turret.robotToTurret(degreesFromForward)` and `Turret.turretToRobot(turretDegrees)`. Anything measured from the robot's front (the camera, field aiming, autonomous) uses them, never a hand-added 90
+- **Limits: ±135° from robot forward** (team, for the wiring): `MAX_LEFT_DEGREES = 45`, `MAX_RIGHT_DEGREES = -225`. Replaces 042's ±120 from the magnet
+- `turnForward()` now really points forward (-90). Turret Test X / B turn to 45° left / right of forward (90° left of the magnet would now be past the left limit)
+- The rest spot (the magnet), homing (043, 044) and minimum aim speed (045) are unchanged
+Who: Team / mentor (11/8)
