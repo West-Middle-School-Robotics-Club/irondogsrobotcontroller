@@ -32,7 +32,7 @@ DRIVER = {
 }
 OPERATOR = {  # decisions 029, 035
     "Y": ("LAUNCH (hold)", "trigger moves out of the way; let go = blocked"),
-    "X": ("TURRET REST SPOT (press)", "faces dead forward; stick cancels"),
+    "X": ("TURRET REST SPOT (press)", "onto the home magnet; stick cancels"),
     "B": ("DIRECTION (toggle)", "IN (intake in + wheel UP) or OUT (balls leave)"),
     "A": ("INTAKE SYSTEM (toggle)", "intake + water wheel together, on / off"),
     "LT": ("EJECT (hold)", "water wheel DOWN + intake OUT; then all off"),
@@ -269,7 +269,7 @@ else:
         [("Flywheel: ", True), ("starts when START is pressed and runs the whole match.", False)],
         "It is NOT on a button. Watch \"Launcher Status\" for READY.",
         [("A ", True), ("= intake + water wheel on / off.  ", False), ("B ", True), ("= switch IN / OUT.", False)],
-        [("X ", True), ("= turret to dead FORWARD (rest spot). Left stick = take over.", False)],
+        [("X ", True), ("= turret to its REST spot (home magnet). Left stick = take over.", False)],
         [("EJECT ", True), ("beats everything; let go and the intake + water wheel are OFF.", False)],
         [("Lights: ", True), ("PURPLE = the next ball to launch is a NECTAR.", False)],
     ], size=8.6)

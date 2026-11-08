@@ -459,3 +459,31 @@ Decision: When START is pressed in Main TeleOp:
 - **Lights:** the alliance color, as before. **GREEN while the turret is homed and turning to forward**, then back to the alliance color when it arrives. **PURPLE (NECTAR) still wins** over green
 - Nothing moves during INIT (G304.H). The turret still homes in INIT if it is pointed at the magnet
 Who: Team
+
+## 042 – The turret's rest spot is the home magnet  (2026-11-08)
+Status: Accepted (not tested on the robot yet)
+Issue: #31
+Context: Decisions 039 and 040 made the rest spot dead forward (code angle 10.5). The team wants the rest spot back at the home magnet instead.
+Decision: **`Turret.REST_ANGLE_DEGREES = HOME_ANGLE_DEGREES`**. `goToRestAngle()` (operator X, Turret Test A, Main TeleOp start-up) now turns the turret onto the **home magnet**, 90° left of forward. The home search is unchanged: not homed = turn left until the switch triggers, then stop on it. The team also set `HOME_ANGLE_DEGREES = 0` and the limits to `MAX_LEFT_DEGREES = 120` / `MAX_RIGHT_DEGREES = -120` by hand (11/8), so **the magnet is angle 0** and dead forward is about -86 on this scale. Anything written as "0 = forward" (like `turnForward()`, or Turret Test X / B at 45°) now means 0 = the magnet. 039 and 040 stay as history: forward is still reachable with `turnForward()` or the stick.
+Who: Team
+
+## 043 – Home on the middle of the magnet  (2026-11-08)
+Status: Accepted (not tested on the robot yet)
+Issue: #31
+Context: Homing at the first switch trigger (the magnet's edge) landed about 2° different from run to run, which moves every turn from the magnet, like ±90°. The edge moves with speed and direction. The middle of the magnet's range is steadier.
+Decision: `Turret.CENTER_HOME_ON_MAGNET = true`. The turret still homes at the first trigger so nothing waits. When the switch turns off again (the turret has passed all the way through), it re-homes **once** on `(enter count + leave count) / 2`. `goToRestAngle()` keeps turning left until it is through the magnet, then goes back to the middle. A pass narrower than `MIN_MAGNET_ZONE_COUNTS` is ignored. Turret Test shows the magnet's width. If it is still off, the next ideas are approaching the magnet from the same direction every time (gear backlash) and a slower pass.
+Who: Team
+
+## 044 – Home search goes both ways; rest spot is approached the same way every time  (2026-11-08)
+Status: Accepted (not tested on the robot yet)
+Issue: #31
+Context: The home search always turned LEFT. If the turret was already left of the magnet, it drove into the hard stop. The turret also landed a few degrees different from run to run, which fits gear backlash (it arrives a little differently depending on which way it was moving).
+Decision: (1) The search starts LEFT. If the encoder stops changing for `SEARCH_STALL_S` (hard stop), it turns around and goes RIGHT; a second stop gives up (HOME NOT FOUND). `HOME_SEARCH_TIMEOUT_S` is 10 s. (2) A move to the rest spot arrives moving the same way the turret was moving when it homed. On the wrong side it first goes `APPROACH_OVERSHOOT_DEGREES` past, then comes back.
+Who: Team
+
+## 045 – The turret never aims slower than MIN_AIM_SPEED  (2026-11-08)
+Status: Accepted (not tested on the robot yet)
+Issue: #31
+Context: The turret always stopped 4-5° away from its target (the magnet, or the ±90° moves). Aiming speed was `AIM_GAIN x error`, so near the target it asked for only 0.06-0.1, which is inside the servo's dead zone: the servo stopped moving before it got there.
+Decision: `Turret.MIN_AIM_SPEED = 0.15`. While the turret is outside `TOLERANCE_DEGREES`, it never asks for less than this. If it goes PAST the target (it coasts), it stops there instead of chasing back and forth. `isAtTarget()` is true once it has reached or passed the target.
+Who: Team
