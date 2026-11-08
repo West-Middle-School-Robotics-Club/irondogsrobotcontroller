@@ -54,8 +54,9 @@ public class Intake {
     public static final double WATER_WHEEL_SPEED = 0.65;  // Note 11/7: 0.65 (decision 041)
 
     // TODO(#4): set to true if "in" / "waterWheelUp" spins the wrong way.
-    public static final boolean INTAKE_REVERSED = false;
-    public static final boolean WATER_WHEEL_REVERSED = false;
+    // Note 11/7: Main TeleOp started with the intake system going OUT instead of IN, so both changed to true.
+    public static final boolean INTAKE_REVERSED = true;
+    public static final boolean WATER_WHEEL_REVERSED = true;
 
     private final CRServo intakeServo;        // null if not in the Driver Station config
     private final CRServo waterWheelServo;  // null if not in the Driver Station config

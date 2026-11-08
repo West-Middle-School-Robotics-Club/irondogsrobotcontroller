@@ -114,8 +114,8 @@ Worksheet: `intake-test.pdf`. Test with **Intake Test**. Issue #4.
 |---|---|---|---|---|
 | `INTAKE_SPEED` | `0.65` | Intake servo speed (0 to 1). Team wants 60-70% (decision 041) | Lower it if balls bounce off | 🔧 |
 | `WATER_WHEEL_SPEED` | `0.65` | Water wheel speed (0 to 1). Team wants 60-70% (decision 041) | Lower it if balls jam at the top | 🔧 |
-| `INTAKE_REVERSED` | `false` | Set `true` if "intake IN" pushes balls OUT | Intake Test, A button | 🔧 |
-| `WATER_WHEEL_REVERSED` | `false` | Set `true` if "water wheel UP" moves balls DOWN | Intake Test, X button | 🔧 |
+| `INTAKE_REVERSED` | `true` | Set `true` if "intake IN" pushes balls OUT. 11/7: Main TeleOp ran OUT at start, so `true`. Confirmed 11/7: IN at start, eject pushes balls out | Intake Test, A button | ✅ |
+| `WATER_WHEEL_REVERSED` | `true` | Set `true` if "water wheel UP" moves balls DOWN. 11/7: set `true` with the intake. Confirmed 11/7 in Main TeleOp | Intake Test, X button | ✅ |
 | `NECTAR_SWITCH_WIRING` | `NORMALLY_CLOSED` | How the NECTAR switches are wired. If "PRESSED" shows when NOT pressed, use `NORMALLY_CLOSED` | Intake Test: press each lever | ✅ |
 
 ## Launcher (flywheel + trigger gate): `subsystems/Launcher.java`
