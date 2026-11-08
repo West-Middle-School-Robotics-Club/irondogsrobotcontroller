@@ -78,9 +78,17 @@
 <text x="532.2" y="135.5" font-family="Helvetica, Arial, sans-serif" font-size="7.4" fill="#1d4ed8" text-anchor="middle" font-weight="bold">GARDEN</text>
 <rect x="268.2" y="276.1" width="128.7" height="163.0" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.5" />
 <rect x="263.3" y="296.5" width="66.0" height="42.9" fill="white" stroke="#d62828" stroke-width="2.5" />
-<rect x="263.3" y="375.8" width="66.0" height="42.9" fill="white" stroke="#d62828" stroke-width="2.5" />
-<rect x="335.9" y="296.5" width="66.0" height="42.9" fill="white" stroke="#1d4ed8" stroke-width="2.5" />
+<text x="296.3" y="318.4" font-family="Helvetica, Arial, sans-serif" font-size="6.3" fill="#6b7280" text-anchor="middle">down</text>
+<text x="296.3" y="325.8" font-family="Helvetica, Arial, sans-serif" font-size="4.5" fill="#6b7280" text-anchor="middle">tags 30-33</text>
+<rect x="263.3" y="375.8" width="66.0" height="42.9" fill="#d62828" stroke="#d62828" stroke-width="2.5" fill-opacity="0.35"/>
+<text x="296.3" y="397.6" font-family="Helvetica, Arial, sans-serif" font-size="8.5" fill="#d62828" text-anchor="middle" font-weight="bold">UP</text>
+<text x="296.3" y="405.0" font-family="Helvetica, Arial, sans-serif" font-size="4.5" fill="#6b7280" text-anchor="middle">tags 34-37</text>
+<rect x="335.9" y="296.5" width="66.0" height="42.9" fill="#1d4ed8" stroke="#1d4ed8" stroke-width="2.5" fill-opacity="0.35"/>
+<text x="368.9" y="318.4" font-family="Helvetica, Arial, sans-serif" font-size="8.5" fill="#1d4ed8" text-anchor="middle" font-weight="bold">UP</text>
+<text x="368.9" y="325.8" font-family="Helvetica, Arial, sans-serif" font-size="4.5" fill="#6b7280" text-anchor="middle">tags 42-45</text>
 <rect x="335.9" y="375.8" width="66.0" height="42.9" fill="white" stroke="#1d4ed8" stroke-width="2.5" />
+<text x="368.9" y="397.6" font-family="Helvetica, Arial, sans-serif" font-size="6.3" fill="#6b7280" text-anchor="middle">down</text>
+<text x="368.9" y="405.0" font-family="Helvetica, Arial, sans-serif" font-size="4.5" fill="#6b7280" text-anchor="middle">tags 38-41</text>
 <text x="332.6" y="283.9" font-family="Helvetica, Arial, sans-serif" font-size="7.4" fill="#111827" text-anchor="middle" font-weight="bold">HIVE</text>
 <circle cx="104.9" cy="436.8" r="9.9" fill="#fde68a" stroke="#a16207" stroke-width="1.5"/>
 <circle cx="253.4" cy="129.9" r="9.9" fill="#fde68a" stroke="#a16207" stroke-width="1.5"/>
@@ -119,40 +127,41 @@
 <line x1="530.6" y1="489.6" x2="503.9" y2="489.6" stroke="#1d4ed8" stroke-width="2"/><polygon points="503.9,489.6 509.3,487.0 509.3,492.2" fill="#1d4ed8"/>
 <text x="50.0" y="645.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#111827" text-anchor="start">Filled box = START (arrow = FRONT, black bar = BACK on the wall).  Numbered circles = waypoints.  Dashed box = where it PARKS.</text>
 <text x="50.0" y="661.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start">Robot size used: 17.98 x 15.99 in (BasicAuton.ROBOT_LENGTH_IN / ROBOT_WIDTH_IN). Blue = Red rotated 180° (decision 011).</text>
-<text x="50.0" y="691.2" font-family="Helvetica, Arial, sans-serif" font-size="14.0" fill="#111827" text-anchor="start" font-weight="bold">The steps (from BasicAuton.java, in inches)</text>
-<text x="50.0" y="713.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">Step</text>
-<text x="105.0" y="713.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">RED x, y, heading</text>
-<text x="250.0" y="713.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">BLUE x, y, heading</text>
-<text x="395.0" y="713.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">What happens</text>
-<text x="50.0" y="733.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start" font-weight="bold">Start</text>
-<text x="105.0" y="733.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">60, 63.01, -90°</text>
-<text x="250.0" y="733.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-60, -63.01, 90°</text>
-<text x="395.0" y="733.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">Robot set up here. Nothing moves during INIT</text>
-<text x="50.0" y="752.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start" font-weight="bold">1</text>
-<text x="105.0" y="752.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">60, 50, -90°</text>
-<text x="250.0" y="752.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-60, -50, 90°</text>
-<text x="395.0" y="752.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">LEAVE: drive straight forward, off the red wall</text>
-<text x="50.0" y="771.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start" font-weight="bold">2</text>
-<text x="105.0" y="771.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">40, 60, -90°</text>
-<text x="250.0" y="771.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-40, -60, 90°</text>
-<text x="395.0" y="771.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">PARK: slide toward the audience, partly into the LOADING ZONE, off the wall</text>
-<text x="50.0" y="818.2" font-family="Helvetica, Arial, sans-serif" font-size="14.0" fill="#111827" text-anchor="start" font-weight="bold">Test log: 5 good runs in a row = ready for competition</text>
-<text x="50.0" y="840.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Run</text>
-<text x="95.0" y="840.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Red / Blue</text>
-<text x="170.0" y="840.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Delay (s)</text>
-<text x="240.0" y="840.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Parked? (Y/N)</text>
-<text x="340.0" y="840.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Lights</text>
-<text x="405.0" y="840.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Time (s)</text>
-<text x="470.0" y="840.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Notes (overshoot, short, bumped...)</text>
-<line x1="50" y1="866.2" x2="800" y2="866.2" stroke="#c4c8d0" stroke-width="1"/>
-<text x="58.0" y="862.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">1</text>
-<line x1="50" y1="890.2" x2="800" y2="890.2" stroke="#c4c8d0" stroke-width="1"/>
-<text x="58.0" y="886.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">2</text>
-<line x1="50" y1="914.2" x2="800" y2="914.2" stroke="#c4c8d0" stroke-width="1"/>
-<text x="58.0" y="910.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">3</text>
-<line x1="50" y1="938.2" x2="800" y2="938.2" stroke="#c4c8d0" stroke-width="1"/>
-<text x="58.0" y="934.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">4</text>
-<line x1="50" y1="962.2" x2="800" y2="962.2" stroke="#c4c8d0" stroke-width="1"/>
-<text x="58.0" y="958.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">5</text>
+<text x="50.0" y="677.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start">HIVE: the UP CELLS shown are at MATCH START (Red: audience side, Blue: far side). Every TIP flips which CELL is up.</text>
+<text x="50.0" y="705.2" font-family="Helvetica, Arial, sans-serif" font-size="14.0" fill="#111827" text-anchor="start" font-weight="bold">The steps (from BasicAuton.java, in inches)</text>
+<text x="50.0" y="727.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">Step</text>
+<text x="105.0" y="727.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">RED x, y, heading</text>
+<text x="250.0" y="727.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">BLUE x, y, heading</text>
+<text x="395.0" y="727.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">What happens</text>
+<text x="50.0" y="747.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start" font-weight="bold">Start</text>
+<text x="105.0" y="747.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">60, 63.01, -90°</text>
+<text x="250.0" y="747.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-60, -63.01, 90°</text>
+<text x="395.0" y="747.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">Robot set up here. Nothing moves during INIT</text>
+<text x="50.0" y="766.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start" font-weight="bold">1</text>
+<text x="105.0" y="766.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">60, 50, -90°</text>
+<text x="250.0" y="766.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-60, -50, 90°</text>
+<text x="395.0" y="766.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">LEAVE: drive straight forward, off the red wall</text>
+<text x="50.0" y="785.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start" font-weight="bold">2</text>
+<text x="105.0" y="785.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">40, 60, -90°</text>
+<text x="250.0" y="785.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-40, -60, 90°</text>
+<text x="395.0" y="785.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">PARK: slide toward the audience, partly into the LOADING ZONE, off the wall</text>
+<text x="50.0" y="832.2" font-family="Helvetica, Arial, sans-serif" font-size="14.0" fill="#111827" text-anchor="start" font-weight="bold">Test log: 5 good runs in a row = ready for competition</text>
+<text x="50.0" y="854.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Run</text>
+<text x="95.0" y="854.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Red / Blue</text>
+<text x="170.0" y="854.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Delay (s)</text>
+<text x="240.0" y="854.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Parked? (Y/N)</text>
+<text x="340.0" y="854.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Lights</text>
+<text x="405.0" y="854.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Time (s)</text>
+<text x="470.0" y="854.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Notes (overshoot, short, bumped...)</text>
+<line x1="50" y1="880.2" x2="800" y2="880.2" stroke="#c4c8d0" stroke-width="1"/>
+<text x="58.0" y="876.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">1</text>
+<line x1="50" y1="904.2" x2="800" y2="904.2" stroke="#c4c8d0" stroke-width="1"/>
+<text x="58.0" y="900.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">2</text>
+<line x1="50" y1="928.2" x2="800" y2="928.2" stroke="#c4c8d0" stroke-width="1"/>
+<text x="58.0" y="924.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">3</text>
+<line x1="50" y1="952.2" x2="800" y2="952.2" stroke="#c4c8d0" stroke-width="1"/>
+<text x="58.0" y="948.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">4</text>
+<line x1="50" y1="976.2" x2="800" y2="976.2" stroke="#c4c8d0" stroke-width="1"/>
+<text x="58.0" y="972.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">5</text>
 <text x="425.0" y="1088.0" font-family="Helvetica, Arial, sans-serif" font-size="9.0" fill="#6b7280" text-anchor="middle">Field positions approximate. Source: BIOBUZZ Competition Manual Section 9. Generated by TeamCode/docs/game/diagrams/make_diagrams.py</text>
 </svg>

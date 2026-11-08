@@ -54,9 +54,17 @@
 <text x="678.0" y="170.7" font-family="Helvetica, Arial, sans-serif" font-size="9.9" fill="#1d4ed8" text-anchor="middle" font-weight="bold">GARDEN</text>
 <rect x="326.0" y="358.1" width="171.6" height="217.4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.5" />
 <rect x="319.4" y="385.4" width="88.0" height="57.2" fill="white" stroke="#d62828" stroke-width="2.5" />
-<rect x="319.4" y="491.0" width="88.0" height="57.2" fill="white" stroke="#d62828" stroke-width="2.5" />
-<rect x="416.2" y="385.4" width="88.0" height="57.2" fill="white" stroke="#1d4ed8" stroke-width="2.5" />
+<text x="363.4" y="414.5" font-family="Helvetica, Arial, sans-serif" font-size="8.4" fill="#6b7280" text-anchor="middle">down</text>
+<text x="363.4" y="424.4" font-family="Helvetica, Arial, sans-serif" font-size="5.9" fill="#6b7280" text-anchor="middle">tags 30-33</text>
+<rect x="319.4" y="491.0" width="88.0" height="57.2" fill="#d62828" stroke="#d62828" stroke-width="2.5" fill-opacity="0.35"/>
+<text x="363.4" y="520.1" font-family="Helvetica, Arial, sans-serif" font-size="11.4" fill="#d62828" text-anchor="middle" font-weight="bold">UP</text>
+<text x="363.4" y="530.0" font-family="Helvetica, Arial, sans-serif" font-size="5.9" fill="#6b7280" text-anchor="middle">tags 34-37</text>
+<rect x="416.2" y="385.4" width="88.0" height="57.2" fill="#1d4ed8" stroke="#1d4ed8" stroke-width="2.5" fill-opacity="0.35"/>
+<text x="460.2" y="414.5" font-family="Helvetica, Arial, sans-serif" font-size="11.4" fill="#1d4ed8" text-anchor="middle" font-weight="bold">UP</text>
+<text x="460.2" y="424.4" font-family="Helvetica, Arial, sans-serif" font-size="5.9" fill="#6b7280" text-anchor="middle">tags 42-45</text>
 <rect x="416.2" y="491.0" width="88.0" height="57.2" fill="white" stroke="#1d4ed8" stroke-width="2.5" />
+<text x="460.2" y="520.1" font-family="Helvetica, Arial, sans-serif" font-size="8.4" fill="#6b7280" text-anchor="middle">down</text>
+<text x="460.2" y="530.0" font-family="Helvetica, Arial, sans-serif" font-size="5.9" fill="#6b7280" text-anchor="middle">tags 38-41</text>
 <text x="411.8" y="368.5" font-family="Helvetica, Arial, sans-serif" font-size="9.9" fill="#111827" text-anchor="middle" font-weight="bold">HIVE</text>
 <circle cx="108.2" cy="572.4" r="13.2" fill="#fde68a" stroke="#a16207" stroke-width="1.5"/>
 <circle cx="306.2" cy="163.2" r="13.2" fill="#fde68a" stroke="#a16207" stroke-width="1.5"/>
@@ -80,14 +88,17 @@
 <text x="146.2" y="845.6" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#111827" text-anchor="start">LOADING ZONE (PARK)</text>
 <rect x="273.975" y="840.35" width="11.55" height="3.15" fill="#d62828"/>
 <text x="290.8" y="845.6" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#111827" text-anchor="start">GARDEN</text>
-<rect x="343.425" y="837.725" width="11.55" height="8.4" fill="white" stroke="#1d4ed8" stroke-width="2"/>
-<text x="360.2" y="845.6" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#111827" text-anchor="start">CELL (in HIVE)</text>
-<line x1="459.07500000000005" y1="841.9250000000001" x2="470.62500000000006" y2="841.9250000000001" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="4,3"/>
-<text x="475.9" y="845.6" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#111827" text-anchor="start">Center line</text>
+<rect x="343.425" y="837.725" width="11.55" height="8.4" fill="#1d4ed8" fill-opacity="0.35" stroke="#1d4ed8" stroke-width="2"/>
+<text x="360.2" y="845.6" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#111827" text-anchor="start">UP CELL at start</text>
+<rect x="470.625" y="837.725" width="11.55" height="8.4" fill="white" stroke="#1d4ed8" stroke-width="2"/>
+<text x="487.4" y="845.6" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#111827" text-anchor="start">CELL down</text>
+<line x1="557.4" y1="841.9250000000001" x2="568.9499999999999" y2="841.9250000000001" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="4,3"/>
+<text x="574.2" y="845.6" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#111827" text-anchor="start">Center line</text>
 <text x="60.0" y="865.6" font-family="Helvetica, Arial, sans-serif" font-size="10.0" fill="#6b7280" text-anchor="start">Coordinates (decision 011): origin = field center, +X toward far wall, +Y toward red wall, in inches. Blue = Red rotated 180°. Stay on your own side in AUTO (G402).</text>
-<text x="60.0" y="898.6" font-family="Helvetica, Arial, sans-serif" font-size="15.0" fill="#111827" text-anchor="start" font-weight="bold">Notes</text>
-<line x1="60" y1="928.6" x2="790" y2="928.6" stroke="#c4c8d0" stroke-width="1"/>
-<line x1="60" y1="956.6" x2="790" y2="956.6" stroke="#c4c8d0" stroke-width="1"/>
-<line x1="60" y1="984.6" x2="790" y2="984.6" stroke="#c4c8d0" stroke-width="1"/>
+<text x="60.0" y="880.6" font-family="Helvetica, Arial, sans-serif" font-size="10.0" fill="#6b7280" text-anchor="start">HIVE: the UP CELLS shown are at MATCH START (Red: audience side, Blue: far side). Every TIP flips which CELL of that HIVE is up.</text>
+<text x="60.0" y="908.6" font-family="Helvetica, Arial, sans-serif" font-size="15.0" fill="#111827" text-anchor="start" font-weight="bold">Notes</text>
+<line x1="60" y1="938.6" x2="790" y2="938.6" stroke="#c4c8d0" stroke-width="1"/>
+<line x1="60" y1="966.6" x2="790" y2="966.6" stroke="#c4c8d0" stroke-width="1"/>
+<line x1="60" y1="994.6" x2="790" y2="994.6" stroke="#c4c8d0" stroke-width="1"/>
 <text x="425.0" y="1088.0" font-family="Helvetica, Arial, sans-serif" font-size="9.0" fill="#6b7280" text-anchor="middle">Field positions approximate. Source: BIOBUZZ Competition Manual Section 9. Generated by TeamCode/docs/game/diagrams/make_diagrams.py</text>
 </svg>
