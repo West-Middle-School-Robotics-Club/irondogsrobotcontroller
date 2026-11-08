@@ -372,6 +372,9 @@ def read_basic_auton():
                 note = line.split("//", 1)[1].strip() if "//" in line else ""
                 path.append((tuple(ev(g) for g in m.groups()), note))
         routes[route] = (start, path)
+    # The plain-words setup from BasicAuton.setupText(): NEAR first, then FAR, each as (red, blue)
+    setups = re.findall(r'red \?\s*"([^"]+)"\s*:\s*"([^"]+)"', src)
+    consts["SETUP"] = {"NEAR": setups[0], "FAR": setups[1]}
     return consts, routes
 
 
@@ -381,8 +384,8 @@ def to_blue(pose):
     return (-x, -y, (h + 180) % 360)
 
 
-def robot_outline(f, pose, length, width, color, dashed=False, fill="none", label=""):
-    """The robot's footprint, with an arrow showing which way it faces."""
+def robot_outline(f, pose, length, width, color, dashed=False, fill="none", label="", mark_back=False):
+    """The robot's footprint, with an arrow showing which way it faces. mark_back = thick black bar on its BACK edge."""
     import math
     x, y, h = pose
     hr = math.radians(h)
@@ -398,6 +401,10 @@ def robot_outline(f, pose, length, width, color, dashed=False, fill="none", labe
            f'stroke-width="2.5"{dash}/>']
     tip = (x + length * 0.45 * fx, y + length * 0.45 * fy)
     out.append(f.arrow(f.px(y), f.py(x), f.px(tip[1]), f.py(tip[0]), color, 2))
+    if mark_back:  # corners 2 and 3 are the back corners (a = -1)
+        (bx0, by0), (bx1, by1) = [tuple(float(v) for v in c.split(",")) for c in corners[2:4]]
+        out.append(f'<line x1="{bx0:.1f}" y1="{by0:.1f}" x2="{bx1:.1f}" y2="{by1:.1f}" stroke="{INK}" '
+                   f'stroke-width="5" stroke-linecap="round"/>')
     if label:
         out.append(Field.text(f.px(y), f.py(x) + 0.5 * f.s * 3, label, 2.6 * f.s, color, "middle", bold=True))
     return "\n".join(out)
@@ -405,7 +412,7 @@ def robot_outline(f, pose, length, width, color, dashed=False, fill="none", labe
 
 def draw_route(f, start, path, length, width, color):
     """Start footprint, numbered waypoints joined by arrows, and the park footprint (dashed)."""
-    out = [robot_outline(f, start, length, width, color, fill=color, label="START")]
+    out = [robot_outline(f, start, length, width, color, fill=color, label="START", mark_back=True)]
     prev = start
     for i, (wp, _note) in enumerate(path, start=1):
         out.append(f.arrow(f.px(prev[1]), f.py(prev[0]), f.px(wp[1]), f.py(wp[0]), color, 3))
@@ -417,24 +424,68 @@ def draw_route(f, start, path, length, width, color):
     return "\n".join(out)
 
 
+def setup_panel(x0, y0, w, route, red_text, blue_text):
+    """Big, simple SET UP instructions with a close-up: the robot's BACK on the wall (decision 046)."""
+    import textwrap
+    out = [f'<rect x="{x0}" y="{y0}" width="{w}" height="490" fill="#fef9c3" stroke="#a16207" stroke-width="2" rx="8"/>',
+           Field.text(x0 + w / 2, y0 + 30, "SET UP", 24, INK, "middle", bold=True),
+           Field.text(x0 + w / 2, y0 + 52, "BACK against the wall", 15, INK, "middle", bold=True)]
+
+    def closeup(cx, top, good):
+        """A wall (left) and a robot seen from above. good = back on the wall; else its side (wrong)."""
+        parts = [f'<rect x="{cx - 70}" y="{top}" width="12" height="80" fill="#9ca3af"/>',
+                 Field.text(cx - 64, top + 94, "WALL", 9, GREY, "middle", bold=True)]
+        if good:
+            rx, ry, rw, rh = cx - 58, top + 16, 64, 48           # robot: back (left edge) on the wall
+            parts.append(f'<rect x="{rx}" y="{ry}" width="{rw}" height="{rh}" fill="#fecaca" stroke="{INK}" stroke-width="2"/>')
+            parts.append(f'<line x1="{rx}" y1="{ry}" x2="{rx}" y2="{ry + rh}" stroke="{INK}" stroke-width="6"/>')
+            parts.append(Field.text(rx + 6, ry + rh / 2 + 4, "BACK", 10, INK, "start", bold=True))
+            parts.append(Field.arrow(rx + rw - 8, ry + rh / 2, rx + rw + 40, ry + rh / 2, INK, 3))
+            parts.append(Field.text(rx + rw + 22, ry + rh / 2 - 8, "FRONT", 10, INK, "middle", bold=True))
+        else:
+            rx, ry, rw, rh = cx - 58, top + 8, 48, 64            # robot sideways: its SIDE on the wall
+            parts.append(f'<rect x="{rx}" y="{ry}" width="{rw}" height="{rh}" fill="#e5e7eb" stroke="{GREY}" stroke-width="2"/>')
+            parts.append(Field.arrow(rx + rw / 2, ry + rh - 6, rx + rw / 2, ry + 4, GREY, 3))
+            parts.append(f'<line x1="{cx - 75}" y1="{top}" x2="{cx + 20}" y2="{top + 80}" stroke="{RED}" stroke-width="6"/>')
+            parts.append(f'<line x1="{cx + 20}" y1="{top}" x2="{cx - 75}" y2="{top + 80}" stroke="{RED}" stroke-width="6"/>')
+        return parts
+
+    out += closeup(x0 + w / 2, y0 + 70, good=True)
+    out.append(Field.text(x0 + w / 2, y0 + 190, "YES: back on the wall", 12, "#15803d", "middle", bold=True))
+    out += closeup(x0 + w / 2 + 25, y0 + 205, good=False)
+    out.append(Field.text(x0 + w / 2, y0 + 318, "NO: side on the wall", 12, RED, "middle", bold=True))
+
+    y = y0 + 348
+    for color, label, text in ((RED, "RED", red_text), (BLUE, "BLUE", blue_text)):
+        out.append(Field.text(x0 + 12, y, label + ":", 12, color, bold=True))
+        for line in textwrap.wrap(text, 27):
+            y += 15
+            out.append(Field.text(x0 + 12, y, escape(line), 11.5, INK))
+        y += 22
+    out.append(Field.text(x0 + w / 2, y0 + 480, "Same as the SET UP line on the INIT screen", 9, GREY, "middle"))
+    return "\n".join(out)
+
+
 def route_sheet(route, consts, routes):
     """One printable page per route: the field with RED and BLUE drawn, the steps, and a test log."""
     start, path = routes[route]
     length, width = consts["ROBOT_LENGTH_IN"], consts["ROBOT_WIDTH_IN"]
-    where = {"NEAR": "against our alliance wall, next to the LOADING ZONE",
-             "FAR": "against the audience wall (Red) / far wall (Blue)"}[route]
+    where = {"NEAR": "our alliance wall, next to the LOADING ZONE",
+             "FAR": "the audience wall (Red) / far wall (Blue)"}[route]
     out = [Field.text(50, 48, f"Basic Auton {route}: LEAVE + PARK  ({TEAM_NAME})", 21, INK, bold=True),
-           Field.text(50, 72, f"Start {where}. OpModes: \"Basic Auton RED {route}\" and \"Basic Auton BLUE {route}\".",
-                      12, GREY)]
+           Field.text(50, 72, f"Robot's BACK against {where}. OpModes: \"Basic Auton RED {route}\" and "
+                      f"\"Basic Auton BLUE {route}\".", 12, GREY)]
 
-    f = Field(left=150, top=120, scale=3.85)  # 554 units
+    f = Field(left=95, top=120, scale=3.3)  # 475 units, leaves room for the SET UP panel on the right
+    red_setup, blue_setup = consts["SETUP"][route]
+    out.append(setup_panel(620, 105, 200, route, red_setup, blue_setup))
     out.append(f.draw(show_axes=False))
     out.append(draw_route(f, start, path, length, width, RED))
     out.append(draw_route(f, to_blue(start), [(to_blue(p), n) for p, n in path], length, width, BLUE))
 
     # Key
     ky = 120 + f.size() + 50
-    out.append(Field.text(50, ky, "Filled box = START (arrow = front of robot).  Numbered circles = waypoints, driven in order.  "
+    out.append(Field.text(50, ky, "Filled box = START (arrow = FRONT, black bar = BACK on the wall).  Numbered circles = waypoints.  "
                           "Dashed box = where it PARKS.", 10.5, INK))
     out.append(Field.text(50, ky + 16, f"Robot size used: {length:g} x {width:g} in (BasicAuton.ROBOT_LENGTH_IN / ROBOT_WIDTH_IN). "
                           "Blue = Red rotated 180° (decision 011).", 10.5, GREY))
