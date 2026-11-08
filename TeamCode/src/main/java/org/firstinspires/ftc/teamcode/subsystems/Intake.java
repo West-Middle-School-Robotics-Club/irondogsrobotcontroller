@@ -106,6 +106,16 @@ public class Intake {
         setWaterWheelSpeed(-WATER_WHEEL_SPEED);
     }
 
+    /** Run the intake at any speed, from -1 (full OUT) to +1 (full IN). in() and out() use INTAKE_SPEED. */
+    public void runIntake(double speed) {
+        setIntakeSpeed(Math.max(-1.0, Math.min(1.0, speed)));
+    }
+
+    /** Run the water wheel at any speed, from -1 (full DOWN) to +1 (full UP). waterWheelUp() and waterWheelDown() use WATER_WHEEL_SPEED. */
+    public void runWaterWheel(double speed) {
+        setWaterWheelSpeed(Math.max(-1.0, Math.min(1.0, speed)));
+    }
+
     /** Stop only the intake (the water wheel keeps doing what it was doing). */
     public void stopIntake() {
         setIntakeSpeed(0.0);

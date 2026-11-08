@@ -163,15 +163,17 @@ story = header_block(
     c("intakeServo") + ", " + c("waterWheelServo") + " (Continuous Rotation Servo), " +
     c("nectarDetectorLeftSwitch") + ", " + c("nectarDetectorRightSwitch") + " (Digital Device)")
 story += controls([
-    ["HOLD A / B", "intake IN / OUT"],
-    ["HOLD X / Y", "water wheel UP (to the launcher) / DOWN (clear a jam)"],
+    ["A / B", "spin ON-OFF (toggle) / STOP. Starts stopped"],
+    ["DPAD up / down", "speed of BOTH +/- 0.05.  The speed is not saved: copy the final number into Intake.java"],
+    ["DPAD left / right", "direction (toggle): IN + water wheel UP, or OUT + water wheel DOWN"],
+    ["X", "which one runs: BOTH, INTAKE only, WATER WHEEL only. Use \"only\" to check one at a time"],
     ["(no button)", "the switches are read all the time, even in INIT. Watch the telemetry lines "
                     "\"NECTAR detected\", \"Nectar left switch\", \"Nectar right switch\""],
 ])
 story += steps([
-    ["1", "Hold A", "balls go IN", "", c("INTAKE_REVERSED = true")],
-    ["2", "Hold X", "balls go UP toward the launcher", "", c("WATER_WHEEL_REVERSED = true")],
-    ["3", "Hold A + X with 3 balls", "no jam, no ball flying out", "", "lower " + c("INTAKE_SPEED") + " / " +
+    ["1", "X to INTAKE only, press A (direction IN)", "balls go IN", "", c("INTAKE_REVERSED = true")],
+    ["2", "X to WATER WHEEL only, press A (direction UP)", "balls go UP toward the launcher", "", c("WATER_WHEEL_REVERSED = true")],
+    ["3", "X to BOTH, A on, 3 balls. Tune the speed with dpad up / down", "no jam, no ball flying out", "", "copy the speed from the screen into " + c("INTAKE_SPEED") + " / " +
      c("WATER_WHEEL_SPEED") + " (0 to 1)"],
     ["4", "Nothing touching the levers", "both \"not pressed\", \"NECTAR detected: no\"", "",
      "says PRESSED: switch " + c("NECTAR_SWITCH_WIRING") + " to the other value"],
@@ -260,7 +262,7 @@ story = header_block(
     c("turretRotateServo") + " (Continuous Rotation Servo), " + c("turretEncoder") + " (Motor port, encoder only), " +
     c("turretHomeSwitch") + " (Digital Device), " + c("turretHoodServo") + " (Servo)")
 story += [warn("<b>Nothing physical stops the turret.</b> Until step 4 is done it can turn into wires or the frame. "
-               "Keep a hand near STOP and turn in small moves. Angles: 0 = forward, + = LEFT, home switch = 90 (LEFT). Limits: -60 to +90 (the hard stops are at -33 and +56 until moved, decision 037).")]
+               "Keep a hand near STOP. Turret angles: 0 = the MAGNET = robot forward, + = LEFT. Limits: 135 / -135 (decisions 047, 048).")]
 story += [p("Part A: Turret Servo Raw Test (servo alone)", H2),
           table([["#", "Do this", "Expected", "Actual", "If wrong"],
                  ["A1", "Push the left stick left and hold", "turret KEEPS turning while held, stops when let go", "",
@@ -270,21 +272,21 @@ story += [p("Part A: Turret Servo Raw Test (servo alone)", H2),
 story += controls([
     ["HOLD dpad LEFT / RIGHT", "turn left / right (half speed). + right trigger = full speed (once homed). + bumper = slow"],
     ["Y", "set a MARK: \"Since mark\" counts degrees from here"],
-    ["A", "turn to the REST spot (dead forward on the robot). Not homed yet? It turns LEFT to find the home switch first. Do steps 1 to 3 first!"],
-    ["X / B", "turn to 45° left / right (same warning)"],
+    ["A", "turn to the REST spot (the home magnet = forward). Not homed yet? It turns LEFT to find the home switch first. Do steps 1 to 3 first!"],
+    ["X / B", "turn to 45° left / right of ROBOT FORWARD (same warning)"],
     ["Dpad UP / DOWN", "hood up / down a little"],
-    ["BOTH lights GREEN", "turret is at HOME: the switch at 90° LEFT, or within HOME_TOLERANCE_COUNTS of it"],
+    ["BOTH lights GREEN", "turret is at HOME: the switch (forward), or within HOME_TOLERANCE_COUNTS of it"],
 ])
 story += steps([
     ["1", "Hold dpad LEFT", "turret turns LEFT (counter-clockwise from above)", "", c("SERVO_REVERSED = true")],
     ["2", "Turn left, watch \"Turret angle\"", "angle goes UP", "", c("ENCODER_REVERSED = true")],
-    ["3", "Y (mark), then turn exactly 90° left (use a square or tape marks)", "\"Since mark\" reads about 90", "",
-     "new " + c("ENCODER_REVS_PER_TURRET_REV") + " = old value x (what it read) / 90 = ______"],
+    ["3", "Note \"Turret angle\", then turn exactly 90° left (use a square or tape marks)", "it changes by about 90", "",
+     "new " + c("ENCODER_REVS_PER_TURRET_REV") + " = old value x (change it read) / 90 = ______"],
     ["4", "Home it. Turn slowly left until just before anything hits. Read the angle. Same to the right",
-     "left: ____° right: ____° (from forward)",
+     "left: ____° right: ____° (turret angles)",
      "", "set " + c("MAX_LEFT_DEGREES") + " / " + c("MAX_RIGHT_DEGREES") + " a few degrees inside those"],
-    ["5", "Turn past the home switch (90° LEFT) once (homes). Press A, then X, then B",
-     "turns toward 0, 45 L, 45 R (within limits), no wobble", "",
+    ["5", "Turn past the home switch (forward) once (homes). Press A, then X, then B",
+     "turns to the magnet, then 45 L / 45 R of forward, no wobble", "",
      "wobbles: lower " + c("AIM_GAIN") + ". Too slow: raise it. Runs away: steps 1 or 2 are wrong"],
     ["6", "Turn through the home switch slowly, watch \"Switch raw reading\"", "reading flips at the magnet", "",
      "flips the other way: " + c("HOME_SWITCH_TRIGGERED_STATE") + " to the other value"],
@@ -295,9 +297,9 @@ story += steps([
 story += constants([
     [c("SERVO_REVERSED"), "false", "", ""],
     [c("ENCODER_REVERSED"), "false", "", ""],
-    [c("ENCODER_REVS_PER_TURRET_REV"), "1.0", "", ""],
-    [c("HOME_ANGLE_DEGREES"), "90", "", ""],
-    [c("MAX_LEFT_DEGREES") + " / " + c("MAX_RIGHT_DEGREES"), "90 / -60", "", ""],
+    [c("ENCODER_REVS_PER_TURRET_REV"), "4.11", "", ""],
+    [c("FORWARD_ANGLE_DEGREES") + " (magnet = 0)", "0", "", ""],
+    [c("MAX_LEFT_DEGREES") + " / " + c("MAX_RIGHT_DEGREES"), "135 / -135", "", ""],
     [c("AIM_GAIN"), "0.02", "", ""],
     [c("HOME_SWITCH_TRIGGERED_STATE"), "false", "", ""],
     [c("HOOD_LOWEST_POSITION") + " / " + c("HOOD_HIGHEST_POSITION"), "0.0 / 1.0", "", ""],

@@ -5,13 +5,14 @@ Four OpModes in the **Basic Auton** group on the Driver Station. Pick the one th
 
 | OpMode | Start | Route |
 |---|---|---|
-| Basic Auton RED NEAR | Tile **A6**, left side against the **red wall** | Slide off the wall, park in the wall end of the LOADING ZONE (A5) |
-| Basic Auton RED FAR | Tile **B1**, back against the **audience wall** | Off the wall, up column B (clear of the HIVE), park in the field end of the LOADING ZONE |
-| Basic Auton BLUE NEAR | Tile **F1**, left side against the **blue wall** | Same as RED NEAR, rotated 180° |
+| Basic Auton RED NEAR | Tile **A6**, **back** against the **red wall**, facing into the field | Drive forward off the wall, slide toward the audience, park in the **far-wall third** of the LOADING ZONE (A5) |
+| Basic Auton RED FAR | Tile **B1**, back against the **audience wall** | Off the wall, up column B (clear of the HIVE), park in the **audience third** of the LOADING ZONE |
+| Basic Auton BLUE NEAR | Tile **F1**, **back** against the **blue wall**, facing into the field | Same as RED NEAR, rotated 180° |
 | Basic Auton BLUE FAR | Tile **E6**, back against the **far wall** | Same as RED FAR, rotated 180° |
 
+- **Every start is BACK to the wall** (decision 046). The INIT screen says exactly how to place the robot ("SET UP: ...").
 - **During INIT:** both lights show the alliance color. **Dpad up/down** sets a **start delay** (0-10 s) for when our partner's route crosses ours. Keep the robot **still** until the Pinpoint says READY. Nothing moves.
-- **After START:** waits for the delay, then drives each waypoint using the **Pinpoint** (not timers). Lights: **GREEN** = parked, **YELLOW** = stopped early (a waypoint timed out).
+- **After START:** waits for the delay, then drives each waypoint using the **Pinpoint** (not timers). First it waits up to 3 s for the Pinpoint to be READY; if it isn't, the robot does NOT drive (YELLOW). Lights: **GREEN** = parked, **YELLOW** = stopped early (a waypoint timed out, out of time, or Pinpoint not ready).
 - After AUTO, the matching **Main TeleOp** is queued up automatically.
 
 All the code is in `BasicAuton.java`. The four small files only pick the alliance and route.

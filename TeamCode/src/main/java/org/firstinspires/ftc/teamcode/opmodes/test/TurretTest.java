@@ -19,23 +19,23 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *     + hold RIGHT TRIGGER   FULL speed (only once homed; before that, everything is capped at NOT_HOMED_MAX_SPEED)
  *     + hold a bumper        SLOW, fine moves
  *   Y                        set a MARK: "Since mark" counts from here. Use it to measure a move
- *   A                        turn to the REST spot (dead forward, code angle 10.5), the same as X on the operator's
+ *   A                        turn to the REST spot (the home magnet), the same as X on the operator's
  *                            gamepad (decision 039). Homed: turns straight there. Not homed: first turns LEFT
  *                            to find the home switch, then goes there (gives up after HOME_SEARCH_TIMEOUT_S)
- *   X / B                    turn to 45° left / right: use the encoder to aim, so they only work once HOMED,
+ *   X / B                    turn to 45° left / right of ROBOT FORWARD (decision 047): use the encoder to aim, so they only work once HOMED,
  *                            and only as far as MAX_LEFT / MAX_RIGHT allow
  *   any dpad left/right      cancels A / X / B
  *   dpad up / down           tilt the HOOD up / down a little (find HOOD_LOWEST / HIGHEST_POSITION)
  *
- * The home switch is at 90 degrees LEFT of forward (decision 034). The first time it triggers,
- * the encoder is HOMED (that spot = HOME_ANGLE_DEGREES = 90).
+ * At the home switch (magnet) the turret faces robot FORWARD. When it triggers, the encoder is HOMED: the magnet
+ * is turret angle 0 = forward (decisions 047, 048).
  * BOTH lights turn GREEN whenever the turret is at HOME: at the switch, or within ±HOME_TOLERANCE_COUNTS of it.
  * Until then, the turret only moves slowly.
  *
  * Calibrate IN ORDER (steps in issue #31). Don't try A / X / B until steps 1 and 2 are right!
  *   1. Dpad LEFT must turn the turret LEFT. If not: SERVO_REVERSED = true in Turret.java
  *   2. Turning LEFT must make "Turret angle" go UP. If not: ENCODER_REVERSED = true
- *   3. Turn exactly 90° left: "Turret angle" should read about 90. If not: fix ENCODER_REVS_PER_TURRET_REV
+ *   3. Note "Turret angle", turn exactly 90°: it should change by about 90. If not: fix ENCODER_REVS_PER_TURRET_REV
  *   4. Set MAX_LEFT_DEGREES / MAX_RIGHT_DEGREES
  *   5. Tune AIM_GAIN with A / X / B
  *
@@ -117,19 +117,19 @@ public class TurretTest extends LinearOpMode {
                 turret.goToRestAngle();   // homed: straight to the rest spot. Not homed: finds the home switch first (039)
             }
             if (gamepad1.xWasPressed()) {
-                turret.turnTo(45);
+                turret.turnTo(Turret.robotToTurret(45));    // 45 degrees LEFT of robot forward (decision 047)
             }
             if (gamepad1.bWasPressed()) {
-                turret.turnTo(-45);
+                turret.turnTo(Turret.robotToTurret(-45));   // 45 degrees RIGHT of robot forward
             }
 
             turret.update();
             showHome(turret, leftLight, rightLight);
 
             telemetry.addLine("HOLD dpad L/R = turn (+R trigger = FULL, +bumper = slow)   dpad U/D = hood");
-            telemetry.addLine("Y = mark   A = rest spot (forward)   X/B = 45° L/R");
+            telemetry.addLine("Y = mark   A = rest spot (magnet)   X/B = 45° L/R of forward");
             if (!turret.isHomed()) {
-                telemetry.addData("Speed capped", "%.2f until homed: turn past the home switch (90° left) once", Turret.NOT_HOMED_MAX_SPEED);
+                telemetry.addData("Speed capped", "%.2f until homed: turn past the home switch (forward) once", Turret.NOT_HOMED_MAX_SPEED);
             }
             telemetry.addLine();
             addReadings(turret, turretEncoder, homeSwitch, markCounts, sinceMarkSet);
@@ -154,7 +154,7 @@ public class TurretTest extends LinearOpMode {
         int counts = turret.getEncoderCounts();
         int sinceMark = counts - markCounts;
 
-        telemetry.addLine("--- Home switch (at 90° left) ---");
+        telemetry.addLine("--- Home switch (at forward) ---");
         telemetry.addData("Home switch (magnet)", turret.isAtHomeSwitch() ? "YES" : "no");
         telemetry.addData("Switch raw reading", "%b  (should FLIP when the magnet passes)", homeSwitch.getState());
         telemetry.addLine("  Never flips? Try the other channel of that digital port (REV switch: usually the odd one, n+1).");

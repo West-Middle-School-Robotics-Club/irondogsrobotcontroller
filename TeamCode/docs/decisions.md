@@ -459,3 +459,64 @@ Decision: When START is pressed in Main TeleOp:
 - **Lights:** the alliance color, as before. **GREEN while the turret is homed and turning to forward**, then back to the alliance color when it arrives. **PURPLE (NECTAR) still wins** over green
 - Nothing moves during INIT (G304.H). The turret still homes in INIT if it is pointed at the magnet
 Who: Team
+
+## 042 – The turret's rest spot is the home magnet  (2026-11-08)
+Status: Accepted (not tested on the robot yet)
+Issue: #31
+Context: Decisions 039 and 040 made the rest spot dead forward (code angle 10.5). The team wants the rest spot back at the home magnet instead.
+Decision: **`Turret.REST_ANGLE_DEGREES = HOME_ANGLE_DEGREES`**. `goToRestAngle()` (operator X, Turret Test A, Main TeleOp start-up) now turns the turret onto the **home magnet**, 90° left of forward. The home search is unchanged: not homed = turn left until the switch triggers, then stop on it. The team also set `HOME_ANGLE_DEGREES = 0` and the limits to `MAX_LEFT_DEGREES = 120` / `MAX_RIGHT_DEGREES = -120` by hand (11/8), so **the magnet is angle 0** and dead forward is about -86 on this scale. Anything written as "0 = forward" (like `turnForward()`, or Turret Test X / B at 45°) now means 0 = the magnet. 039 and 040 stay as history: forward is still reachable with `turnForward()` or the stick.
+Who: Team
+
+## 043 – Home on the middle of the magnet  (2026-11-08)
+Status: Accepted (not tested on the robot yet)
+Issue: #31
+Context: Homing at the first switch trigger (the magnet's edge) landed about 2° different from run to run, which moves every turn from the magnet, like ±90°. The edge moves with speed and direction. The middle of the magnet's range is steadier.
+Decision: `Turret.CENTER_HOME_ON_MAGNET = true`. The turret still homes at the first trigger so nothing waits. When the switch turns off again (the turret has passed all the way through), it re-homes **once** on `(enter count + leave count) / 2`. `goToRestAngle()` keeps turning left until it is through the magnet, then goes back to the middle. A pass narrower than `MIN_MAGNET_ZONE_COUNTS` is ignored. Turret Test shows the magnet's width. If it is still off, the next ideas are approaching the magnet from the same direction every time (gear backlash) and a slower pass.
+Who: Team
+
+## 044 – Home search goes both ways; rest spot is approached the same way every time  (2026-11-08)
+Status: Accepted (not tested on the robot yet)
+Issue: #31
+Context: The home search always turned LEFT. If the turret was already left of the magnet, it drove into the hard stop. The turret also landed a few degrees different from run to run, which fits gear backlash (it arrives a little differently depending on which way it was moving).
+Decision: (1) The search starts LEFT. If the encoder stops changing for `SEARCH_STALL_S` (hard stop), it turns around and goes RIGHT; a second stop gives up (HOME NOT FOUND). `HOME_SEARCH_TIMEOUT_S` is 10 s. (2) A move to the rest spot arrives moving the same way the turret was moving when it homed. On the wrong side it first goes `APPROACH_OVERSHOOT_DEGREES` past, then comes back.
+Who: Team
+
+## 045 – The turret never aims slower than MIN_AIM_SPEED  (2026-11-08)
+Status: Accepted (not tested on the robot yet)
+Issue: #31
+Context: The turret always stopped 4-5° away from its target (the magnet, or the ±90° moves). Aiming speed was `AIM_GAIN x error`, so near the target it asked for only 0.06-0.1, which is inside the servo's dead zone: the servo stopped moving before it got there.
+Decision: `Turret.MIN_AIM_SPEED = 0.15`. While the turret is outside `TOLERANCE_DEGREES`, it never asks for less than this. If it goes PAST the target (it coasts), it stops there instead of chasing back and forth. `isAtTarget()` is true once it has reached or passed the target.
+Who: Team
+
+## 046 – Every Basic Auton starts with the robot's BACK against the wall  (2026-11-08)
+Status: Accepted (NEAR not tested on the floor yet). Changes the NEAR start in 026; the rest of 026 stands
+Issue: #22
+Context: NEAR started with the robot's LEFT side on the alliance wall, FAR with its BACK on the audience wall. Students could easily put the back against the wall for NEAR too. Then the robot is turned 90° from what the code tells the Pinpoint, and every move goes the wrong way.
+Decision:
+- **One rule for every start: BACK against the wall.** NEAR (RED) starts in A6 with its back on the red wall, facing into the field (heading -90): `redPose(60, 72 - ROBOT_LENGTH_IN / 2, -90)`
+- NEAR route: LEAVE = drive straight forward off the wall to (60, 50); PARK = slide toward the audience to (40, 60), still facing into the field (no turning). That is partly in the LOADING ZONE (PARK) and about 3 in off the wall (LEAVE). BLUE is still RED rotated 180°. FAR is unchanged (it was already back to the wall)
+- The **INIT screen shows a plain "SET UP:" line** for each program (tile, which wall the back touches, which way the front faces), so the drive team doesn't need the route sheet to place the robot
+Who: Mentor (11/8)
+
+## 047 – Turret angles: 0 = the magnet, robot forward = -90, limits ±135 from forward  (2026-11-08)
+Status: Accepted (limits not tested on the robot yet). Settles the angle scale from 042 and replaces its limits
+Issue: #31
+Context: The turret code was first written with 0 = robot forward and the magnet in front. Then the magnet moved 90° left, and 042 made the magnet angle 0, but some comments and `turnForward()` still assumed 0 = forward. Future features (camera aiming, field aiming in Advanced Auton) think in "degrees from robot forward", so a hidden 90° offset would be an easy bug.
+Decision:
+- **Turret angle 0 = the home magnet** (team choice). + = left (decision 007)
+- **Robot forward = `Turret.FORWARD_ANGLE_DEGREES = -90`**: the magnet is 90° left of forward. This constant is the **only** place the offset lives; a remount changes only it
+- **Helpers:** `Turret.robotToTurret(degreesFromForward)` and `Turret.turretToRobot(turretDegrees)`. Anything measured from the robot's front (the camera, field aiming, autonomous) uses them, never a hand-added 90
+- **Limits: ±135° from robot forward** (team, for the wiring): `MAX_LEFT_DEGREES = 45`, `MAX_RIGHT_DEGREES = -225`. Replaces 042's ±120 from the magnet
+- `turnForward()` now really points forward (-90). Turret Test X / B turn to 45° left / right of forward (90° left of the magnet would now be past the left limit)
+- The rest spot (the magnet), homing (043, 044) and minimum aim speed (045) are unchanged
+Who: Team / mentor (11/8)
+
+## 048 – Correction: at the magnet the turret faces FORWARD (no 90° offset)  (2026-11-08)
+Status: Accepted. Corrects the forward angle and limits in 047; the rest of 047 stands
+Issue: #31
+Context: 047 put robot forward at turret angle -90, because the magnet sits 90° to the left of the robot's front. But at the home switch the turret (launcher) itself faces forward. Turret Test showed it: X / B aimed 90° off, and the turret could turn past the intended limits.
+Decision:
+- **`FORWARD_ANGLE_DEGREES = 0`**: magnet = turret angle 0 = robot forward. No offset
+- **Limits ±135 from forward = `MAX_LEFT_DEGREES = 135`, `MAX_RIGHT_DEGREES = -135`**
+- Keep `robotToTurret()` / `turretToRobot()` and the constant: today they change nothing, but a future remount only changes `FORWARD_ANGLE_DEGREES`
+Who: Team / mentor (11/8)

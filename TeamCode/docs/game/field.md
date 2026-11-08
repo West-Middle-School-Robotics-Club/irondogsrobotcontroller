@@ -47,6 +47,7 @@ Blue's is near the audience (F2). Gardens are in opposite corners.
 - **Bi-stable:** one CELL faces **up** at a time. Launching enough elements into the **upward** CELL **TIPS** the HIVE, and the other CELL then faces up
 - **CELL opening:** ~**20 in wide × 14 in tall × 12 in deep**
 - At match start, the CELL that "points at" a FLOWER is tilted **down** (p. 83). 3 NECTAR of the HIVE's color start in the upward CELL
+- **So at match start the UP CELLS are: Red = AUDIENCE side (tags 34-37), Blue = FAR side (tags 42-45).** Red's far-side CELL points at the far-wall FLOWER and Blue's audience-side CELL points at the audience-wall FLOWER, so those start down. **Every TIP flips** which CELL of that HIVE is up, so Advanced Auton can only count on this for its first launch. The diagrams in `diagrams/` show it
 
 ## FLOWERS (9.7, pp. 72–73)
 - **4 FLOWERS**, attached to the perimeter walls, roughly one per wall (see map)

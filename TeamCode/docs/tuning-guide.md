@@ -27,7 +27,7 @@ Most of these have a **printable worksheet** in `TeamCode/docs/worksheets/` (see
 | `SLOW_MODE_SCALE` | `opmodes/teleop/DriverControls.java` | `0.4` | Hold a bumper: slow, for lining up |
 | `TURBO_SCALE` | `opmodes/teleop/DriverControls.java` | `1.0` | Hold a trigger: full speed |
 | `SNAP_ANGLE_DEGREES` | `opmodes/teleop/DriverControls.java` | `15.0` | Straight-line assist: how forgiving it is |
-| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `0.45` | Flywheel power (it runs the whole match) |
+| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `1.0` | Flywheel power (it runs the whole match) |
 | `X_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the X odometry pod is, sideways from the turning center |
 | `Y_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the Y odometry pod is, forward from the turning center |
 
@@ -112,8 +112,8 @@ Worksheet: `intake-test.pdf`. Test with **Intake Test**. Issue #4.
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `INTAKE_SPEED` | `0.65` | Intake servo speed (0 to 1). Team wants 60-70% (decision 041) | Lower it if balls bounce off | 🔧 |
-| `WATER_WHEEL_SPEED` | `0.65` | Water wheel speed (0 to 1). Team wants 60-70% (decision 041) | Lower it if balls jam at the top | 🔧 |
+| `INTAKE_SPEED` | `1.0` | Intake servo speed (0 to 1). Team wants 60-70% (decision 041) | Intake Test: dpad up / down changes the speed of both live (0.05 steps), then copy the number here. Lower it if balls bounce off | 🔧 |
+| `WATER_WHEEL_SPEED` | `1.0` | Water wheel speed (0 to 1). Team wants 60-70% (decision 041) | Intake Test: same dpad speed as the intake; use X = water wheel only to tune it alone, then copy the number here. Lower it if balls jam at the top | 🔧 |
 | `INTAKE_REVERSED` | `true` | Set `true` if "intake IN" pushes balls OUT. 11/7: Main TeleOp ran OUT at start, so `true`. Confirmed 11/7: IN at start, eject pushes balls out | Intake Test, A button | ✅ |
 | `WATER_WHEEL_REVERSED` | `true` | Set `true` if "water wheel UP" moves balls DOWN. 11/7: set `true` with the intake. Confirmed 11/7 in Main TeleOp | Intake Test, X button | ✅ |
 | `NECTAR_SWITCH_WIRING` | `NORMALLY_CLOSED` | How the NECTAR switches are wired. If "PRESSED" shows when NOT pressed, use `NORMALLY_CLOSED` | Intake Test: press each lever | ✅ |
@@ -123,7 +123,7 @@ Worksheet: `launcher-test.pdf`. Test with **Launcher Test**. Issue #5, decision 
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `DEFAULT_SPIN_POWER` | `0.45` | Flywheel power (0 to 1). Runs the whole match. Team wants 40-50% for now (decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
+| `DEFAULT_SPIN_POWER` | `1.0` | Flywheel power (0 to 1). Runs the whole match. Team wants 40-50% for now (decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
 | `MOTOR_REVERSED` | `true` | Flywheel direction | Launcher Test: balls must go OUT | 🔧 |
 | `READY_VELOCITY_THRESHOLD` | `1000.0` | The flywheel counts as READY at this speed (ticks/second) | Launcher Test: read "Launcher Velocity" once settled; use ~90% of it | 🔧 placeholder |
 | `TRIGGER_REST_POSITION` | `0.0` | Trigger gate position that **blocks** the balls (0 to 1) | Launcher Test, left bumper | 🔧 |
@@ -136,18 +136,25 @@ Worksheet: `turret-test.pdf`. Test with **Turret Test**, **in this order** (step
 |---|---|---|---|---|
 | `SERVO_REVERSED` | `false` | Step 1: set `true` if a + (left) speed turns the turret RIGHT | Turret Test, dpad left | 🔧 |
 | `ENCODER_REVERSED` | `false` | Step 2: set `true` if "Turret angle" goes DOWN when turning left | Turret Test | 🔧 |
-| `ENCODER_REVS_PER_TURRET_REV` | `4.69` | Step 3: encoder turns per one turret turn (gear ratio) | Turn exactly 90°; angle must read ~90. Or count gear teeth | ✅ 18-tooth servo gear, about 84.5-tooth turret gear (11/7). Changes if the encoder moves to the big gear |
-| `HOME_ANGLE_DEGREES` | `86.2` | Where the turret points when the home switch triggers: about 90° LEFT of robot forward (decisions 034, 038). Change only if the turret or the magnet is remounted | Press X / Turret Test A: forward must look straight. 11/7: it ended 1.8° too far right (90 → 88.2), then still 1.1° too far right; the team set it to 86.2 by hand | 🔧 re-check after the change |
-| `MAX_LEFT_DEGREES` | `90.0` | Step 4: farthest the turret may turn left, measured from FORWARD (0). 90 = the home switch, so the turret can always reach the magnet (decision 037) | Chosen by the team. Measured hard stop on the left: 55.9° (11/7), the team will move it. The turret coasts a few degrees past a limit | 🔧 stop must be moved first |
-| `MAX_RIGHT_DEGREES` | `-60.0` | Step 4: farthest right, from forward (0). Negative = right of forward | Chosen by the team. Measured hard stop on the right: -33.1° (11/7), the team will move it | 🔧 stop must be moved first |
-| `AIM_GAIN` | `0.02` | Step 5: speed per degree away from a target. Bigger = faster, may wobble | Turret Test X / B (±45°) | 🔧 |
+| `ENCODER_REVS_PER_TURRET_REV` | `4.11` | Step 3: encoder turns per one turret turn (gear ratio) | Turn exactly 90°; angle must read ~90. Or count gear teeth | ✅ 18-tooth servo gear, about 84.5-tooth turret gear (11/7). Changes if the encoder moves to the big gear. 11/8: the team changed it from 4.69 to 4.11 after the 90° test moves |
+| `HOME_ANGLE_DEGREES` | `0` | The angle the code calls the home magnet. Keep it 0: every turret angle is measured from the magnet (decisions 042, 047). To move "forward", change `FORWARD_ANGLE_DEGREES` | | ✅ |
+| `FORWARD_ANGLE_DEGREES` | `0.0` | Where ROBOT FORWARD is in turret angles. At the magnet the turret faces forward, so 0: no offset (decision 048). The ONE place an offset would live if the turret or magnet is remounted | Turret Test X / B must land 45° left / right of the robot's front | ✅ |
+| `MAX_LEFT_DEGREES` | `135.0` | Step 4: farthest the turret may turn LEFT, in turret angles (0 = magnet = forward). 135° left of forward (decisions 047, 048) | Turn slowly to it once and check the wiring. The turret coasts a few degrees past a limit | 🔧 check the wiring once |
+| `MAX_RIGHT_DEGREES` | `-135.0` | Step 4: farthest RIGHT: 135° right of forward (decisions 047, 048) | Same | 🔧 check the wiring once |
+| `AIM_GAIN` | `0.02` | Step 5: speed per degree away from a target. Bigger = faster, may wobble | Turret Test X / B (±90° from the magnet) | 🔧 |
+| `MIN_AIM_SPEED` | `0.15` | Slowest aiming speed. The servo doesn't move below some power, so without this the turret stopped 3-5° short of a target (decision 045) | Turret Test: A, X, B must land within about 1° of the target. Stops short: raise it. Jumps past: lower it | 🔧 not tested yet |
 | `MAX_SPEED` | `0.6` | Fastest the turret turns to a target | | 🔧 |
 | `TOLERANCE_DEGREES` | `1.0` | "Close enough" to a target | | 🔧 |
 | `NOT_HOMED_MAX_SPEED` | `0.35` | Speed cap until the turret has passed forward once | 0.15 was too slow (10/15) | ✅ |
 | `RUNAWAY_DEGREES` | `20.0` | Safety: stop if it moves this much the WRONG way | Leave it | ✅ |
-| `HOME_TOLERANCE_COUNTS` | `200` | How close to forward counts as "home" (light green) | Smaller = stricter | ✅ |
-| `REST_ANGLE_DEGREES` | `10.5` | Where X (operator) and A (Turret Test) turn the turret: dead forward on the robot (decisions 039, 040). In the code's angle scale that is +10.5 | Turret Test A: the turret must face dead forward | ✅ checked 11/7 |
-| `HOME_SEARCH_TIMEOUT_S` | `6.0` | Operator X (turret forward) when the turret is NOT homed yet: it turns left to find the home switch, and gives up after this many seconds | Time a full left turn to the switch, then add a margin | 🔧 not tested yet |
+| `HOME_TOLERANCE_COUNTS` | `50` | How close to forward counts as "home" (light green) | Smaller = stricter | ✅ |
+| `CENTER_HOME_ON_MAGNET` | `true` | Home on the MIDDLE of the magnet's range instead of the first trigger (decision 043). The turret must pass all the way through the magnet once. Set `false` for the old edge homing | Turret Test: turn left through the magnet, "Magnet range" shows its width and "homed on the MIDDLE". Press A / X / B several times: the turret should land within about 1° each time | 🔧 not tested yet |
+| `MIN_MAGNET_ZONE_COUNTS` | `20` | A pass through the magnet narrower than this is ignored (the turret turned around inside it) | Compare with the "Magnet range" counts in Turret Test; keep it well under that | 🔧 |
+| `REST_ANGLE_DEGREES` | `HOME_ANGLE_DEGREES` | Where X (operator) and A (Turret Test) turn the turret: onto the home magnet, which is angle 0 now (decision 042). It follows HOME_ANGLE_DEGREES. Was 10.5 = dead forward (039, 040) | Turret Test A: the turret stops on the magnet and both lights go GREEN | 🔧 |
+| `HOME_SEARCH_TIMEOUT_S` | `10.0` | Home search (X / A / start-up) when the turret is NOT homed: how long it may look, turning left first and then right if it hits a stop (decision 044). Gives up after this many seconds | Time a full sweep both ways, then add a margin | 🔧 not tested yet |
+| `SEARCH_STALL_S` | `0.4` | During the home search, no encoder movement for this long = the turret hit a hard stop, so turn around. A second stop = give up | Too short: stops it before it starts. Too long: pushes into the stop | 🔧 |
+| `SEARCH_STALL_COUNTS` | `15` | The least the encoder must change to count as "still moving" (about 52 counts = 1°) | Leave it | 🔧 |
+| `APPROACH_OVERSHOOT_DEGREES` | `8.0` | A move to the rest spot always ends moving the same way the turret moved when it homed. On the wrong side, it first goes this far past, then comes back (gear backlash) | Press A from both sides of the magnet: it should land in the same spot | 🔧 |
 | `HOME_SWITCH_TRIGGERED_STATE` | `false` | What the home switch reads at the magnet | Turret Test: "Home switch (magnet)" says YES at the magnet | ✅ |
 | `HOOD_LOWEST_POSITION` | `0.0` | Hood's flattest position (0 to 1). Keeps it off its hard stop | Turret Test dpad down | 🔧 |
 | `HOOD_HIGHEST_POSITION` | `1.0` | Hood's steepest position | Turret Test dpad up | 🔧 |
