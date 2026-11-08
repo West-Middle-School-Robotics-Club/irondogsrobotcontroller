@@ -55,13 +55,15 @@ public abstract class BasicAuton extends LinearOpMode {
     // RED positions (inches, degrees). See TeamCode/docs/game/field.md for the map.
     // TODO(#22): check each one on a taped practice field and adjust.
     // ------------------------------------------------------------------------------------------------
-    // NEAR: start in tile A6, LEFT side touching the RED wall (y = 72), facing the far wall.
+    // Every Basic Auton starts with the robot's BACK touching a wall (decision 046), so the drive team has one rule.
+    // NEAR: start in tile A6, BACK touching the RED wall (y = 72), FRONT facing into the field (heading -90).
     // The LOADING ZONE (A5) is right next to it, toward the audience.
-    static final Pose2D RED_NEAR_START = redPose(60, 72 - ROBOT_WIDTH_IN / 2, 0);
+    static final Pose2D RED_NEAR_START = redPose(60, 72 - ROBOT_LENGTH_IN / 2, -90);
     static final Pose2D[] RED_NEAR_PATH = {
-            redPose(60, 50, 0),   // LEAVE: slide right, off the red wall
-            redPose(40, 61, 0),   // PARK: in the wall end of the LOADING ZONE (zone: x 24.5 to 47.5, y 61 to 72)
+            redPose(60, 50, -90),  // LEAVE: drive straight forward, off the red wall
+            redPose(40, 60, -90),  // PARK: slide toward the audience, partly into the LOADING ZONE, off the wall
     };
+    // (LOADING ZONE: x 24.5 to 47.5, y 61 to 72. PARK = partly in it; LEAVE = not touching the wall at the end.)
 
     // FAR: start in tile B1, BACK touching the AUDIENCE wall (x = -72), facing the far wall.
     static final Pose2D RED_FAR_START = redPose(-72 + ROBOT_LENGTH_IN / 2, 36, 0);
@@ -124,6 +126,7 @@ public abstract class BasicAuton extends LinearOpMode {
             }
 
             telemetry.addData("BASIC AUTON", "%s  %s  (lights are %s)", alliance, route, allianceColor);
+            telemetry.addLine("SET UP: " + setupText(route, alliance));
             telemetry.addLine("Wrong one? Stop and pick the right Basic Auton.");
             telemetry.addData("Start delay", "%d s   (dpad up/down to change)", delaySeconds);
             telemetry.addData("Start position", poseText(start));
@@ -252,6 +255,17 @@ public abstract class BasicAuton extends LinearOpMode {
             telemetry.addData("Target", poseText(target));
         }
         telemetry.update();
+    }
+
+    /** How to place the robot, in plain words for the drive team (shown during INIT). Always BACK to a wall (046). */
+    static String setupText(Route route, Alliance alliance) {
+        boolean red = alliance == Alliance.RED;
+        if (route == Route.NEAR) {
+            return red ? "tile A6, BACK touching the RED wall, FRONT facing into the field"
+                       : "tile F1, BACK touching the BLUE wall, FRONT facing into the field";
+        }
+        return red ? "tile B1, BACK touching the AUDIENCE wall, FRONT facing the FAR wall"
+                   : "tile E6, BACK touching the FAR wall, FRONT facing the AUDIENCE";
     }
 
     /** A RED field position, in inches and degrees. */
