@@ -50,8 +50,8 @@ public class Intake {
 
     // Speeds, from 0 to 1. TODO(#4): tune on the robot with "Intake Test".
     //Note 11/6: changed from 1.0 to 0.8 for intake and water wheel
-    public static final double INTAKE_SPEED = 0.65;   // Note 11/7: 0.65 (decision 041)
-    public static final double WATER_WHEEL_SPEED = 0.65;  // Note 11/7: 0.65 (decision 041)
+    public static final double INTAKE_SPEED = 1.0;   // Note 11/7: 0.65 (decision 041)
+    public static final double WATER_WHEEL_SPEED = 1.0;  // Note 11/7: 0.65 (decision 041)
 
     // TODO(#4): set to true if "in" / "waterWheelUp" spins the wrong way.
     // Note 11/7: Main TeleOp started with the intake system going OUT instead of IN, so both changed to true.
