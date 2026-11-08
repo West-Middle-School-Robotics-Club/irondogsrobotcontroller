@@ -5,8 +5,8 @@ Four OpModes in the **Basic Auton** group on the Driver Station. Pick the one th
 
 | OpMode | Start | Route |
 |---|---|---|
-| Basic Auton RED NEAR | Tile **A6**, **back** against the **red wall**, facing into the field | Drive forward off the wall, slide toward the audience, park in the wall end of the LOADING ZONE (A5) |
-| Basic Auton RED FAR | Tile **B1**, back against the **audience wall** | Off the wall, up column B (clear of the HIVE), park in the field end of the LOADING ZONE |
+| Basic Auton RED NEAR | Tile **A6**, **back** against the **red wall**, facing into the field | Drive forward off the wall, slide toward the audience, park in the **far-wall third** of the LOADING ZONE (A5) |
+| Basic Auton RED FAR | Tile **B1**, back against the **audience wall** | Off the wall, up column B (clear of the HIVE), park in the **audience third** of the LOADING ZONE |
 | Basic Auton BLUE NEAR | Tile **F1**, **back** against the **blue wall**, facing into the field | Same as RED NEAR, rotated 180° |
 | Basic Auton BLUE FAR | Tile **E6**, back against the **far wall** | Same as RED FAR, rotated 180° |
 
