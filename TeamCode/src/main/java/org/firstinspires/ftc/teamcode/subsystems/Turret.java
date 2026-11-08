@@ -92,8 +92,8 @@ public class Turret {
     //   right: forward - 135 = 0 - 135 = -135
     // Limits are software only, so keep them inside anything the turret could hit. The turret coasts a few degrees
     // past a limit after we stop the servo. TODO(#31): turn slowly to both limits once and check the wiring.
-    public static final double MAX_LEFT_DEGREES = 135.0;
-    public static final double MAX_RIGHT_DEGREES = -130.0;
+    public static final double MAX_LEFT_DEGREES = 120.0;
+    public static final double MAX_RIGHT_DEGREES = -120.0;
 
     // TODO(#31) step 5: tune the aiming. Speed = AIM_GAIN x (degrees away from the target).
     // Example: 0.02 means 10 degrees away = speed 0.2. Bigger = faster but may wobble past the target.
