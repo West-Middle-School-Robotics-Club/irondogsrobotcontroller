@@ -255,12 +255,12 @@ build("launcher-test.pdf", "Launcher Test", "#5", story)
 story = header_block(
     "Turret Test",
     "Calibrate the turret IN ORDER: servo direction, encoder direction, gear ratio, limits, aiming. Then the hood "
-    "and the home switch.  (issue #31, decisions 019, 021, 033)",
+    "and the home switch.  (issue #31, decisions 019, 021, 033, 042)",
     "Turret Servo Raw Test, then Turret Test",
     c("turretRotateServo") + " (Continuous Rotation Servo), " + c("turretEncoder") + " (Motor port, encoder only), " +
     c("turretHomeSwitch") + " (Digital Device), " + c("turretHoodServo") + " (Servo)")
 story += [warn("<b>Nothing physical stops the turret.</b> Until step 4 is done it can turn into wires or the frame. "
-               "Keep a hand near STOP and turn in small moves. Angles: 0 = forward, + = LEFT, home switch = 90 (LEFT). Limits: -60 to +90 (the hard stops are at -33 and +56 until moved, decision 037).")]
+               "Keep a hand near STOP. Angles: 0 = forward, + = LEFT, switch = 90. Start homing with the turret roughly FORWARD.")]
 story += [p("Part A: Turret Servo Raw Test (servo alone)", H2),
           table([["#", "Do this", "Expected", "Actual", "If wrong"],
                  ["A1", "Push the left stick left and hold", "turret KEEPS turning while held, stops when let go", "",
@@ -270,7 +270,7 @@ story += [p("Part A: Turret Servo Raw Test (servo alone)", H2),
 story += controls([
     ["HOLD dpad LEFT / RIGHT", "turn left / right (half speed). + right trigger = full speed (once homed). + bumper = slow"],
     ["Y", "set a MARK: \"Since mark\" counts degrees from here"],
-    ["A", "turn to the REST spot (dead forward on the robot). Not homed yet? It turns LEFT to find the home switch first. Do steps 1 to 3 first!"],
+    ["A / LEFT STICK in", "A = rest spot (forward; homes first if needed). Stick in = find home. Steps 1-3 first!"],
     ["X / B", "turn to 45° left / right (same warning)"],
     ["Dpad UP / DOWN", "hood up / down a little"],
     ["BOTH lights GREEN", "turret is at HOME: the switch at 90° LEFT, or within HOME_TOLERANCE_COUNTS of it"],
@@ -283,7 +283,7 @@ story += steps([
     ["4", "Home it. Turn slowly left until just before anything hits. Read the angle. Same to the right",
      "left: ____° right: ____° (from forward)",
      "", "set " + c("MAX_LEFT_DEGREES") + " / " + c("MAX_RIGHT_DEGREES") + " a few degrees inside those"],
-    ["5", "Turn past the home switch (90° LEFT) once (homes). Press A, then X, then B",
+    ["5", "Turret roughly forward, press the LEFT STICK in (homes). Press A, then X, then B",
      "turns toward 0, 45 L, 45 R (within limits), no wobble", "",
      "wobbles: lower " + c("AIM_GAIN") + ". Too slow: raise it. Runs away: steps 1 or 2 are wrong"],
     ["6", "Turn through the home switch slowly, watch \"Switch raw reading\"", "reading flips at the magnet", "",
@@ -297,7 +297,7 @@ story += constants([
     [c("ENCODER_REVERSED"), "false", "", ""],
     [c("ENCODER_REVS_PER_TURRET_REV"), "1.0", "", ""],
     [c("HOME_ANGLE_DEGREES"), "90", "", ""],
-    [c("MAX_LEFT_DEGREES") + " / " + c("MAX_RIGHT_DEGREES"), "90 / -60", "", ""],
+    [c("MAX_LEFT_DEGREES") + " / " + c("MAX_RIGHT_DEGREES"), "135 / -135", "", ""],
     [c("AIM_GAIN"), "0.02", "", ""],
     [c("HOME_SWITCH_TRIGGERED_STATE"), "false", "", ""],
     [c("HOOD_LOWEST_POSITION") + " / " + c("HOOD_HIGHEST_POSITION"), "0.0 / 1.0", "", ""],

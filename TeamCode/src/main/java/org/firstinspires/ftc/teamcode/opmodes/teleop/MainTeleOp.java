@@ -66,7 +66,7 @@ public abstract class MainTeleOp extends LinearOpMode {
         rightLight.setColor(allianceColor(alliance));
 
         while (opModeInInit()) {
-            robot.turret.update(); // homes the turret if it passes forward; never moves it during INIT
+            robot.turret.update(); // watches the home switch; never moves the turret during INIT
             telemetry.addData("ALLIANCE", "%s  (lights are %s)", alliance, allianceColor(alliance));
             telemetry.addLine("Wrong color? Stop and pick the other Main TeleOp.");
             telemetry.addLine();

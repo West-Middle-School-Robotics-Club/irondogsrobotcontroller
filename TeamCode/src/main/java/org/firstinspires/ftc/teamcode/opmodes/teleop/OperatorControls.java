@@ -18,7 +18,8 @@ import org.firstinspires.ftc.teamcode.Robot;
  *   Left trigger  HOLD to EJECT: water wheel DOWN + intake OUT, for a quick push out. Eject beats the toggles.
  *                 When you let go, the intake and water wheel are OFF.
  *   X             TURRET REST SPOT: turn the turret to its rest spot, dead forward (decisions 039, 040), from
- *                 wherever it is. If it isn't homed yet it first turns left to find the home switch, then goes there.
+ *                 wherever it is. If it isn't homed yet it homes first (decision 042: turns LEFT to find the switch,
+ *                 so the turret must start roughly forward), then goes there.
  *                 Moving the left stick cancels it, so you can always take over.
  *   Left stick    push LEFT / RIGHT to turn the turret by hand (further = faster). Let go = stop.
  *                 Slow until the turret is homed (turn it past the home switch, 90° left, once). Stops at its limits.
