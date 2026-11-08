@@ -55,9 +55,12 @@ BLUE_GARDEN = (70.0, 72.0, -72.0, -49.0)         # along far wall from corner F6
 HIVE_FRAME = (-24.7, 24.7, -19.5, 19.5)          # frame base ~49.5 x 39 in, field center
 CELL_W_Y = 20.0                                  # CELL opening ~20 in wide
 CELL_D_X = 13.0                                  # drawn depth (top-down view, approximate)
-CELL_CENTERS = [                                 # (x, y, alliance)
-    (12.0, 11.0, "red"), (-12.0, 11.0, "red"),
-    (12.0, -11.0, "blue"), (-12.0, -11.0, "blue"),
+# (x, y, alliance, UP at match start?, AprilTag IDs). At match start the CELL that points at a FLOWER is DOWN
+# (Competition Manual p. 83, field.md): Red's AUDIENCE-side CELL and Blue's FAR-side CELL start UP.
+# Every HIVE TIP flips which CELL is up, so this is only the STARTING position.
+CELL_CENTERS = [
+    (12.0, 11.0, "red", False, "30-33"), (-12.0, 11.0, "red", True, "34-37"),
+    (12.0, -11.0, "blue", True, "42-45"), (-12.0, -11.0, "blue", False, "38-41"),
 ]
 
 FLOWERS = [(-24.0, 69.0), (69.0, 24.0), (24.0, -69.0), (-69.0, -24.0)]  # on the walls
@@ -147,9 +150,16 @@ class Field:
 
         # HIVE structure and CELLS (approximate, top-down)
         out.append(self.rect(HIVE_FRAME, "#f3f4f6", GREY, 1.5))
-        for (cx, cy, color) in CELL_CENTERS:
+        for (cx, cy, color, up, tags) in CELL_CENTERS:
             r = (cx - CELL_D_X / 2, cx + CELL_D_X / 2, cy - CELL_W_Y / 2, cy + CELL_W_Y / 2)
-            out.append(self.rect(r, "white", RED if color == "red" else BLUE, 2.5))
+            c = RED if color == "red" else BLUE
+            if up:   # UP at match start: filled with the alliance color
+                out.append(self.rect(r, c, c, 2.5, 'fill-opacity="0.35"'))
+                out.append(self.text(self.px(cy), self.py(cx) + 0.05 * small, "UP", 1.15 * small, c, "middle", bold=True))
+            else:
+                out.append(self.rect(r, "white", c, 2.5))
+                out.append(self.text(self.px(cy), self.py(cx) + 0.05 * small, "down", 0.85 * small, GREY, "middle"))
+            out.append(self.text(self.px(cy), self.py(cx) + 1.05 * small, "tags " + tags, 0.6 * small, GREY, "middle"))
         out.append(self.text(self.px(0), self.py(HIVE_FRAME[1]) + 1.05 * small, "HIVE", small, INK, "middle", bold=True))
 
         # FLOWERS
@@ -236,7 +246,8 @@ def legend(x, y, size=11, vertical=False):
         (f'<circle cx="{{cx}}" cy="{{cy}}" r="{size * 0.45}" fill="#fde68a" stroke="#a16207" stroke-width="1.2"/>', "FLOWER"),
         (f'<rect x="{{x0}}" y="{{y0}}" width="{size * 1.1}" height="{size * 0.8}" fill="#f6b3b3" stroke="{RED}" stroke-width="1.5"/>', "LOADING ZONE (PARK)"),
         (f'<rect x="{{x0}}" y="{{y1}}" width="{size * 1.1}" height="{size * 0.3}" fill="{RED}"/>', "GARDEN"),
-        (f'<rect x="{{x0}}" y="{{y0}}" width="{size * 1.1}" height="{size * 0.8}" fill="white" stroke="{BLUE}" stroke-width="2"/>', "CELL (in HIVE)"),
+        (f'<rect x="{{x0}}" y="{{y0}}" width="{size * 1.1}" height="{size * 0.8}" fill="{BLUE}" fill-opacity="0.35" stroke="{BLUE}" stroke-width="2"/>', "UP CELL at start"),
+        (f'<rect x="{{x0}}" y="{{y0}}" width="{size * 1.1}" height="{size * 0.8}" fill="white" stroke="{BLUE}" stroke-width="2"/>', "CELL down"),
         (f'<line x1="{{x0}}" y1="{{cy}}" x2="{{x2}}" y2="{{cy}}" stroke="{GREY}" stroke-width="1.5" stroke-dasharray="4,3"/>', "Center line"),
     ]
     out, cx_, cy_ = [], x, y
@@ -273,7 +284,10 @@ def field_template():
     out.append(Field.text(60, 150 + f.size() + 82,
                           "Coordinates (decision 011): origin = field center, +X toward far wall, +Y toward red wall, in inches. "
                           "Blue = Red rotated 180\u00b0. Stay on your own side in AUTO (G402).", 10, GREY))
-    y = 150 + f.size() + 115
+    out.append(Field.text(60, 150 + f.size() + 97,
+                          "HIVE: the UP CELLS shown are at MATCH START (Red: audience side, Blue: far side). "
+                          "Every TIP flips which CELL of that HIVE is up.", 10, GREY))
+    y = 150 + f.size() + 125
     out.append(Field.text(60, y, "Notes", 15, INK, bold=True))
     for i in range(3):
         out.append(f'<line x1="60" y1="{y + 30 + i * 28}" x2="{PAGE_W - 60}" y2="{y + 30 + i * 28}" '
@@ -489,9 +503,11 @@ def route_sheet(route, consts, routes):
                           "Dashed box = where it PARKS.", 10.5, INK))
     out.append(Field.text(50, ky + 16, f"Robot size used: {length:g} x {width:g} in (BasicAuton.ROBOT_LENGTH_IN / ROBOT_WIDTH_IN). "
                           "Blue = Red rotated 180° (decision 011).", 10.5, GREY))
+    out.append(Field.text(50, ky + 32, "HIVE: the UP CELLS shown are at MATCH START (Red: audience side, Blue: far side). "
+                          "Every TIP flips which CELL is up.", 10.5, GREY))
 
     # Steps table, straight from the code
-    ty = ky + 46
+    ty = ky + 60
     out.append(Field.text(50, ty, "The steps (from BasicAuton.java, in inches)", 14, INK, bold=True))
     cols = [50, 105, 250, 395]
     heads = ["Step", "RED x, y, heading", "BLUE x, y, heading", "What happens"]
