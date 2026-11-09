@@ -23,6 +23,8 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import KeepTogether, PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
+from code_values import now, pct   # current values, read from the Java code (so the "Was" column is never out of date)
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 styles = getSampleStyleSheet()
@@ -120,7 +122,7 @@ def steps(rows, title="Steps, in order"):
 
 def constants(rows, file_name):
     return [KeepTogether([p("Numbers to put into the code: " + c(file_name), H2),
-                          table([["Constant", "Was", "New value", "Checked by"]] + rows, [2.6, 1.1, 1.6, 1.7],
+                          table([["Constant", "Was", "New value", "Checked by"]] + rows, [2.45, 1.65, 1.35, 1.55],
                                 row_height=0.34 * inch)])]
 
 
@@ -187,11 +189,11 @@ story += steps([
 story.append(Spacer(1, 4))
 story.append(p("Step 7 and 8, repeat 5 times each. NECTAR detected: ___ / 5.   POLLEN wrongly detected: ___ / 5.", BODY))
 story += constants([
-    [c("INTAKE_REVERSED"), "false", "", ""],
-    [c("WATER_WHEEL_REVERSED"), "false", "", ""],
-    [c("INTAKE_SPEED"), "1.0", "", ""],
-    [c("WATER_WHEEL_SPEED"), "1.0", "", ""],
-    [c("NECTAR_SWITCH_WIRING"), "NORMALLY_OPEN", "", ""],
+    [c("INTAKE_REVERSED"), now("INTAKE_REVERSED"), "", ""],
+    [c("WATER_WHEEL_REVERSED"), now("WATER_WHEEL_REVERSED"), "", ""],
+    [c("INTAKE_SPEED"), now("INTAKE_SPEED"), "", ""],
+    [c("WATER_WHEEL_SPEED"), now("WATER_WHEEL_SPEED"), "", ""],
+    [c("NECTAR_SWITCH_WIRING"), now("NECTAR_SWITCH_WIRING"), "", ""],
 ], "subsystems/Intake.java")
 story += section("Wiring, for " + c("hardware-config.md") + " (Intake table)",
           table([["Device", "Hub (CH / EH)", "Port"],
@@ -242,11 +244,11 @@ story += section("Hit-rate test (the \"done when\" of issue #5)",
           table([["Power", "Distance (in)", "Battery (V)", "Made / 10", "Who launched"],
                  ["", "", "", "", ""], ["", "", "", "", ""]], [1.0, 1.3, 1.2, 1.2, 2.3], row_height=0.36 * inch))
 story += constants([
-    [c("MOTOR_REVERSED"), "true", "", ""],
-    [c("TRIGGER_REST_POSITION"), "0.0", "", ""],
-    [c("TRIGGER_FIRE_POSITION"), "0.5", "", ""],
-    [c("READY_VELOCITY_THRESHOLD"), "1000", "", ""],
-    [c("DEFAULT_SPIN_POWER"), "1.0", "", ""],
+    [c("MOTOR_REVERSED"), now("MOTOR_REVERSED"), "", ""],
+    [c("TRIGGER_REST_POSITION"), now("TRIGGER_REST_POSITION"), "", ""],
+    [c("TRIGGER_FIRE_POSITION"), now("TRIGGER_FIRE_POSITION"), "", ""],
+    [c("READY_VELOCITY_THRESHOLD"), now("READY_VELOCITY_THRESHOLD"), "", ""],
+    [c("DEFAULT_SPIN_POWER"), now("DEFAULT_SPIN_POWER"), "", ""],
 ], "subsystems/Launcher.java")
 story += [p("Also write in " + c("hardware-config.md") + ": motor gear ratio ______, Expansion Hub motor port ____, "
             "trigger servo hub ____ port ____.", SMALL)]
@@ -262,7 +264,8 @@ story = header_block(
     c("turretRotateServo") + " (Continuous Rotation Servo), " + c("turretEncoder") + " (Motor port, encoder only), " +
     c("turretHomeSwitch") + " (Digital Device), " + c("turretHoodServo") + " (Servo)")
 story += [warn("<b>Nothing physical stops the turret.</b> Until step 4 is done it can turn into wires or the frame. "
-               "Keep a hand near STOP. Turret angles: 0 = the MAGNET = robot forward, + = LEFT. Limits: 135 / -135 (decisions 047, 048).")]
+               "Keep a hand near STOP. Turret angles: 0 = the MAGNET = robot forward, + = LEFT. Limits: "
+               + now("MAX_LEFT_DEGREES", "MAX_RIGHT_DEGREES") + " (decisions 047, 048).")]
 story += [p("Part A: Turret Servo Raw Test (servo alone)", H2),
           table([["#", "Do this", "Expected", "Actual", "If wrong"],
                  ["A1", "Push the left stick left and hold", "turret KEEPS turning while held, stops when let go", "",
@@ -295,15 +298,15 @@ story += steps([
      " just inside the hard stops"],
 ], title="Part B: Turret Test, steps IN ORDER")
 story += constants([
-    [c("SERVO_REVERSED"), "false", "", ""],
-    [c("ENCODER_REVERSED"), "false", "", ""],
-    [c("ENCODER_REVS_PER_TURRET_REV"), "4.11", "", ""],
-    [c("FORWARD_ANGLE_DEGREES") + " (magnet = 0)", "0", "", ""],
-    [c("MAX_LEFT_DEGREES") + " / " + c("MAX_RIGHT_DEGREES"), "135 / -135", "", ""],
-    [c("AIM_GAIN"), "0.02", "", ""],
-    [c("HOME_SWITCH_TRIGGERED_STATE"), "false", "", ""],
-    [c("HOOD_LOWEST_POSITION") + " / " + c("HOOD_HIGHEST_POSITION"), "0.0 / 1.0", "", ""],
-    [c("HOME_TOLERANCE_COUNTS"), "200", "", ""],
+    [c("SERVO_REVERSED"), now("SERVO_REVERSED"), "", ""],
+    [c("ENCODER_REVERSED"), now("ENCODER_REVERSED"), "", ""],
+    [c("ENCODER_REVS_PER_TURRET_REV"), now("ENCODER_REVS_PER_TURRET_REV"), "", ""],
+    [c("FORWARD_ANGLE_DEGREES") + " (magnet = 0)", now("FORWARD_ANGLE_DEGREES"), "", ""],
+    [c("MAX_LEFT_DEGREES") + " / " + c("MAX_RIGHT_DEGREES"), now("MAX_LEFT_DEGREES", "MAX_RIGHT_DEGREES"), "", ""],
+    [c("AIM_GAIN"), now("AIM_GAIN"), "", ""],
+    [c("HOME_SWITCH_TRIGGERED_STATE"), now("HOME_SWITCH_TRIGGERED_STATE"), "", ""],
+    [c("HOOD_LOWEST_POSITION") + " / " + c("HOOD_HIGHEST_POSITION"), now("HOOD_LOWEST_POSITION", "HOOD_HIGHEST_POSITION"), "", ""],
+    [c("HOME_TOLERANCE_COUNTS"), now("HOME_TOLERANCE_COUNTS"), "", ""],
 ], "subsystems/Turret.java")
 story += after("#31")
 build("turret-test.pdf", "Turret Test", "#31", story)
@@ -343,10 +346,10 @@ story += section("Measurements",
                  ["6a", "square", "", "", "", "", ""], ["6b", "square", "", "", "", "", ""], ["6c", "square", "", "", "", "", ""]],
                 [0.45, 1.2, 1.1, 1.15, 0.9, 1.0, 1.2], row_height=0.33 * inch))
 story += constants([
-    [c("X_POD_DIRECTION"), "FORWARD", "", ""],
-    [c("Y_POD_DIRECTION"), "FORWARD", "", ""],
-    [c("X_POD_OFFSET_MM"), "0.0", "", ""],
-    [c("Y_POD_OFFSET_MM"), "0.0", "", ""],
+    [c("X_POD_DIRECTION"), now("X_POD_DIRECTION"), "", ""],
+    [c("Y_POD_DIRECTION"), now("Y_POD_DIRECTION"), "", ""],
+    [c("X_POD_OFFSET_MM"), now("X_POD_OFFSET_MM"), "", ""],
+    [c("Y_POD_OFFSET_MM"), now("Y_POD_OFFSET_MM"), "", ""],
 ], "subsystems/Odometry.java")
 story += after("#6 (and #21 for the offsets)")
 build("pinpoint-test.pdf", "Pinpoint Test", "#6 / #21", story)
@@ -372,10 +375,10 @@ story += steps([
     ["5", "B", "back to REST, stays there", "", ""],
 ])
 story += constants([
-    [c("REST_POSITION"), "0.5", "", ""],
-    [c("POSITION_A"), "0.4", "", ""],
-    [c("POSITION_B"), "0.6", "", ""],
-    [c("SWITCH_SECONDS"), "0.15", "", ""],
+    [c("REST_POSITION"), now("REST_POSITION"), "", ""],
+    [c("POSITION_A"), now("POSITION_A"), "", ""],
+    [c("POSITION_B"), now("POSITION_B"), "", ""],
+    [c("SWITCH_SECONDS"), now("SWITCH_SECONDS"), "", ""],
 ], "subsystems/FlowerFlipper.java")
 story += [p("Not on a gamepad button yet (decision 029). Write here what the team wants: which button, driver or "
             "operator, hold or toggle?", BODY), lines(3)]
@@ -391,9 +394,9 @@ story = header_block(
     "the 4 drive motors and the " + c("pinpoint"), group="TeleOp list on the Driver Station")
 story += controls([
     ["Left stick", "drive and strafe.   Right stick: turn"],
-    ["Nothing held", "NORMAL speed (70%)"],
-    ["HOLD a bumper", "SLOW (40%), for lining up"],
-    ["HOLD a trigger", "TURBO (100%). Bumper beats trigger"],
+    ["Nothing held", "NORMAL speed (" + pct("NORMAL_SCALE") + ")"],
+    ["HOLD a bumper", "SLOW (" + pct("SLOW_MODE_SCALE") + "), for lining up"],
+    ["HOLD a trigger", "TURBO (" + pct("TURBO_SCALE") + "). Bumper beats trigger"],
     ["A", "straight-line assist on / off. Rumble: 1 blip = ON, 2 = OFF"],
 ])
 story += [p("<b>Course:</b> tape a start box, a 10 ft straight run, and a 2 ft target box to park in. Each driver runs "
@@ -413,11 +416,11 @@ story += steps([
     ["4", "Press A twice", "1 blip then 2 blips, telemetry ON then OFF", "", ""],
 ], title="Checks")
 story += constants([
-    [c("SLOW_MODE_SCALE"), "0.4", "", ""],
-    [c("NORMAL_SCALE"), "0.7", "", ""],
-    [c("TURBO_SCALE"), "1.0", "", ""],
-    [c("SNAP_ANGLE_DEGREES"), "15", "", ""],
-    [c("ASSIST_ON_AT_START"), "true", "", ""],
+    [c("SLOW_MODE_SCALE"), now("SLOW_MODE_SCALE"), "", ""],
+    [c("NORMAL_SCALE"), now("NORMAL_SCALE"), "", ""],
+    [c("TURBO_SCALE"), now("TURBO_SCALE"), "", ""],
+    [c("SNAP_ANGLE_DEGREES"), now("SNAP_ANGLE_DEGREES"), "", ""],
+    [c("ASSIST_ON_AT_START"), now("ASSIST_ON_AT_START"), "", ""],
 ], "opmodes/teleop/DriverControls.java")
 story += [p("Drivers' decision (everyone agrees): SLOW ____%, NORMAL ____%, TURBO ____%, assist starts ON / OFF. Why?", BODY),
           lines(2)]
