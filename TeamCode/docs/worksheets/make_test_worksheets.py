@@ -122,7 +122,7 @@ def steps(rows, title="Steps, in order"):
 
 def constants(rows, file_name):
     return [KeepTogether([p("Numbers to put into the code: " + c(file_name), H2),
-                          table([["Constant", "Was", "New value", "Checked by"]] + rows, [2.6, 1.45, 1.4, 1.55],
+                          table([["Constant", "Was", "New value", "Checked by"]] + rows, [2.45, 1.65, 1.35, 1.55],
                                 row_height=0.34 * inch)])]
 
 
