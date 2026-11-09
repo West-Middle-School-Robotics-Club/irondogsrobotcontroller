@@ -41,7 +41,7 @@ public class DriverControls {
     // The driver turns it on/off with A. ASSIST_ON_AT_START = how every TeleOp starts.
     // SNAP_ANGLE_DEGREES = how far off straight still counts as straight. Bigger = more forgiving.
     public static final boolean ASSIST_ON_AT_START = true;
-    public static final double SNAP_ANGLE_DEGREES = 15.0;
+    public static final double SNAP_ANGLE_DEGREES = 20.0;
 
     private boolean straightLineAssist = ASSIST_ON_AT_START;
 
@@ -55,8 +55,8 @@ public class DriverControls {
     public enum DriveSpeed { SLOW, NORMAL, TURBO }
 
     // How much of full power each speed uses (1.0 = full power). TODO: tune with the drivers.
-    public static final double SLOW_MODE_SCALE = 0.4;
-    public static final double NORMAL_SCALE = 0.7;
+    public static final double SLOW_MODE_SCALE = 0.5;
+    public static final double NORMAL_SCALE = 0.8;
     public static final double TURBO_SCALE = 1.0;
 
     // The triggers are analog (0 = released, 1 = all the way down). Pressed past this = "held".

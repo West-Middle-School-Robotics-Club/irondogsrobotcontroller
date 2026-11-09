@@ -520,3 +520,17 @@ Decision:
 - **Limits ±135 from forward = `MAX_LEFT_DEGREES = 135`, `MAX_RIGHT_DEGREES = -135`**
 - Keep `robotToTurret()` / `turretToRobot()` and the constant: today they change nothing, but a future remount only changes `FORWARD_ANGLE_DEGREES`
 Who: Team / mentor (11/8)
+
+## 049 – Main TeleOp drives in BRAKE  (2026-11-08)
+Status: Accepted (not tested on the robot yet)
+Issue: #17
+Context: Decision 023 had Main TeleOp drive in FLOAT so the robot coasts when the sticks are released. The team wants the robot to stop quickly instead.
+Decision: **Main TeleOp calls `setBrakeOnStop(true)` → BRAKE**, the same as Autonomous. 023 stays as history. To go back to coasting, change that one line in `MainTeleOp.java` to `false`. Telemetry still shows "Stop mode".
+Who: Team
+
+## 050 – The turret does not move in Main TeleOp (for now)  (2026-11-08)
+Status: Accepted (not tested on the robot yet)
+Issue: #31
+Context: The turret isn't ready to use in matches yet (homing and aiming are still being tuned), so the team wants it switched off in Main TeleOp.
+Decision: **`OperatorControls.TURRET_ENABLED = false`.** The operator's left stick and X do nothing, and Main TeleOp does not send the turret to its rest spot at START. The turret is never given a command, so it does not move. The turret code, Turret Test and the other mechanisms are unchanged. Set it to `true` to turn the controls back on.
+Who: Team

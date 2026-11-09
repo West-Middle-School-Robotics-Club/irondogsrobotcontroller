@@ -57,6 +57,7 @@ Test with **Main TeleOp**. Decisions 029, 030.
 | `TURRET_MAX_STICK_SPEED` | `1.0` | Fastest the left stick turns the turret (0 to 1) | Lower it if aiming by hand is too twitchy | 🔧 |
 | `TURRET_STICK_DEADZONE` | `0.05` | Ignore tiny stick movement | Raise it if the turret creeps with the stick released | ✅ |
 | `INTAKE_ON_AT_START` | `true` | Do the intake + water wheel start ON when the match starts? (A toggles them) | Operator's preference | 🔧 |
+| `TURRET_ENABLED` | `false` | `OperatorControls.java`: can the turret move in Main TeleOp? `false` = left stick and X do nothing, and no move at START (decision 050) | Set `true` to turn the turret controls back on | 🔧 |
 | `TRIGGER_HELD` | `0.5` | How far the left trigger must be pressed to EJECT | Rarely changed | ✅ |
 
 ## Main TeleOp start-up: `opmodes/teleop/MainTeleOp.java`
@@ -139,22 +140,22 @@ Worksheet: `turret-test.pdf`. Test with **Turret Test**, **in this order** (step
 | `ENCODER_REVS_PER_TURRET_REV` | `4.11` | Step 3: encoder turns per one turret turn (gear ratio) | Turn exactly 90°; angle must read ~90. Or count gear teeth | ✅ 18-tooth servo gear, about 84.5-tooth turret gear (11/7). Changes if the encoder moves to the big gear. 11/8: the team changed it from 4.69 to 4.11 after the 90° test moves |
 | `HOME_ANGLE_DEGREES` | `0` | The angle the code calls the home magnet. Keep it 0: every turret angle is measured from the magnet (decisions 042, 047). To move "forward", change `FORWARD_ANGLE_DEGREES` | | ✅ |
 | `FORWARD_ANGLE_DEGREES` | `0.0` | Where ROBOT FORWARD is in turret angles. At the magnet the turret faces forward, so 0: no offset (decision 048). The ONE place an offset would live if the turret or magnet is remounted | Turret Test X / B must land 45° left / right of the robot's front | ✅ |
-| `MAX_LEFT_DEGREES` | `135.0` | Step 4: farthest the turret may turn LEFT, in turret angles (0 = magnet = forward). 135° left of forward (decisions 047, 048) | Turn slowly to it once and check the wiring. The turret coasts a few degrees past a limit | 🔧 check the wiring once |
-| `MAX_RIGHT_DEGREES` | `-135.0` | Step 4: farthest RIGHT: 135° right of forward (decisions 047, 048) | Same | 🔧 check the wiring once |
+| `MAX_LEFT_DEGREES` | `120.0` | Step 4: farthest the turret may turn LEFT, in turret angles (0 = magnet = forward). 135° left of forward (decisions 047, 048) | Turn slowly to it once and check the wiring. The turret coasts a few degrees past a limit | 🔧 check the wiring once |
+| `MAX_RIGHT_DEGREES` | `-120.0` | Step 4: farthest RIGHT: 135° right of forward (decisions 047, 048) | Same | 🔧 check the wiring once |
 | `AIM_GAIN` | `0.02` | Step 5: speed per degree away from a target. Bigger = faster, may wobble | Turret Test X / B (±90° from the magnet) | 🔧 |
 | `MIN_AIM_SPEED` | `0.15` | Slowest aiming speed. The servo doesn't move below some power, so without this the turret stopped 3-5° short of a target (decision 045) | Turret Test: A, X, B must land within about 1° of the target. Stops short: raise it. Jumps past: lower it | 🔧 not tested yet |
 | `MAX_SPEED` | `0.6` | Fastest the turret turns to a target | | 🔧 |
-| `TOLERANCE_DEGREES` | `1.0` | "Close enough" to a target | | 🔧 |
+| `TOLERANCE_DEGREES` | `0.5` | "Close enough" to a target | | 🔧 |
 | `NOT_HOMED_MAX_SPEED` | `0.35` | Speed cap until the turret has passed forward once | 0.15 was too slow (10/15) | ✅ |
-| `RUNAWAY_DEGREES` | `20.0` | Safety: stop if it moves this much the WRONG way | Leave it | ✅ |
-| `HOME_TOLERANCE_COUNTS` | `50` | How close to forward counts as "home" (light green) | Smaller = stricter | ✅ |
+| `RUNAWAY_DEGREES` | `10.0` | Safety: stop if it moves this much the WRONG way | Leave it | ✅ |
+| `HOME_TOLERANCE_COUNTS` | `100` | How close to forward counts as "home" (light green) | Smaller = stricter | ✅ |
 | `CENTER_HOME_ON_MAGNET` | `true` | Home on the MIDDLE of the magnet's range instead of the first trigger (decision 043). The turret must pass all the way through the magnet once. Set `false` for the old edge homing | Turret Test: turn left through the magnet, "Magnet range" shows its width and "homed on the MIDDLE". Press A / X / B several times: the turret should land within about 1° each time | 🔧 not tested yet |
 | `MIN_MAGNET_ZONE_COUNTS` | `20` | A pass through the magnet narrower than this is ignored (the turret turned around inside it) | Compare with the "Magnet range" counts in Turret Test; keep it well under that | 🔧 |
 | `REST_ANGLE_DEGREES` | `HOME_ANGLE_DEGREES` | Where X (operator) and A (Turret Test) turn the turret: onto the home magnet, which is angle 0 now (decision 042). It follows HOME_ANGLE_DEGREES. Was 10.5 = dead forward (039, 040) | Turret Test A: the turret stops on the magnet and both lights go GREEN | 🔧 |
 | `HOME_SEARCH_TIMEOUT_S` | `10.0` | Home search (X / A / start-up) when the turret is NOT homed: how long it may look, turning left first and then right if it hits a stop (decision 044). Gives up after this many seconds | Time a full sweep both ways, then add a margin | 🔧 not tested yet |
 | `SEARCH_STALL_S` | `0.4` | During the home search, no encoder movement for this long = the turret hit a hard stop, so turn around. A second stop = give up | Too short: stops it before it starts. Too long: pushes into the stop | 🔧 |
 | `SEARCH_STALL_COUNTS` | `15` | The least the encoder must change to count as "still moving" (about 52 counts = 1°) | Leave it | 🔧 |
-| `APPROACH_OVERSHOOT_DEGREES` | `8.0` | A move to the rest spot always ends moving the same way the turret moved when it homed. On the wrong side, it first goes this far past, then comes back (gear backlash) | Press A from both sides of the magnet: it should land in the same spot | 🔧 |
+| `APPROACH_OVERSHOOT_DEGREES` | `2.0` | A move to the rest spot always ends moving the same way the turret moved when it homed. On the wrong side, it first goes this far past, then comes back (gear backlash) | Press A from both sides of the magnet: it should land in the same spot | 🔧 |
 | `HOME_SWITCH_TRIGGERED_STATE` | `false` | What the home switch reads at the magnet | Turret Test: "Home switch (magnet)" says YES at the magnet | ✅ |
 | `HOOD_LOWEST_POSITION` | `0.0` | Hood's flattest position (0 to 1). Keeps it off its hard stop | Turret Test dpad down | 🔧 |
 | `HOOD_HIGHEST_POSITION` | `1.0` | Hood's steepest position | Turret Test dpad up | 🔧 |

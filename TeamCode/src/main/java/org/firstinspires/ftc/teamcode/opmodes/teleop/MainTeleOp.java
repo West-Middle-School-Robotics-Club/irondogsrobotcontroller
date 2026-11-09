@@ -57,9 +57,9 @@ public abstract class MainTeleOp extends LinearOpMode {
         DriverControls driver = new DriverControls();
         OperatorControls operator = new OperatorControls();
 
-        // TeleOp drives in FLOAT (wheels coast when the sticks are released) for smoother driving.
-        // Autonomous keeps the Drivetrain default, BRAKE, for precise stops (decision 023).
-        robot.drivetrain.setBrakeOnStop(false);
+        // TeleOp drives in BRAKE (the robot stops quickly when the sticks are released), like Autonomous (decision 049).
+        // It was FLOAT (decision 023). To go back to coasting, change true to false.
+        robot.drivetrain.setBrakeOnStop(true);
 
         // ---------- INIT ----------
         leftLight.setColor(allianceColor(alliance));
@@ -87,7 +87,8 @@ public abstract class MainTeleOp extends LinearOpMode {
         robot.launcher.spinUp();
         robot.launcher.resetTrigger();
         // The turret turns to its rest spot (the magnet) on its own. Not homed yet? Then it waits for the operator (X button).
-        if (robot.turret.isHomed() || TURRET_FIND_HOME_AT_START) {
+        // Skipped when OperatorControls.TURRET_ENABLED is false: then the turret never moves in Main TeleOp.
+        if (OperatorControls.TURRET_ENABLED && (robot.turret.isHomed() || TURRET_FIND_HOME_AT_START)) {
             robot.turret.goToRestAngle();
         }
 

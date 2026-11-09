@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.Robot;
  *                 push balls out). Starts as IN. Works whether the system is on or off
  *   Left trigger  HOLD to EJECT: water wheel DOWN + intake OUT, for a quick push out. Eject beats the toggles.
  *                 When you let go, the intake and water wheel are OFF.
+ *   (TURRET_ENABLED = false for now, decision 050: the turret does NOT move, so X and the left stick do nothing.)
  *   X             TURRET REST SPOT: turn the turret onto the home magnet (decision 042), from
  *                 wherever it is. If it isn't homed yet it first turns left to find the home switch, then goes there.
  *                 Moving the left stick cancels it, so you can always take over.
@@ -36,6 +37,10 @@ public class OperatorControls {
 
     // Does the intake system (intake + water wheel) start ON when the match starts? (A toggles it, decision 041)
     public static final boolean INTAKE_ON_AT_START = true;
+
+    // Can the turret move in Main TeleOp? false = the left stick and X do nothing, and the turret does not move
+    // at START either (MainTeleOp checks this too). Set true to turn the turret controls back on (decision 050).
+    public static final boolean TURRET_ENABLED = false;
 
     // Turret stick: ignore tiny stick movement, and the fastest the stick can turn it (0 to 1).
     public static final double TURRET_STICK_DEADZONE = 0.05;
@@ -76,18 +81,21 @@ public class OperatorControls {
 
         // --- Turret (left stick, left / right) ---
         // Stick pushed LEFT is negative x, but turret + = LEFT (decision 007), so we flip it here.
-        double turretSpeed = -gamepad.left_stick_x;
-        if (Math.abs(turretSpeed) < TURRET_STICK_DEADZONE) {
-            turretSpeed = 0.0;
-        }
-        // Moving the stick takes over from "turret rest spot". An idle stick must NOT cancel it, so we only send
-        // "speed 0" when the turret is not moving by itself.
-        if (turretSpeed != 0.0 || !robot.turret.isAutoMoving()) {
-            robot.turret.setManualSpeed(turretSpeed * TURRET_MAX_STICK_SPEED);
-        }
-        // X = turn the turret to its rest spot (a press starts it; the turret stops itself there)
-        if (gamepad.xWasPressed()) {
-            robot.turret.goToRestAngle();
+        // Skipped completely when TURRET_ENABLED is false: the turret is never given a command, so it can't move.
+        if (TURRET_ENABLED) {
+            double turretSpeed = -gamepad.left_stick_x;
+            if (Math.abs(turretSpeed) < TURRET_STICK_DEADZONE) {
+                turretSpeed = 0.0;
+            }
+            // Moving the stick takes over from "turret rest spot". An idle stick must NOT cancel it, so we only send
+            // "speed 0" when the turret is not moving by itself.
+            if (turretSpeed != 0.0 || !robot.turret.isAutoMoving()) {
+                robot.turret.setManualSpeed(turretSpeed * TURRET_MAX_STICK_SPEED);
+            }
+            // X = turn the turret to its rest spot (a press starts it; the turret stops itself there)
+            if (gamepad.xWasPressed()) {
+                robot.turret.goToRestAngle();
+            }
         }
 
         // --- Launch (hold Y) ---

@@ -32,11 +32,11 @@ DRIVER = {
 }
 OPERATOR = {  # decisions 029, 035
     "Y": ("LAUNCH (hold)", "trigger moves out of the way; let go = blocked"),
-    "X": ("TURRET REST SPOT (press)", "onto the home magnet; stick cancels"),
+    "X": ("TURRET REST SPOT (OFF for now)", "TURRET_ENABLED = false: does nothing"),
     "B": ("DIRECTION (toggle)", "IN (intake in + wheel UP) or OUT (balls leave)"),
     "A": ("INTAKE SYSTEM (toggle)", "intake + water wheel together, on / off"),
     "LT": ("EJECT (hold)", "water wheel DOWN + intake OUT; then all off"),
-    "LS": ("TURRET (left / right)", "further = faster; let go = stop. Slow until homed"),
+    "LS": ("TURRET (OFF for now)", "TURRET_ENABLED = false: does nothing"),
 }
 
 # (key, button name, anchor x, anchor y). Positions are in inches on a landscape page.
@@ -229,7 +229,7 @@ box(c, 5.65, 0.55, 4.9, 1.85, "Good to know", [
     "stick left = strafe left, right stick left = turn left.",
     [("Straight-line assist (A): ", True), ("left stick within 15° of", False)],
     "straight forward / back / left / right drives exactly straight (#67).",
-    "Let go of the sticks and the robot coasts to a stop (FLOAT, decision 023).",
+    "Let go of the sticks and the robot stops quickly (BRAKE, decision 049).",
     "Nothing moves during INIT (game rule G304.H).",
     [("Free buttons ", True), ("(B X Y, dpad, stick presses) can get", False)],
     "driver jobs later, e.g. \"turret to forward\".",
@@ -269,13 +269,13 @@ else:
         [("Flywheel: ", True), ("starts when START is pressed and runs the whole match.", False)],
         "It is NOT on a button. Watch \"Launcher Status\" for READY.",
         [("A ", True), ("= intake + water wheel on / off.  ", False), ("B ", True), ("= switch IN / OUT.", False)],
-        [("X ", True), ("= turret to its REST spot (home magnet). Left stick = take over.", False)],
+        [("X ", True), ("= turret rest spot. TURRET OFF for now (TURRET_ENABLED = false): X and the left stick do nothing.", False)],
         [("EJECT ", True), ("beats everything; let go and the intake + water wheel are OFF.", False)],
         [("Lights: ", True), ("PURPLE = the next ball to launch is a NECTAR.", False)],
     ], size=8.6)
     box(c, 6.25, 0.55, 4.3, 1.85, "Not on a button yet", [
-        "Turret to forward, hood up / down, turret auto-aim",
-        "(later, #7). Flower flipper: waiting to see if it's built.",
+        "Turret: OFF in Main TeleOp for now (decision 050). Hood up / down,",
+        "turret auto-aim (later, #7). Flower flipper: waiting to see if built.",
         "Free: dpad, bumpers, right trigger, right stick.",
         "Code: opmodes/teleop/OperatorControls.java",
     ], size=8.6)

@@ -98,13 +98,13 @@ public class Turret {
     // TODO(#31) step 5: tune the aiming. Speed = AIM_GAIN x (degrees away from the target).
     // Example: 0.02 means 10 degrees away = speed 0.2. Bigger = faster but may wobble past the target.
     public static final double AIM_GAIN = 0.02;
-    public static final double MAX_SPEED = 0.6;            // fastest the turret is allowed to turn (0 to 1)
+    public static final double MAX_SPEED = 0.7;            // fastest the turret is allowed to turn (0 to 1)
     // Slowest aiming speed. A continuous servo doesn't move at all below some power (its dead zone). Without this,
     // AIM_GAIN x error gets so small near the target (0.02 x 3 degrees = 0.06) that the turret STOPS 3 to 5 degrees short.
     // TODO(#31): tune. Raise it if the turret stops short of the target, lower it if it jumps past (decision 045).
     public static final double MIN_AIM_SPEED = 0.15;
     public static final double TOLERANCE_DEGREES = 0.5;    // "close enough" to the target: stop here
-    public static final double NOT_HOMED_MAX_SPEED = 0.35; // slower, for moving before the turret is homed
+    public static final double NOT_HOMED_MAX_SPEED = 0.45; // slower, for moving before the turret is homed
                                                            // (0.15 was too slow to move the Axon turret, 10/15)
 
     // goToRestAngle(): the turret's REST spot (decisions 039, 040) is the HOME MAGNET (HOME_ANGLE_DEGREES, decision 042). If the turret is already
