@@ -23,10 +23,10 @@ Most of these have a **printable worksheet** in `TeamCode/docs/worksheets/` (see
 
 | Setting | File | Now | What it does |
 |---|---|---|---|
-| `NORMAL_SCALE` | `opmodes/teleop/DriverControls.java` | `0.7` | Everyday driving speed (70% power) |
-| `SLOW_MODE_SCALE` | `opmodes/teleop/DriverControls.java` | `0.4` | Hold a bumper: slow, for lining up |
+| `NORMAL_SCALE` | `opmodes/teleop/DriverControls.java` | `0.8` | Everyday driving speed (80% power) |
+| `SLOW_MODE_SCALE` | `opmodes/teleop/DriverControls.java` | `0.5` | Hold a bumper: slow, for lining up |
 | `TURBO_SCALE` | `opmodes/teleop/DriverControls.java` | `1.0` | Hold a trigger: full speed |
-| `SNAP_ANGLE_DEGREES` | `opmodes/teleop/DriverControls.java` | `15.0` | Straight-line assist: how forgiving it is |
+| `SNAP_ANGLE_DEGREES` | `opmodes/teleop/DriverControls.java` | `20.0` | Straight-line assist: how forgiving it is |
 | `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `1.0` | Flywheel power (it runs the whole match) |
 | `X_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the X odometry pod is, sideways from the turning center |
 | `Y_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the Y odometry pod is, forward from the turning center |
@@ -40,11 +40,11 @@ Worksheet: `driver-tuning.pdf`. Test with **Main TeleOp**. Issues #3, #67.
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `SLOW_MODE_SCALE` | `0.4` | Power while a bumper is held (0 to 1) | Drivers try lining up on a goal; pick what feels controllable | 🔧 |
-| `NORMAL_SCALE` | `0.7` | Power with nothing held | Drivers drive laps; fast but still controllable | 🔧 |
+| `SLOW_MODE_SCALE` | `0.5` | Power while a bumper is held (0 to 1) | Drivers try lining up on a goal; pick what feels controllable | 🔧 |
+| `NORMAL_SCALE` | `0.8` | Power with nothing held | Drivers drive laps; fast but still controllable | 🔧 |
 | `TURBO_SCALE` | `1.0` | Power while a trigger is held | Usually leave at 1.0 (full power) | ✅ |
 | `ASSIST_ON_AT_START` | `true` | Is straight-line assist ON when a TeleOp starts? (A toggles it) | Drivers' preference | 🔧 |
-| `SNAP_ANGLE_DEGREES` | `15.0` | Stick within this many degrees of straight = drive exactly straight. Bigger = more forgiving, but diagonals need a bigger push | Try 10, 15, 20 | 🔧 |
+| `SNAP_ANGLE_DEGREES` | `20.0` | Stick within this many degrees of straight = drive exactly straight. Bigger = more forgiving, but diagonals need a bigger push | Try 10, 15, 20 | 🔧 |
 | `STRAFE_CORRECTION` | `1.1` | Boosts sideways driving, because mecanum strafes slower than it drives forward | Strafe 48 in and drive 48 in at the same stick: raise it if strafing is shorter | 🔧 |
 | `DEADZONE` | `0.05` | Ignore tiny stick movement so the robot doesn't creep | Raise it if the robot creeps with sticks released | ✅ |
 | `TRIGGER_HELD` | `0.5` | How far a trigger must be pressed to count as "held" (turbo) | Rarely changed | ✅ |
@@ -144,9 +144,9 @@ Worksheet: `turret-test.pdf`. Test with **Turret Test**, **in this order** (step
 | `MAX_RIGHT_DEGREES` | `-120.0` | Step 4: farthest RIGHT: 135° right of forward (decisions 047, 048) | Same | 🔧 check the wiring once |
 | `AIM_GAIN` | `0.02` | Step 5: speed per degree away from a target. Bigger = faster, may wobble | Turret Test X / B (±90° from the magnet) | 🔧 |
 | `MIN_AIM_SPEED` | `0.15` | Slowest aiming speed. The servo doesn't move below some power, so without this the turret stopped 3-5° short of a target (decision 045) | Turret Test: A, X, B must land within about 1° of the target. Stops short: raise it. Jumps past: lower it | 🔧 not tested yet |
-| `MAX_SPEED` | `0.6` | Fastest the turret turns to a target | | 🔧 |
+| `MAX_SPEED` | `0.7` | Fastest the turret turns to a target | | 🔧 |
 | `TOLERANCE_DEGREES` | `0.5` | "Close enough" to a target | | 🔧 |
-| `NOT_HOMED_MAX_SPEED` | `0.35` | Speed cap until the turret has passed forward once | 0.15 was too slow (10/15) | ✅ |
+| `NOT_HOMED_MAX_SPEED` | `0.45` | Speed cap until the turret has passed forward once | 0.15 was too slow (10/15) | ✅ |
 | `RUNAWAY_DEGREES` | `10.0` | Safety: stop if it moves this much the WRONG way | Leave it | ✅ |
 | `HOME_TOLERANCE_COUNTS` | `100` | How close to forward counts as "home" (light green) | Smaller = stricter | ✅ |
 | `CENTER_HOME_ON_MAGNET` | `true` | Home on the MIDDLE of the magnet's range instead of the first trigger (decision 043). The turret must pass all the way through the magnet once. Set `false` for the old edge homing | Turret Test: turn left through the magnet, "Magnet range" shows its width and "homed on the MIDDLE". Press A / X / B several times: the turret should land within about 1° each time | 🔧 not tested yet |

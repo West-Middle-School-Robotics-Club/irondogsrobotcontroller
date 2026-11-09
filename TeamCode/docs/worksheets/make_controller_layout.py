@@ -18,15 +18,17 @@ from reportlab.lib.pagesizes import landscape, letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 
+from code_values import now, pct   # speeds and the assist angle, read from DriverControls.java (never out of date)
+
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "controller-layout.pdf")
 
 # What each control does. Missing or "" = a blank to fill in. None = shown as "(free)".
 DRIVER = {
-    "LT": ("TURBO (hold)", "full speed: 100%"),
-    "RT": ("TURBO (hold)", "full speed: 100%"),
-    "LB": ("SLOW (hold)", "lining up: 40%"),
-    "RB": ("SLOW (hold)", "lining up: 40%"),
-    "LS": ("DRIVE", "almost straight = exactly straight (±15°)"),
+    "LT": ("TURBO (hold)", "full speed: " + pct("TURBO_SCALE")),
+    "RT": ("TURBO (hold)", "full speed: " + pct("TURBO_SCALE")),
+    "LB": ("SLOW (hold)", "lining up: " + pct("SLOW_MODE_SCALE")),
+    "RB": ("SLOW (hold)", "lining up: " + pct("SLOW_MODE_SCALE")),
+    "LS": ("DRIVE", "almost straight = exactly straight (±%g°)" % float(now("SNAP_ANGLE_DEGREES"))),
     "RS": ("TURN", "push left / right"),
     "A": ("STRAIGHT ASSIST on/off", "rumble: 1 blip = ON, 2 = OFF. Starts ON"),
 }
@@ -216,18 +218,18 @@ page(c, DRIVER, "Gamepad 1: DRIVER",
      "Drives the robot. Pick it on the Driver Station with START + A. Same in every TeleOp (DriverControls.java).",
      blank_default=False)
 box(c, 0.45, 0.55, 4.9, 1.85, "Three driving speeds", [
-    [("SLOW  ", True), ("hold either bumper: 40% power, for lining up", False)],
-    [("NORMAL  ", True), ("nothing held: 70% power, everyday driving", False)],
-    [("TURBO  ", True), ("hold either trigger: 100% power, crossing the field", False)],
+    [("SLOW  ", True), ("hold either bumper: " + pct("SLOW_MODE_SCALE") + " power, for lining up", False)],
+    [("NORMAL  ", True), ("nothing held: " + pct("NORMAL_SCALE") + " power, everyday driving", False)],
+    [("TURBO  ", True), ("hold either trigger: " + pct("TURBO_SCALE") + " power, crossing the field", False)],
     [("Both held? ", True), ("SLOW wins (the safer choice).", False)],
     "The Driver Station shows \"Drive speed\" during the match.",
-    "Speeds are a first try: tune SLOW_MODE_SCALE, NORMAL_SCALE",
-    "and TURBO_SCALE in DriverControls.java with the drivers.",
+    "These numbers come from SLOW_MODE_SCALE, NORMAL_SCALE and",
+    "TURBO_SCALE in DriverControls.java (reprint after changing them).",
 ])
 box(c, 5.65, 0.55, 4.9, 1.85, "Good to know", [
     "Directions match the robot: stick forward = drive forward,",
     "stick left = strafe left, right stick left = turn left.",
-    [("Straight-line assist (A): ", True), ("left stick within 15° of", False)],
+    [("Straight-line assist (A): ", True), ("left stick within %g° of" % float(now("SNAP_ANGLE_DEGREES")), False)],
     "straight forward / back / left / right drives exactly straight (#67).",
     "Let go of the sticks and the robot stops quickly (BRAKE, decision 049).",
     "Nothing moves during INIT (game rule G304.H).",
