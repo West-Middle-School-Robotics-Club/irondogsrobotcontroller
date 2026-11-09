@@ -534,3 +534,14 @@ Issue: #31
 Context: The turret isn't ready to use in matches yet (homing and aiming are still being tuned), so the team wants it switched off in Main TeleOp.
 Decision: **`OperatorControls.TURRET_ENABLED = false`.** The operator's left stick and X do nothing, and Main TeleOp does not send the turret to its rest spot at START. The turret is never given a command, so it does not move. The turret code, Turret Test and the other mechanisms are unchanged. Set it to `true` to turn the controls back on.
 Who: Team
+
+## 051 – The code is the source of truth for tuned values  (2026-11-09)
+Status: Accepted
+Issue: —
+Context: As the team tests and calibrates on the robot, values in the code change quickly (speeds, positions, limits). Docs and earlier decisions fall behind, e.g. decision 041 said intake 0.65 and flywheel 40-50%, while testing moved both to 1.0.
+Decision:
+- **The value in the code wins.** A number in a doc, worksheet or decision is history, not a target. Don't change code to match an older doc
+- **Docs follow the code:** `check_tuning_guide.py` checks the tuning guide; the worksheet scripts read current values from the code (`docs/worksheets/code_values.py`). Re-run them before printing
+- A note in the code next to a changed value says when and why (e.g. "Note 11/8: 1.0 after testing")
+- Bigger design choices (how something works, not a number) still get a decision
+Who: Mentor (11/9)
