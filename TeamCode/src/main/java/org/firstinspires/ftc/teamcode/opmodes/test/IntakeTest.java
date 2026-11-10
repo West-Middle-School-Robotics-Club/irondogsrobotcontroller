@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -36,6 +37,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *
  * Printable worksheet (steps, Expected / Actual / Fix, numbers for the code): TeamCode/docs/worksheets/intake-test.pdf
  */
+// Hidden on the Driver Station (decision 052). To use it: delete the @Disabled line below, then build and deploy.
+@Disabled
 @TeleOp(name = "Intake Test", group = "Tests")
 public class IntakeTest extends LinearOpMode {
 

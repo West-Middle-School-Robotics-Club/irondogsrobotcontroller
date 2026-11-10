@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -24,6 +25,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *   Y          switch to FLOAT
  *   sticks     drive (let go of the sticks at full speed to compare stopping)
  */
+// Hidden on the Driver Station (decision 052). To use it: delete the @Disabled line below, then build and deploy.
+@Disabled
 @TeleOp(name = "Brake Mode Check", group = "Tests")
 public class BrakeModeCheck extends LinearOpMode {
 

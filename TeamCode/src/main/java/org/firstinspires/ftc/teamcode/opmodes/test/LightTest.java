@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -18,6 +19,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  * For each color, check the light matches the name. If one is wrong, fine-tune it and
  * put the better number in Light.java.
  */
+// Hidden on the Driver Station (decision 052). To use it: delete the @Disabled line below, then build and deploy.
+@Disabled
 @TeleOp(name = "Light Test", group = "Tests")
 public class LightTest extends LinearOpMode {
 

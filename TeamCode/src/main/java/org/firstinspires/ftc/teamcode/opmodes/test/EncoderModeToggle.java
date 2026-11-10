@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -23,6 +24,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  * The real setting for all other OpModes is USE_ENCODER_SPEED_CONTROL in Drivetrain.java.
  * This test puts that setting back when it stops.
  */
+// Hidden on the Driver Station (decision 052). To use it: delete the @Disabled line below, then build and deploy.
+@Disabled
 @TeleOp(name = "Encoder Mode Toggle", group = "Tests")
 public class EncoderModeToggle extends LinearOpMode {
 

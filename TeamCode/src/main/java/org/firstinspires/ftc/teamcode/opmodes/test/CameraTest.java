@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -17,6 +18,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *
  * "Camera connected" = false? Check it's in the Control Hub USB port labeled "USB 3.0".
  */
+// Hidden on the Driver Station (decision 052). To use it: delete the @Disabled line below, then build and deploy.
+@Disabled
 @TeleOp(name = "Camera Test", group = "Tests")
 public class CameraTest extends LinearOpMode {
 
