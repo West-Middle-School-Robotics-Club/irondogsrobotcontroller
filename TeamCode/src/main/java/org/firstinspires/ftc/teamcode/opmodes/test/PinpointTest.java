@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -28,6 +29,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *
  * Printable worksheet (steps, Expected / Actual / Fix, numbers for the code): TeamCode/docs/worksheets/pinpoint-test.pdf
  */
+// Hidden on the Driver Station (decision 052). To use it: delete the @Disabled line below, then build and deploy.
+@Disabled
 @TeleOp(name = "Pinpoint Test", group = "Tests")
 public class PinpointTest extends LinearOpMode {
 

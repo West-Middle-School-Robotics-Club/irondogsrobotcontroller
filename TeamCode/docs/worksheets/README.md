@@ -4,6 +4,9 @@ Print one, take it to the robot, fill it in with a pen, then a coder copies the 
 go on the GitHub issue. Each PDF is made by a Python script here (`pip install reportlab`, then `python3 make_...py`).
 Edit the script, not the PDF.
 
+**Test OpModes are hidden on the Driver Station** (decision 052). Before using a sheet, delete the `@Disabled` line in
+that test's file (`opmodes/test/`), then build and deploy. Put it back before a competition.
+
 **The "Was" column and the driver speeds are read from the Java code** (`code_values.py`), so they always match the
 code when you print. Changed a value in the code? Re-run the script before printing.
 

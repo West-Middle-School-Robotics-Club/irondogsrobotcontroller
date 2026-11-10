@@ -103,8 +103,8 @@ def header_block(title, subtitle, opmode, needs, group="Tests group on the Drive
         Spacer(1, 4),
         p("<b>OpMode:</b> %s (%s).  <b>Needs in the config:</b> %s" % (opmode, group, needs),
           SMALL),
-        p("<b>Safety:</b> robot on blocks or on the floor with space around it, hands clear of moving parts, "
-          "one person ready to press STOP. Nothing moves during INIT; everything starts after START.", SMALL),
+        p("<b>Hidden by default</b> (052): delete " + c("@Disabled") + " in its file, build, deploy. "
+          "<b>Safety:</b> space around the robot, hands clear, one person on STOP. Nothing moves in INIT.", SMALL),
     ]
 
 

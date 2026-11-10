@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
@@ -26,6 +27,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  * the servo is still in standard (positional) mode: reprogram it with its servo programmer (goBILDA or Axon).
  * If it creeps when "Speed" is 0.00, recenter it with the servo programmer.
  */
+// Hidden on the Driver Station (decision 052). To use it: delete the @Disabled line below, then build and deploy.
+@Disabled
 @TeleOp(name = "Turret Servo Raw Test", group = "Tests")
 public class TurretServoRawTest extends LinearOpMode {
 

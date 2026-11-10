@@ -23,7 +23,6 @@ teamcode/
     ├── teleop/
     │   ├── DriverControls.java ← the ONLY code that turns gamepad sticks into drive commands
     │   ├── OperatorControls.java ← the ONLY code that turns gamepad 2 buttons into mechanism commands (decision 029)
-    │   ├── ExampleTeleOp.java
     │   ├── MainTeleOp.java     ← the match TeleOp (shared code, no @TeleOp of its own)
     │   ├── MainTeleOpRed.java  ← "Main TeleOp RED": picks Alliance.RED (decision 022)
     │   └── MainTeleOpBlue.java ← "Main TeleOp BLUE": picks Alliance.BLUE
@@ -31,7 +30,7 @@ teamcode/
     │   ├── BasicAuton.java     ← Basic Auton shared code: LEAVE + PARK with the Pinpoint (#22, decision 026)
     │   ├── BasicAutonRedNear.java / RedFar / BlueNear / BlueFar ← pick alliance + route
     │   └── README.md           ← which Basic Auton to pick, and what to tune
-    └── test/               ← test and tuning OpModes (the "Tests" group on the Driver Station)
+    ├── test/               ← test and tuning OpModes ("Tests" group). HIDDEN with @Disabled (decision 052)
         ├── AllianceCameraTest.java ← shared code for the red/blue camera tests (#7)
         ├── BlueCameraTest.java ← camera as BLUE: only tags 38-45 are targets
         ├── BrakeModeCheck.java
@@ -42,10 +41,12 @@ teamcode/
         ├── LightTest.java ← check the colors on both lights
         ├── PinpointTest.java
         ├── RedCameraTest.java ← camera as RED: only tags 30-37 are targets
-        ├── TestDriveMotors.java ← test-only helper; never used by real robot code
         ├── TestLauncher.java ← test whether the launcher flywheel motor spins (#5)
-        ├── TurretServoRawTest.java ← the turret servo ALONE: joystick speed, no homing/limits (#31)
         └── TurretTest.java ← turn the (continuous) turret with the dpad, learn the ELC encoder, calibrate (#31)
+    └── archive/            ← old programs kept for reference, HIDDEN with @Disabled (decision 052)
+        ├── manualDriver.java ← the team's first driving program (9/23)
+        ├── TestDriveMotors.java ← test-only helper; never used by real robot code
+        └── TurretServoRawTest.java ← the turret servo ALONE: joystick speed, no homing/limits (#31)
 ```
 
 `Odometry`, `Camera` and `Light` are created directly by the OpModes that need them, not by `Robot.java` yet. If a device
@@ -58,7 +59,7 @@ when its devices aren't in the config.
 
 1. **Only subsystems touch hardware.** Motors, servos and sensors are `private` inside their subsystem.
    OpModes call methods like `robot.drivetrain.drive(...)` or `robot.intake.in()`, never `motor.setPower(...)`.
-2. **Every OpMode starts with `Robot robot = new Robot(hardwareMap);`.** See `ExampleTeleOp.java`.
+2. **Every OpMode starts with `Robot robot = new Robot(hardwareMap);`.** See the example under "Adding a new OpMode".
 3. **No magic numbers.** Config names, speeds and positions are named constants at the top of the subsystem,
    e.g. `FRONT_LEFT_DRIVE_NAME = "frontLeftDrive"`.
    The variable holding the device uses the same name as the config: `frontLeftDrive`.
@@ -103,6 +104,28 @@ Auto:    Pinpoint / path code ───→ drivetrain.drive(forward, left, turn)
 
 ## Adding a new OpMode
 
-1. Copy `opmodes/teleop/ExampleTeleOp.java` into `opmodes/teleop/` or `opmodes/auto/`.
-2. Change the class name, and the `name` in `@TeleOp(...)` (or use `@Autonomous(...)`).
+1. Make a new file in `opmodes/teleop/`, `opmodes/auto/` or `opmodes/test/`, following this pattern:
+   ```java
+   @TeleOp(name = "My TeleOp", group = "TeleOp")   // or @Autonomous(...)
+   public class MyTeleOp extends LinearOpMode {
+       @Override
+       public void runOpMode() {
+           Robot robot = new Robot(hardwareMap);          // 1. set up all the hardware
+           DriverControls driver = new DriverControls();
+           waitForStart();                                // 2. nothing moves before START
+           while (opModeIsActive()) {                     // 3. loop: gamepads -> subsystems -> telemetry
+               driver.drive(robot.drivetrain, gamepad1);
+               robot.addTelemetry(telemetry);
+               telemetry.update();
+           }
+           robot.stop();
+       }
+   }
+   ```
+   No motor code in the OpMode: hardware lives in the subsystems, sticks in `DriverControls`.
+2. Pick a class name, and the `name` the Driver Station shows.
 3. Build and deploy, then pick it on the Driver Station.
+
+**Hidden OpModes (decision 052).** Test and archive OpModes have `@Disabled` above their `@TeleOp`, so the
+Driver Station list only shows the competition programs. To use one: delete its `@Disabled` line, build and
+deploy. Put it back before a competition. A new test OpMode gets `@Disabled` too once it's done.

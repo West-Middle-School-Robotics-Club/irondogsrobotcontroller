@@ -545,3 +545,13 @@ Decision:
 - A note in the code next to a changed value says when and why (e.g. "Note 11/8: 1.0 after testing")
 - Bigger design choices (how something works, not a number) still get a decision
 Who: Mentor (11/9)
+
+## 052 – Test and archive OpModes are hidden on the Driver Station  (2026-11-10)
+Status: Accepted
+Issue: —
+Context: The Driver Station list had the competition programs mixed in with 11 test programs and old archive programs. At a competition the drive team should only see what they need.
+Decision:
+- **Every OpMode in `opmodes/test/` and `opmodes/archive/` has `@Disabled`** (the FTC SDK's way to hide an OpMode). The list shows only **Main TeleOp RED / BLUE** and the **4 Basic Autons**
+- **To use a test:** delete its `@Disabled` line, build and deploy. Put it back before a competition. Each file has a one-line comment saying so, and so do the printed worksheets
+- `ExampleTeleOp` and `HelloWorld` are **deleted**. The example OpMode pattern now lives in `code-structure.md` ("Adding a new OpMode")
+Who: Mentor (11/10)
