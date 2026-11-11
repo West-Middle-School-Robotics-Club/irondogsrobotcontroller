@@ -68,6 +68,14 @@ public class DriverControls {
      * @return which speed is active (SLOW, NORMAL or TURBO), to show on telemetry.
      */
     public DriveSpeed drive(Drivetrain drivetrain, Gamepad gamepad) {
+        return drive(drivetrain, gamepad, 1.0);
+    }
+
+    /**
+     * Same as drive(), but every power is also multiplied by speedMultiplier (0 to 1), on top of SLOW / NORMAL / TURBO.
+     * Test OpModes use it as a "speed dial" on the dpad (Pinpoint Test). Main TeleOp uses drive() above, which is 1.0.
+     */
+    public DriveSpeed drive(Drivetrain drivetrain, Gamepad gamepad, double speedMultiplier) {
         // A = straight-line assist on / off. aWasPressed() is true only ONCE per press.
         if (gamepad.aWasPressed()) {
             straightLineAssist = !straightLineAssist;
@@ -100,7 +108,7 @@ public class DriverControls {
         left *= STRAFE_CORRECTION;
 
         DriveSpeed speed = pickSpeed(gamepad);
-        double scale = scaleFor(speed);
+        double scale = scaleFor(speed) * Math.max(0.0, Math.min(1.0, speedMultiplier));
 
         drivetrain.drive(forward * scale, left * scale, turn * scale);
         return speed;

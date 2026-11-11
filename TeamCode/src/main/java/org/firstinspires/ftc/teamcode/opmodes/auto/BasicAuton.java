@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Odometry;
 import org.firstinspires.ftc.teamcode.subsystems.Power;
 
 /**
- * BASIC AUTON (issue #22, decisions 011, 014, 020, 026): LEAVE + PARK, drive-only.
+ * BASIC AUTON (issue #22, decisions 011, 014, 020, 026, 046): LEAVE + PARK, drive-only.
  *
  *   LEAVE (3 pts): the robot stops touching the wall it started against.
  *   PARK  (5 pts): at the end of AUTO, the robot is at least partly in our LOADING ZONE.
@@ -21,12 +21,19 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *
  * This is the SHARED code. The four OpModes (Red/Blue x Near/Far) only pick an alliance and a route.
  *
- * How it drives: the Pinpoint (Odometry) knows where the robot is on the field. For each waypoint, we drive
- * toward it, faster when far and slower when close, until we're close enough ("proportional control").
+ * How it drives: at START the Pinpoint (Odometry) is told where the robot is on the field (the start position for
+ * the route). From then on it reports field positions. For each waypoint the robot drives toward it, faster when far
+ * and slower when close, brakes a little early so it doesn't slide past, and moves on when it has stopped close
+ * enough ("proportional control").
  *
  * Positions are written ONCE, for RED, in field coordinates (decision 011: origin at field center,
  * +X toward the far wall, +Y toward the red wall, heading counter-clockwise, 0 = facing the far wall).
  * BLUE is calculated: Blue = Red rotated 180 degrees, (x, y, heading) -> (-x, -y, heading + 180).
+ *
+ * CAREFUL when writing a waypoint: the start HEADING decides which field direction is "forward". NEAR starts facing
+ * -90 (toward -Y), so "forward 23" LOWERS y by 23 and leaves x alone; "right" is -X there. FAR starts facing 0, so
+ * forward is +X and left is +Y. Each waypoint comment below says the move in robot words (forward / right / left)
+ * and the field numbers do the math. Test Auton (opmodes/test) runs the same moves from a (0, 0, 0) start on any floor.
  *
  * Rules this code follows:
  *   - Nothing moves during INIT (G304.H). The drive team sets a start DELAY with the dpad during INIT
@@ -36,14 +43,40 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  */
 public abstract class BasicAuton extends LinearOpMode {
 
+    /** Measures the time between telemetry updates = one pass of the loop (shown as "Loop"). */
+    private final ElapsedTime loopTimer = new ElapsedTime();
+
     /** Which starting spot. NEAR = against our alliance wall, next to the LOADING ZONE. FAR = against the audience wall. */
     public enum Route { NEAR, FAR }
 
-    /** Which alliance this OpMode is for. */
+    /** Which alliance this OpMode is for (the lights during INIT). */
     protected abstract Alliance alliance();
 
     /** Which route this OpMode runs. */
     protected abstract Route route();
+
+    /**
+     * Where the robot starts, in the coordinates the Pinpoint will use: the RED field start for the route, rotated
+     * for BLUE. A test OpMode can override this (Test Auton starts at 0, 0, 0 on any clear floor).
+     */
+    protected Pose2D startPose() {
+        return forAlliance(route() == Route.NEAR ? RED_NEAR_START : RED_FAR_START, alliance());
+    }
+
+    /** The waypoints to drive to, in order, in the same coordinates as startPose(). A test OpMode can override this. */
+    protected Pose2D[] path() {
+        Pose2D[] redPath = route() == Route.NEAR ? RED_NEAR_PATH : RED_FAR_PATH;
+        Pose2D[] path = new Pose2D[redPath.length];
+        for (int i = 0; i < redPath.length; i++) {
+            path[i] = forAlliance(redPath[i], alliance());
+        }
+        return path;
+    }
+
+    /** The "SET UP:" line shown during INIT. A test OpMode can override this to say where it really starts. */
+    protected String setupInstructions() {
+        return setupText(route(), alliance());
+    }
 
     // ------------------------------------------------------------------------------------------------
     // ROBOT SIZE, measured 11/3: 456.59 mm x 406.19 mm (hardware-config.md). Update if the robot changes.
@@ -52,43 +85,62 @@ public abstract class BasicAuton extends LinearOpMode {
     public static final double ROBOT_WIDTH_IN = 15.99;  // left to right (406.19 mm)
 
     // ------------------------------------------------------------------------------------------------
-    // RED positions (inches, degrees). See TeamCode/docs/game/field.md for the map.
-    // TODO(#22): check each one on a taped practice field and adjust.
-    // ------------------------------------------------------------------------------------------------
+    // RED positions (inches, degrees), field coordinates (decision 011). See TeamCode/docs/game/field.md for the map.
+    // Every position is where the robot's CENTER is. The moves were measured on the floor 11/10-11/11 with Test Auton
+    // (testAuton.java has the same moves from a 0, 0, 0 start; keep the two in step). Re-run make_diagrams.py after
+    // changing a position so the route sheets match.
     // Every Basic Auton starts with the robot's BACK touching a wall (decision 046), so the drive team has one rule.
+    // ------------------------------------------------------------------------------------------------
     // NEAR: start in tile A6, BACK touching the RED wall (y = 72), FRONT facing into the field (heading -90).
-    // The LOADING ZONE (A5) is right next to it, toward the audience.
-    static final Pose2D RED_NEAR_START = redPose(60, 72 - ROBOT_LENGTH_IN / 2, -90);
+    // The LOADING ZONE (A5) is right next to it, toward the audience (to the robot's RIGHT).
+    // Facing -90: forward = -Y, right = -X. Center starts at y = 72 - 9 = 63.
+    static final Pose2D RED_NEAR_START = pose(60, 72 - ROBOT_LENGTH_IN / 2, -90);
     static final Pose2D[] RED_NEAR_PATH = {
-            redPose(60, 50, -90),  // LEAVE: drive straight forward, off the red wall
-            redPose(48, 60, -90),  // PARK: slide toward the audience, into the FAR-WALL third of the LOADING ZONE
+            pose(60, 40, -90),  // LEAVE: 23 in forward, off the red wall (y 63 -> 40)
+            pose(48, 40, -90),  // 12 in RIGHT, toward the audience (x 60 -> 48), in front of the LOADING ZONE
+            pose(48, 58, -90),  // PARK: 18 in back (y 40 -> 58), into the LOADING ZONE. Back edge at y 67, 5 in off the wall
     };
-    // LOADING ZONE: x 24.5 (audience end) to 47.5 (far-wall end), y 61 to 72. PARK only needs the robot PARTLY in it,
-    // so the two alliance robots split it (11/8): NEAR parks in the far-wall third (robot x 40-56), FAR in the
-    // audience third (robot x 15-33), about 7 in apart. Both end 3-4 in off the wall, so LEAVE still counts.
-    // TODO(#22): calibrate both on a real practice field.
+    // LOADING ZONE: x 24.5 (audience end) to 47.5 (far-wall end), y 61 to 72. PARK only needs the robot PARTLY in it:
+    // at (48, 58) the robot spans x 40-56, y 49-67, so its far-wall side is in. The audience end is left for our partner.
 
-    // FAR: start in tile B1, BACK touching the AUDIENCE wall (x = -72), facing the far wall.
-    static final Pose2D RED_FAR_START = redPose(-72 + ROBOT_LENGTH_IN / 2, 36, 0);
+    // FAR: start in tile B1, BACK touching the AUDIENCE wall (x = -72), FRONT facing the far wall (heading 0).
+    // Facing 0: forward = +X, left = +Y. Center starts at x = -72 + 9 = -63.
+    static final Pose2D RED_FAR_START = pose(-72 + ROBOT_LENGTH_IN / 2, 36, 0);
     static final Pose2D[] RED_FAR_PATH = {
-            redPose(-48, 40, 0),  // LEAVE: drive forward, off the audience wall
-            redPose(24, 40, 0),   // drive up column B, clear of the HIVE (column C, y < 24)
-            redPose(24, 60, 0),   // PARK: slide left into the AUDIENCE third of the LOADING ZONE
+            pose(37, 36, 0),    // LEAVE + drive 100 in forward, up column B (x -63 -> 37). The HIVE is in column C, to the right
+            pose(37, 56, 0),    // PARK: 20 in LEFT (y 36 -> 56), into the LOADING ZONE. Robot spans y 48-64, so its left side is in
     };
+    // Partner check: (37, 56) is the middle of the LOADING ZONE along the wall, so agree with the partner where they park.
 
     // ------------------------------------------------------------------------------------------------
-    // DRIVING. TODO(#22): tune on the robot.
+    // DRIVING. Tune on the robot (tuning-guide.md has a row for each).
     // ------------------------------------------------------------------------------------------------
-    static final double DRIVE_GAIN = 0.05;           // power per inch away. 20 in away = 1.0 (then capped)
-    static final double MAX_DRIVE_POWER = 0.6;       // fastest we drive
-    static final double MIN_DRIVE_POWER = 0.15;      // slowest we drive (any slower and the robot may not move)
+    // How the drive motors take "power" during Basic Auton (decision 008 is still open):
+    //   true  = encoder speed control (RUN_USING_ENCODER): power = % of top speed, the hub holds that speed.
+    //           Same as Main TeleOp today. At very low powers the hub's speed loop can surge (lurch, stop, lurch)
+    //   false = plain power (RUN_WITHOUT_ENCODER): power = % of battery voltage. Smoother at a crawl, but the
+    //           numbers below mean something different: MIN_DRIVE_POWER needs ~0.12-0.15 or the robot won't move
+    // If the robot still lurches back and forth at a waypoint, try false and re-tune the powers.
+    static final boolean USE_ENCODER_SPEED_CONTROL = true;
+    static final double DRIVE_GAIN = 0.02;           // power per inch away. Slowing starts MAX_DRIVE_POWER / DRIVE_GAIN = 10 in out
+    static final double MAX_DRIVE_POWER = 0.3;       // fastest we drive forward/back
+    static final double MAX_SIDEWAYS_POWER = 0.15;   // fastest we drive sideways (strafing slides more, so a bit slower)
+    static final double MIN_DRIVE_POWER = 0.05;      // slowest we drive (a crawl; encoder speed control keeps it moving)
+    static final double BRAKE_LOOKAHEAD_S = 0.15;    // brake this many seconds early (forward/back): a moving robot slides past the spot otherwise
+    static final double BRAKE_LOOKAHEAD_SIDEWAYS_S = 0.3; // same for sideways moves: braked mecanum wheels still roll sideways on their rollers, so brake earlier
     static final double TURN_GAIN = 0.02;            // turn power per degree away
-    static final double MAX_TURN_POWER = 0.4;
-    static final double POSITION_TOLERANCE_IN = 1.5; // "close enough" to a waypoint
-    static final double HEADING_TOLERANCE_DEG = 3.0;
-    static final double WAYPOINT_TIMEOUT_S = 8.0;    // give up on one waypoint after this long
+    static final double MIN_TURN_POWER = 0.05;       // slowest turn that still moves the robot (less and it sits 3 deg off forever)
+    static final double MAX_TURN_POWER = 0.2;
+    static final double POSITION_TOLERANCE_IN = 1;   // "close enough" to a waypoint
+    static final double HEADING_TOLERANCE_DEG = 2.0;
+    static final double SETTLED_SPEED_IN_PER_S = 2.0; // "stopped" = slower than this. A waypoint counts only once the robot has stopped on it
+    static final double WAYPOINT_TIMEOUT_S = 4.0;    // give up on a waypoint after this long, PLUS...
+    static final double WAYPOINT_TIMEOUT_PER_INCH_S = 0.15; // ...this much per inch of the move (100 in: 4 + 15 = 19 s). Long drives need longer
+    static final double WAYPOINT_PAUSE_S = 2.0;      // stop and sit still this long after each waypoint (settle, read the position). 5.0 while measuring 11/10
     static final double STOP_BY_S = 28.0;            // stop everything by this time (AUTO is 30 s)
     static final int MAX_DELAY_S = 10;               // start delay the drive team can choose in INIT
+    static final boolean RECALIBRATE_AT_START = true; // re-calibrate the Pinpoint gyro at START, when the robot is surely still (see Odometry.recalibrateImu)
+    static final double RECALIBRATE_MIN_S = 0.5;     // the gyro calibration takes about this long; don't trust READY before then
     static final double PINPOINT_READY_TIMEOUT_S = 3.0; // after START, wait this long for the Pinpoint to be READY, else don't drive
 
     // What the lights mean in Basic Auton. Colors are in Light.Color.
@@ -109,9 +161,10 @@ public abstract class BasicAuton extends LinearOpMode {
         Power power = new Power(hardwareMap);
 
         robot.drivetrain.setBrakeOnStop(true);           // autonomous stops precisely (decision 023)
+        robot.drivetrain.setEncoderSpeedControl(USE_ENCODER_SPEED_CONTROL);
 
-        Pose2D start = forAlliance(route == Route.NEAR ? RED_NEAR_START : RED_FAR_START, alliance);
-        Pose2D[] path = route == Route.NEAR ? RED_NEAR_PATH : RED_FAR_PATH;
+        Pose2D start = startPose();
+        Pose2D[] path = path();
 
         // ---------- INIT: show the alliance, choose a delay. Nothing moves. ----------
         Light.Color allianceColor = alliance == Alliance.RED ? RED_ALLIANCE_COLOR : BLUE_ALLIANCE_COLOR;
@@ -129,7 +182,7 @@ public abstract class BasicAuton extends LinearOpMode {
             }
 
             telemetry.addData("BASIC AUTON", "%s  %s  (lights are %s)", alliance, route, allianceColor);
-            telemetry.addLine("SET UP: " + setupText(route, alliance));
+            telemetry.addLine("SET UP: " + setupInstructions());
             telemetry.addLine("Wrong one? Stop and pick the right Basic Auton.");
             telemetry.addData("Start delay", "%d s   (dpad up/down to change)", delaySeconds);
             telemetry.addData("Start position", poseText(start));
@@ -146,12 +199,19 @@ public abstract class BasicAuton extends LinearOpMode {
         // ---------- AUTO ----------
         ElapsedTime autoTimer = new ElapsedTime();
 
+        // The robot is surely sitting still right now (just placed, hands off), so this is the best moment to
+        // calibrate the Pinpoint's gyro. INIT's calibration is ruined if anyone nudges the robot while it runs,
+        // and then the heading drifts for the whole run (the robot slowly turns, and sideways moves go crooked).
+        if (RECALIBRATE_AT_START) {
+            odometry.recalibrateImu();
+        }
         // Wait for the Pinpoint to be READY before telling it where we are. If it is still calibrating,
         // setPose could be ignored or overwritten, and the robot would drive from a wrong position.
         // If it never gets READY, we do NOT drive: a robot that sits still is safer than one that drives blind.
         while (opModeIsActive() && autoTimer.seconds() < PINPOINT_READY_TIMEOUT_S) {
             odometry.update();
-            if (odometry.isReady()) {
+            boolean calibrationHadTime = !RECALIBRATE_AT_START || autoTimer.seconds() >= RECALIBRATE_MIN_S;
+            if (odometry.isReady() && calibrationHadTime) {
                 break;
             }
             showStatus("Waiting for Pinpoint (" + odometry.getStatus() + ")", autoTimer, odometry, null);
@@ -170,7 +230,7 @@ public abstract class BasicAuton extends LinearOpMode {
             robot.stop();
             return;
         }
-        odometry.setPose(start);   // the Pinpoint now reports FIELD positions
+        odometry.setPose(start);   // the Pinpoint now reports FIELD positions (Test Auton: positions from its 0, 0, 0 start)
 
         // Start delay, for when our partner's route crosses ours
         while (opModeIsActive() && autoTimer.seconds() < delaySeconds) {
@@ -181,9 +241,15 @@ public abstract class BasicAuton extends LinearOpMode {
         // Drive to each waypoint in order
         boolean allReached = true;
         for (int i = 0; i < path.length && opModeIsActive(); i++) {
-            Pose2D target = forAlliance(path[i], alliance);
+            Pose2D target = path[i];
             boolean reached = driveTo(robot, odometry, target, autoTimer, "Waypoint " + (i + 1) + " of " + path.length);
             allReached &= reached;
+            // Pause: let the robot settle (BRAKE) and show where the Pinpoint thinks it is, before the next move
+            ElapsedTime pauseTimer = new ElapsedTime();
+            while (opModeIsActive() && pauseTimer.seconds() < WAYPOINT_PAUSE_S && autoTimer.seconds() < STOP_BY_S) {
+                odometry.update();
+                showStatus("Paused after waypoint " + (i + 1) + (reached ? "" : " (NOT reached)"), autoTimer, odometry, target);
+            }
             if (autoTimer.seconds() >= STOP_BY_S) {
                 if (i < path.length - 1) {
                     allReached = false;   // out of time with waypoints left: YELLOW, not GREEN
@@ -205,45 +271,79 @@ public abstract class BasicAuton extends LinearOpMode {
     }
 
     /**
-     * Drive to one field position (proportional control), then stop.
-     * Returns true if we got there, false if we ran out of time.
+     * Drive to one position (proportional control), then stop on it.
+     * Returns true if we got there and stopped, false if we ran out of time.
      */
     private boolean driveTo(Robot robot, Odometry odometry, Pose2D target, ElapsedTime autoTimer, String label) {
         ElapsedTime waypointTimer = new ElapsedTime();
+        odometry.update();
+        // A long move gets a longer timeout: 100 in at a careful speed takes well over 8 s
+        double timeoutSeconds = WAYPOINT_TIMEOUT_S + WAYPOINT_TIMEOUT_PER_INCH_S * distanceBetween(odometry.getPose(), target);
+
         while (opModeIsActive()) {
             odometry.update();
             Pose2D pose = odometry.getPose();
 
-            // How far, in FIELD directions
+            // How far, in FIELD directions (the Pinpoint's X and Y)
             double dx = target.getX(DistanceUnit.INCH) - pose.getX(DistanceUnit.INCH);
             double dy = target.getY(DistanceUnit.INCH) - pose.getY(DistanceUnit.INCH);
             double distance = Math.hypot(dx, dy);
             double headingError = angleWrap(target.getHeading(AngleUnit.DEGREES) - pose.getHeading(AngleUnit.DEGREES));
+            double speed = odometry.getSpeedInchesPerSecond();
 
-            if (distance < POSITION_TOLERANCE_IN && Math.abs(headingError) < HEADING_TOLERANCE_DEG) {
+            // Done = close enough AND stopped. "Close but still sliding" is not done: wait for the brake to finish,
+            // then check again. If it slid out of tolerance, the loop below nudges it back.
+            boolean closeEnough = distance < POSITION_TOLERANCE_IN && Math.abs(headingError) < HEADING_TOLERANCE_DEG;
+            if (closeEnough && speed < SETTLED_SPEED_IN_PER_S) {
                 robot.drivetrain.stop();
                 return true;
             }
-            if (waypointTimer.seconds() > WAYPOINT_TIMEOUT_S || autoTimer.seconds() > STOP_BY_S) {
+            if (waypointTimer.seconds() > timeoutSeconds || autoTimer.seconds() > STOP_BY_S) {
                 robot.drivetrain.stop();
                 return false;
             }
 
-            // Turn the FIELD direction into ROBOT directions (forward / left), using the robot's heading
+            // Turn the FIELD direction into ROBOT directions (forward / left), using the robot's heading.
+            // (NEAR faces -90, so a field -Y move comes out as "forward" here. This is where the start heading matters.)
             double heading = pose.getHeading(AngleUnit.RADIANS);
             double forward = dx * Math.cos(heading) + dy * Math.sin(heading);
             double left = -dx * Math.sin(heading) + dy * Math.cos(heading);
 
-            // Faster when far, slower when close
+            // How sideways is this move? 0 = straight forward/back, 1 = pure strafe. Sideways moves brake worse
+            // (the mecanum rollers roll), so they get a longer brake lookahead and a lower top power.
+            double sideways = distance > 0 ? Math.abs(left) / distance : 0.0;
+            double lookahead = BRAKE_LOOKAHEAD_S + (BRAKE_LOOKAHEAD_SIDEWAYS_S - BRAKE_LOOKAHEAD_S) * sideways;
+            double maxPower = MAX_DRIVE_POWER + (MAX_SIDEWAYS_POWER - MAX_DRIVE_POWER) * sideways;
+
+            // Brake early: how fast is the robot closing in on the waypoint? (Its velocity, in the same field
+            // directions as dx and dy, measured along the line to the waypoint. Positive = getting closer, negative = moving
+            // away, for example after sliding past it.) Steer on where the robot will be in `lookahead` seconds,
+            // so the power drops to 0 just before the waypoint and the slide ends on it instead of past it.
+            // Moving AWAY makes the predicted distance bigger, so the robot pushes back harder: that is correct.
+            double closingSpeed = distance > 0
+                    ? (odometry.getVelocityXInchesPerSecond() * dx + odometry.getVelocityYInchesPerSecond() * dy) / distance
+                    : 0.0;
+            double predictedDistance = distance - closingSpeed * lookahead;
+
+            // Faster when far, slower when close, nothing once the predicted spot is inside the tolerance
             double power = 0.0;
-            if (distance >= POSITION_TOLERANCE_IN) {
-                power = Math.max(MIN_DRIVE_POWER, Math.min(MAX_DRIVE_POWER, DRIVE_GAIN * distance));
+            if (predictedDistance >= POSITION_TOLERANCE_IN) {
+                power = Math.max(MIN_DRIVE_POWER, Math.min(maxPower, DRIVE_GAIN * predictedDistance));
             }
             double scale = distance > 0 ? power / distance : 0.0;
-            double turn = Math.max(-MAX_TURN_POWER, Math.min(MAX_TURN_POWER, TURN_GAIN * headingError));
+
+            // Turn only if the heading is really off, and then hard enough to actually move (MIN_TURN_POWER).
+            // Without the minimum, a 3 degree error gives 0.06 power, the robot doesn't budge, and the waypoint never
+            // counts as reached.
+            double turn = 0.0;
+            if (Math.abs(headingError) >= HEADING_TOLERANCE_DEG) {
+                double turnPower = Math.max(MIN_TURN_POWER, Math.min(MAX_TURN_POWER, TURN_GAIN * Math.abs(headingError)));
+                turn = Math.copySign(turnPower, headingError);
+            }
 
             robot.drivetrain.drive(forward * scale, left * scale, turn);
-            showStatus(label + String.format(": %.1f in to go", distance), autoTimer, odometry, target);
+            showStatus(label + String.format(": %.1f in to go, %.1f in/s, power %.2f", distance, closingSpeed, power),
+                    autoTimer, odometry, target);
         }
         robot.drivetrain.stop();
         return false;
@@ -253,6 +353,8 @@ public abstract class BasicAuton extends LinearOpMode {
         telemetry.addData("BASIC AUTON", "%s  %s", alliance(), route());
         telemetry.addData("Step", step);
         telemetry.addData("Time", "%.1f s", autoTimer.seconds());
+        telemetry.addData("Loop", "%.0f ms  (how often the position is refreshed)", loopTimer.milliseconds());
+        loopTimer.reset();
         telemetry.addData("Robot", poseText(odometry.getPose()));
         if (target != null) {
             telemetry.addData("Target", poseText(target));
@@ -271,8 +373,8 @@ public abstract class BasicAuton extends LinearOpMode {
                    : "tile E6, BACK touching the FAR wall, FRONT facing the AUDIENCE";
     }
 
-    /** A RED field position, in inches and degrees. */
-    static Pose2D redPose(double xInches, double yInches, double headingDegrees) {
+    /** A position, in inches and degrees (a RED field position, or a Test Auton position from its 0, 0, 0 start). */
+    protected static Pose2D pose(double xInches, double yInches, double headingDegrees) {
         return new Pose2D(DistanceUnit.INCH, xInches, yInches, AngleUnit.DEGREES, headingDegrees);
     }
 
@@ -281,8 +383,14 @@ public abstract class BasicAuton extends LinearOpMode {
         if (alliance == Alliance.RED) {
             return redPose;
         }
-        return redPose(-redPose.getX(DistanceUnit.INCH), -redPose.getY(DistanceUnit.INCH),
+        return pose(-redPose.getX(DistanceUnit.INCH), -redPose.getY(DistanceUnit.INCH),
                 angleWrap(redPose.getHeading(AngleUnit.DEGREES) + 180));
+    }
+
+    /** Straight-line distance between two positions, in inches. */
+    static double distanceBetween(Pose2D a, Pose2D b) {
+        return Math.hypot(b.getX(DistanceUnit.INCH) - a.getX(DistanceUnit.INCH),
+                b.getY(DistanceUnit.INCH) - a.getY(DistanceUnit.INCH));
     }
 
     /** Keep an angle between -180 and 180 degrees, so the robot turns the short way. */

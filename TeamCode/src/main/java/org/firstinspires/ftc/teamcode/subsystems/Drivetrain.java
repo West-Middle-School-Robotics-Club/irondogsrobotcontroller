@@ -36,6 +36,7 @@ public class Drivetrain {
     private final DcMotor backRightDrive;
 
     private boolean brakeOnStop = true;
+    private boolean encoderSpeedControl = USE_ENCODER_SPEED_CONTROL;
 
     public Drivetrain(HardwareMap hardwareMap) {
         frontLeftDrive  = hardwareMap.get(DcMotor.class, FRONT_LEFT_DRIVE_NAME);
@@ -50,17 +51,32 @@ public class Drivetrain {
         frontRightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
         backRightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        DcMotor.RunMode runMode = USE_ENCODER_SPEED_CONTROL
-                ? DcMotor.RunMode.RUN_USING_ENCODER
-                : DcMotor.RunMode.RUN_WITHOUT_ENCODER;
-
-        for (DcMotor motor : new DcMotor[] {frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive}) {
-            motor.setMode(runMode);
-        }
+        setEncoderSpeedControl(USE_ENCODER_SPEED_CONTROL);
 
         // Default is BRAKE (precise stops, what autonomous needs). TeleOp switches to FLOAT
         // for smoother driving by calling setBrakeOnStop(false). See decision 023.
         setBrakeOnStop(true);
+    }
+
+    /**
+     * Switch encoder speed control on or off (decision 008 is still open, so an OpMode can pick its own mode).
+     *   true  = RUN_USING_ENCODER: power means "% of top speed", and the hub uses the wheel encoders to hold that speed
+     *   false = RUN_WITHOUT_ENCODER: power means "% of battery voltage", plain and simple
+     * The constructor sets USE_ENCODER_SPEED_CONTROL. Call this with the robot stopped. Nothing moves.
+     */
+    public void setEncoderSpeedControl(boolean useEncoders) {
+        encoderSpeedControl = useEncoders;
+        DcMotor.RunMode runMode = useEncoders
+                ? DcMotor.RunMode.RUN_USING_ENCODER
+                : DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+        for (DcMotor motor : new DcMotor[] {frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive}) {
+            motor.setMode(runMode);
+        }
+    }
+
+    /** True if the hub holds wheel speeds with the encoders (RUN_USING_ENCODER), false for plain power. */
+    public boolean isEncoderSpeedControl() {
+        return encoderSpeedControl;
     }
 
     /**
@@ -122,7 +138,7 @@ public class Drivetrain {
 
     /** Show this subsystem's status on the Driver Station. */
     public void addTelemetry(Telemetry telemetry) {
-        telemetry.addData("Drive mode", USE_ENCODER_SPEED_CONTROL ? "RUN_USING_ENCODER" : "RUN_WITHOUT_ENCODER");
+        telemetry.addData("Drive mode", encoderSpeedControl ? "RUN_USING_ENCODER" : "RUN_WITHOUT_ENCODER");
         telemetry.addData("Stop mode", brakeOnStop ? "BRAKE" : "FLOAT");
         telemetry.addData("Drivetrain front L/R", "%.2f  %.2f", frontLeftDrive.getPower(), frontRightDrive.getPower());
         telemetry.addData("Drivetrain back  L/R", "%.2f  %.2f", backLeftDrive.getPower(), backRightDrive.getPower());

@@ -88,25 +88,44 @@ Worksheet: `pinpoint-test.pdf`. Test with **Pinpoint Test**. Issues #6, #21.
 | `X_POD_DIRECTION` | `FORWARD` | Push the robot forward: X must go UP. If not, `REVERSED` | Pinpoint Test | ✅ |
 | `Y_POD_DIRECTION` | `REVERSED` | Push the robot left: Y must go UP. If not, flip it | Pinpoint Test (11/7: Y went up pushing RIGHT, so changed to `REVERSED`; confirmed after: pushing left makes Y go up) | ✅ |
 
+The Pinpoint Test OpMode drives in BRAKE with straight-line assist ON and a dpad **speed dial**:
+
+| Setting | File | Now | What it does | Status |
+|---|---|---|---|---|
+| `SPEED_DIAL_START` | `opmodes/test/PinpointTest.java` | `0.5` | Where the speed dial is at START (times the normal drive power) | ✅ |
+| `SPEED_DIAL_STEP` | `opmodes/test/PinpointTest.java` | `0.1` | How much one dpad up / down press changes it | ✅ |
+| `SPEED_DIAL_MIN` | `opmodes/test/PinpointTest.java` | `0.1` | The dial never goes below this | ✅ |
+
 ## Basic Auton: `opmodes/auto/BasicAuton.java`
-Guide: `basic-auton-guide.pdf`, routes: `docs/game/diagrams/basic-auton-near.pdf` / `far.pdf`. Issue #22, decision 026.
+Guide: `basic-auton-guide.pdf`, routes: `docs/game/diagrams/basic-auton-near.pdf` / `far.pdf`. Issue #22, decisions 026, 053.
+Positions are **field coordinates** (011). To tune a route on any clear floor, use **Test Auton** (`opmodes/test/testAuton.java`): it starts at (0, 0, 0) and holds the same moves as forward / left distances. Change one, change the other by hand (053).
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
 | `ROBOT_LENGTH_IN` | `17.98` | Robot length, front to back (inches) | Measured 11/3 | ✅ |
 | `ROBOT_WIDTH_IN` | `15.99` | Robot width, left to right (inches) | Measured 11/3 | ✅ |
-| `RED_NEAR_START`, `RED_NEAR_PATH` | (positions) | Where NEAR starts and drives to, for RED. BLUE is calculated | Taped practice field; re-run `make_diagrams.py` after changing | 🔧 |
-| `RED_FAR_START`, `RED_FAR_PATH` | (positions) | Same for FAR | Same | 🔧 |
-| `DRIVE_GAIN` | `0.05` | Power per inch away from the waypoint. Bigger = faster approach, but may overshoot | Taped field: overshoots? lower it. Crawls? raise it | 🔧 |
-| `MAX_DRIVE_POWER` | `0.6` | Fastest Basic Auton drives | Same | 🔧 |
-| `MIN_DRIVE_POWER` | `0.15` | Slowest it drives (lower and the robot may not move) | Lower until the robot just still moves, then add a little | 🔧 |
+| `RED_NEAR_START`, `RED_NEAR_PATH` | (positions) | Where NEAR starts and drives to, for RED, in field coordinates. BLUE is calculated. The start HEADING decides which field direction is forward (NEAR faces -90: forward = -Y, right = -X) | Measure the moves with Test Auton on any floor, convert to field positions (each waypoint comment shows the move); re-run `make_diagrams.py` after changing | 🔧 |
+| `RED_FAR_START`, `RED_FAR_PATH` | (positions) | Same for FAR (faces 0: forward = +X, left = +Y) | Same | 🔧 |
+| `USE_ENCODER_SPEED_CONTROL` | `true` | `true` = motors hold a speed with their encoders (same as Main TeleOp); `false` = plain power (smoother at a crawl, but then `MIN_DRIVE_POWER` needs ~0.12-0.15) | Robot lurches back and forth at a waypoint? try `false` and re-tune the powers (decision 008 still open) | 🔧 |
+| `DRIVE_GAIN` | `0.02` | Power per inch away from the waypoint. Bigger = faster approach, but may overshoot | Taped field: overshoots? lower it. Crawls? raise it | 🔧 |
+| `MAX_DRIVE_POWER` | `0.2` | Fastest Basic Auton drives | Same | 🔧 |
+| `MAX_SIDEWAYS_POWER` | `0.15` | Fastest it drives sideways (strafing). Blended with `MAX_DRIVE_POWER` by how sideways the move is | Slides past sideways waypoints? lower it | 🔧 |
+| `MIN_DRIVE_POWER` | `0.05` | Slowest it drives (lower and the robot may not move) | Lower until the robot just still moves, then add a little | 🔧 |
+| `BRAKE_LOOKAHEAD_S` | `0.15` | Brake this many seconds early. The code aims the spot the robot will reach in this time (speed from the Pinpoint) at the waypoint, so it doesn't slide past | Still overshoots? raise it. Stops short and crawls the last bit? lower it | 🔧 |
+| `BRAKE_LOOKAHEAD_SIDEWAYS_S` | `0.3` | Brake lookahead for sideways moves. Braked mecanum wheels still roll sideways on their rollers, so strafes need to brake earlier | Still slides past sideways? raise it. Stops short? lower it | 🔧 |
 | `TURN_GAIN` | `0.02` | Turn power per degree away from the heading | Wobbles? lower it | 🔧 |
-| `MAX_TURN_POWER` | `0.4` | Fastest it turns | | 🔧 |
-| `POSITION_TOLERANCE_IN` | `1.5` | "Close enough" to a waypoint (inches) | Stops and jitters at a waypoint? raise it | 🔧 |
-| `HEADING_TOLERANCE_DEG` | `3.0` | "Close enough" heading (degrees) | | 🔧 |
-| `WAYPOINT_TIMEOUT_S` | `8.0` | Give up on one waypoint after this many seconds | | ✅ |
+| `MIN_TURN_POWER` | `0.05` | Slowest turn that still moves the robot. Without it a 3° error gives a power too small to budge, and the waypoint never counts | Sits a few degrees off and never finishes? raise it. Twitches? lower it | 🔧 |
+| `MAX_TURN_POWER` | `0.2` | Fastest it turns | | 🔧 |
+| `POSITION_TOLERANCE_IN` | `1` | "Close enough" to a waypoint (inches) | Stops and jitters at a waypoint? raise it | 🔧 |
+| `HEADING_TOLERANCE_DEG` | `2.0` | "Close enough" heading (degrees) | | 🔧 |
+| `SETTLED_SPEED_IN_PER_S` | `2.0` | "Stopped" = slower than this. A waypoint only counts once the robot is close enough AND stopped, so a slide through the spot doesn't count | Takes long to "finish" each waypoint? raise it a little | 🔧 |
+| `WAYPOINT_TIMEOUT_S` | `4.0` | Give up on one waypoint after this many seconds, plus the per-inch time below | | ✅ |
+| `WAYPOINT_TIMEOUT_PER_INCH_S` | `0.15` | Extra timeout per inch of the move (100 in = 4 + 15 = 19 s). A fixed 8 s gave up on the long FAR drive | Times out on a drive that was going fine? raise it | 🔧 |
+| `WAYPOINT_PAUSE_S` | `1.0` | After each waypoint, stop and sit still this long before the next move (lets the robot settle; telemetry shows the Pinpoint position) | Longer = easier to watch and measure; shorter = faster run. Everything must still finish by `STOP_BY_S` | 🔧 |
 | `STOP_BY_S` | `28.0` | Stop everything by this time (AUTO is 30 s) | Keep below 30 | 🔒 |
 | `MAX_DELAY_S` | `10` | Longest start delay the drive team can pick in INIT | | ✅ |
+| `RECALIBRATE_AT_START` | `true` | Re-calibrate the Pinpoint gyro at START, when the robot is surely still. If someone bumps the robot during INIT's calibration the heading drifts all run | Keep on. Costs about half a second of AUTO | ✅ |
+| `RECALIBRATE_MIN_S` | `0.5` | How long the START re-calibration is given before READY is trusted | | ✅ |
 | `PINPOINT_READY_TIMEOUT_S` | `3.0` | After START, how long to wait for the Pinpoint to be READY before setting the start position. If it never is, the robot does not drive (YELLOW lights) | Normally READY already, since INIT shows its status | ✅ |
 | `PARKED_COLOR` | `Light.Color.GREEN` | Lights at the end when parked | Team's choice | ✅ |
 | `STOPPED_EARLY_COLOR` | `Light.Color.YELLOW` | Lights at the end when it stopped early | Team's choice | ✅ |
