@@ -61,7 +61,7 @@ public abstract class BasicAuton extends LinearOpMode {
     static final Pose2D RED_NEAR_START = redPose(60, 72 - ROBOT_LENGTH_IN / 2, -90);
     static final Pose2D[] RED_NEAR_PATH = {
             redPose(60, 50, -90),  // LEAVE: drive straight forward, off the red wall
-            redPose(48, 60, -90),  // PARK: slide toward the audience, into the FAR-WALL third of the LOADING ZONE
+            redPose(56, 62, -90),  // PARK: slide toward the audience, into the FAR-WALL third of the LOADING ZONE
     };
     // LOADING ZONE: x 24.5 (audience end) to 47.5 (far-wall end), y 61 to 72. PARK only needs the robot PARTLY in it,
     // so the two alliance robots split it (11/8): NEAR parks in the far-wall third (robot x 40-56), FAR in the
@@ -80,10 +80,10 @@ public abstract class BasicAuton extends LinearOpMode {
     // DRIVING. TODO(#22): tune on the robot.
     // ------------------------------------------------------------------------------------------------
     static final double DRIVE_GAIN = 0.05;           // power per inch away. 20 in away = 1.0 (then capped)
-    static final double MAX_DRIVE_POWER = 0.6;       // fastest we drive
+    static final double MAX_DRIVE_POWER = 0.4;       // fastest we drive
     static final double MIN_DRIVE_POWER = 0.15;      // slowest we drive (any slower and the robot may not move)
     static final double TURN_GAIN = 0.02;            // turn power per degree away
-    static final double MAX_TURN_POWER = 0.4;
+    static final double MAX_TURN_POWER = 0.3;
     static final double POSITION_TOLERANCE_IN = 1.5; // "close enough" to a waypoint
     static final double HEADING_TOLERANCE_DEG = 3.0;
     static final double WAYPOINT_TIMEOUT_S = 8.0;    // give up on one waypoint after this long
