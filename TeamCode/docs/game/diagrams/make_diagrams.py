@@ -373,7 +373,7 @@ def read_basic_auton():
     def ev(expr):  # evaluates things like "72 - ROBOT_WIDTH_IN / 2" (only numbers and our constants)
         return float(eval(expr, {"__builtins__": {}}, dict(consts)))
 
-    pose_re = r"redPose\(\s*([^,]+?)\s*,\s*([^,]+?)\s*,\s*([^)]+?)\s*\)"
+    pose_re = r"\bpose\(\s*([^,]+?)\s*,\s*([^,]+?)\s*,\s*([^)]+?)\s*\)"
     routes = {}
     for route in ("NEAR", "FAR"):
         s = re.search(r"RED_%s_START\s*=\s*%s" % (route, pose_re), src)

@@ -318,25 +318,28 @@ story = header_block(
     "Pinpoint Test",
     c("pinpoint") + " (goBILDA Pinpoint, I2C) with both pods plugged in")
 story += controls([
-    ["A", "reset position to 0, 0, 0° (do this before EVERY run)"],
+    ["X", "reset position to 0, 0, 0° (do this before EVERY run)"],
     ["B", "reset AND recalibrate the IMU. The robot must be STILL for a second"],
-    ["Sticks", "drive, to bring the robot back. Motors are set to FLOAT so it is easy to push by hand"],
+    ["A", "straight-line assist on / off (starts ON, like Main TeleOp): a stick pointed almost straight drives exactly straight"],
+    ["Dpad up / down", "speed dial: raise / lower the driving speed (starts at 50%)"],
+    ["Sticks", "drive (bumper = slow, trigger = turbo, times the speed dial). Motors BRAKE when the sticks are released, "
+               "so the robot stops where you let go. It is harder to push by hand: push slowly, or drive the moves"],
 ])
 story += [p("<b>Setup:</b> tape a start line and a 48 in mark on the floor. Our pods are 4-bar pods (32 mm wheels), "
             "already set in the code. Directions: +X = forward, +Y = left, +heading = counter-clockwise (decision 007).",
             BODY)]
 story += steps([
     ["1", "INIT, robot still", "\"Pinpoint READY\" before START", "", "stays not ready: check the I2C cable and the pods"],
-    ["2", "A. Push the robot straight FORWARD 48 in", "X about +48, Y about 0", "",
+    ["2", "X. Push or drive the robot straight FORWARD 48 in", "X about +48, Y about 0", "",
      "X goes DOWN: " + c("X_POD_DIRECTION = REVERSED") + ". X far from 48: wrong " + c("POD_TYPE")],
-    ["3", "A. Push the robot straight LEFT 48 in", "Y about +48, X about 0", "",
+    ["3", "X. Push or drive the robot straight LEFT 48 in", "Y about +48, X about 0", "",
      "Y goes DOWN: " + c("Y_POD_DIRECTION = REVERSED")],
-    ["4", "A. Turn the robot in place exactly 1 turn counter-clockwise (tape mark)", "heading back to about 0 (or 360), "
+    ["4", "X. Turn the robot in place exactly 1 turn counter-clockwise (tape mark)", "heading back to about 0 (or 360), "
      "X and Y stay within 1 in", "", "X or Y drift a lot: the pod OFFSETS are off, see step 5"],
-    ["5", "A. Spin 10 turns in place, slowly", "X and Y still within 2 in of 0", "",
+    ["5", "X. Spin 10 turns in place, slowly", "X and Y still within 2 in of 0", "",
      "measure from the WHEELBASE center to each pod wheel (mm) and set " + c("X_POD_OFFSET_MM") + " / " +
      c("Y_POD_OFFSET_MM")],
-    ["6", "A. Drive a 48 in square and come back to the start", "X, Y within 2 in, heading within 3°", "",
+    ["6", "X. Drive a 48 in square and come back to the start", "X, Y within 2 in, heading within 3°", "",
      "repeat 3 times and write the worst error"],
 ])
 story += section("Measurements",

@@ -21,36 +21,45 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  * The settings you tune (pod type, offsets, directions) are at the top of Odometry.java.
  *
  * Controls (gamepad 1):
- *   A          reset position to 0,0,0 (do this before each test run)
+ *   X          reset position to 0,0,0 (do this before each test run)
  *   B          reset AND recalibrate the IMU (robot must be STILL)
- *   sticks     drive, if you want to move the robot back to the start
+ *   A          straight-line assist on / off (starts ON, same as Main TeleOp): a stick pointed almost straight
+ *              drives exactly straight, so a "drive forward 48 in" test really goes straight
+ *   dpad up / down   speed dial: raise / lower the driving speed (starts at SPEED_DIAL_START)
+ *   sticks     drive (bumper = slow, trigger = turbo, as in Main TeleOp, times the speed dial)
  *
- * The drive motors are set to FLOAT (no brake) so the robot is easier to push by hand.
+ * The drive motors run with encoder speed control and BRAKE when the sticks are released (same as Main TeleOp and
+ * Basic Auton, decisions 008, 023, 049), so the robot stops where you let go and a measured drive ends cleanly. It is harder to push by hand; for the
+ * push-by-hand steps, push slowly or drive instead.
  *
  * Printable worksheet (steps, Expected / Actual / Fix, numbers for the code): TeamCode/docs/worksheets/pinpoint-test.pdf
  */
 // Hidden on the Driver Station (decision 052). To use it: delete the @Disabled line below, then build and deploy.
-@Disabled
 @TeleOp(name = "Pinpoint Test", group = "Tests")
 public class PinpointTest extends LinearOpMode {
+
+    // The speed dial (dpad up / down) multiplies every drive power. Start low: the test drives are short and measured.
+    static final double SPEED_DIAL_START = 0.5;   // where the dial is at START (0.5 = half of normal)
+    static final double SPEED_DIAL_STEP = 0.1;    // one dpad press changes it this much
+    static final double SPEED_DIAL_MIN = 0.1;     // the dial never goes below this (the robot would not move)
 
     @Override
     public void runOpMode() {
         Power power = new Power(hardwareMap); // battery voltage + current on every test
         Robot robot = new Robot(hardwareMap);
-        // Here A = reset (below). It reads A first, so the driver's A (straight-line assist) never toggles in this test.
-        DriverControls driver = new DriverControls();
+        DriverControls driver = new DriverControls();   // A = straight-line assist, starts ON
         Odometry odometry = new Odometry(hardwareMap);
         // Test-only: the same Pinpoint, used directly for resets and extra tuning details (code-structure rule 8).
         GoBildaPinpointDriver pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, Odometry.PINPOINT_NAME);
 
-        // Easier to push the robot by hand for the distance tests.
-        TestDriveMotors.setBrake(hardwareMap, false);
+        robot.drivetrain.setBrakeOnStop(true);          // stop where the sticks are released (BRAKE, decision 023)
+        robot.drivetrain.setEncoderSpeedControl(true);  // encoder speed control, like Main TeleOp (decision 008 open)
+        double speedDial = SPEED_DIAL_START;
 
         // Wait for START, showing whether the IMU calibration has finished.
         while (opModeInInit()) {
             odometry.update();
-            if (odometry.getStatus() == GoBildaPinpointDriver.DeviceStatus.READY) {
+            if (odometry.isReady()) {
                 telemetry.addLine("Pinpoint READY. Press START.");
             } else {
                 telemetry.addLine("Keep the robot STILL until the status says READY...");
@@ -63,7 +72,7 @@ public class PinpointTest extends LinearOpMode {
         while (opModeIsActive()) {
             odometry.update();
 
-            if (gamepad1.aWasPressed()) {
+            if (gamepad1.xWasPressed()) {
                 // Back to 0,0,0 without recalibrating the IMU.
                 pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
             }
@@ -71,10 +80,20 @@ public class PinpointTest extends LinearOpMode {
                 // Back to 0,0,0 AND recalibrate the IMU. The robot must be STILL.
                 pinpoint.resetPosAndIMU();
             }
+            if (gamepad1.dpadUpWasPressed()) {
+                speedDial = Math.min(1.0, speedDial + SPEED_DIAL_STEP);
+            }
+            if (gamepad1.dpadDownWasPressed()) {
+                speedDial = Math.max(SPEED_DIAL_MIN, speedDial - SPEED_DIAL_STEP);
+            }
 
-            driver.drive(robot.drivetrain, gamepad1);
+            DriverControls.DriveSpeed speed = driver.drive(robot.drivetrain, gamepad1, speedDial);
 
-            telemetry.addLine("A = reset to 0,0,0     B = reset + recalibrate (keep STILL)");
+            telemetry.addLine("X = reset to 0,0,0     B = reset + recalibrate (keep STILL)");
+            telemetry.addLine("A = straight-line assist     dpad up/down = speed dial");
+            telemetry.addData("Speed dial (dpad)", "%.0f %%", speedDial * 100);
+            driver.addTelemetry(telemetry, speed);
+            robot.drivetrain.addTelemetry(telemetry);
             telemetry.addLine();
             odometry.addTelemetry(telemetry);
             telemetry.addData("Total turning (°)", "%.1f", pinpoint.getHeading(UnnormalizedAngleUnit.DEGREES));
@@ -89,12 +108,5 @@ public class PinpointTest extends LinearOpMode {
         }
 
         robot.stop();
-
-        // EXPERIMENT (issue #17): this OpMode set the drive motors to FLOAT.
-        // The SDK does NOT reset brake mode between OpModes, so an OpMode that never sets it
-        // (like manualDriver) may keep coasting after this one. This line would switch back to BRAKE.
-        // It's commented out ON PURPOSE so we can see the problem happen first. After the
-        // experiment, un-comment it:
-        // TestDriveMotors.setBrake(hardwareMap, true);
     }
 }

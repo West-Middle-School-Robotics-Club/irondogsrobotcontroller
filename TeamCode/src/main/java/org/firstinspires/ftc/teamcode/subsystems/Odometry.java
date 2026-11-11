@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 /**
  * Odometry subsystem: the goBILDA Pinpoint with two dead-wheel pods (decision 005).
- * Tells us where the robot is on the field: X, Y and heading.
+ * Tells us where the robot is: X, Y and heading.
  *
  * Directions follow our team convention (decision 007):
  * +X = forward, +Y = LEFT, +heading = COUNTER-CLOCKWISE.
@@ -75,11 +75,39 @@ public class Odometry {
     }
 
     /**
-     * Tell the Pinpoint where the robot is on the field right now, for example the autonomous START position
-     * (field coordinates, decision 011). From then on getPose() gives field positions.
+     * How fast the robot is moving along X right now, in inches per second. Same X as getPose()
+     * (+ = the way the robot faced when setPose() was last called). Autonomous uses it to brake early.
+     */
+    public double getVelocityXInchesPerSecond() {
+        return pinpoint.getVelX(DistanceUnit.INCH);
+    }
+
+    /** How fast the robot is moving along Y right now, in inches per second (same Y as getPose(), + = left). */
+    public double getVelocityYInchesPerSecond() {
+        return pinpoint.getVelY(DistanceUnit.INCH);
+    }
+
+    /** How fast the robot is moving right now, in inches per second (speed only, no direction). */
+    public double getSpeedInchesPerSecond() {
+        return Math.hypot(getVelocityXInchesPerSecond(), getVelocityYInchesPerSecond());
+    }
+
+    /**
+     * Tell the Pinpoint where the robot is right now, for example the autonomous START position.
+     * From then on getPose() measures from there.
      */
     public void setPose(Pose2D pose) {
         pinpoint.setPosition(pose);
+    }
+
+    /**
+     * Re-calibrate the Pinpoint's gyro (the heading sensor). The robot must be STILL, and stay still until isReady()
+     * is true again (about half a second). The constructor already does this once, during INIT. Basic Auton does it
+     * again at START: if anyone bumps or moves the robot while INIT's calibration runs, the heading drifts for the
+     * whole run, and at START the robot is surely sitting still. Call setPose() afterwards to say where the robot is.
+     */
+    public void recalibrateImu() {
+        pinpoint.recalibrateIMU();
     }
 
     /** READY when it's working. CALIBRATING right after a reset. FAULT_... means a problem. */

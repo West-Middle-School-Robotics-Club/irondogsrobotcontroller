@@ -94,7 +94,7 @@
 <text x="487.4" y="845.6" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#111827" text-anchor="start">CELL down</text>
 <line x1="557.4" y1="841.9250000000001" x2="568.9499999999999" y2="841.9250000000001" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="4,3"/>
 <text x="574.2" y="845.6" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#111827" text-anchor="start">Center line</text>
-<text x="60.0" y="865.6" font-family="Helvetica, Arial, sans-serif" font-size="10.0" fill="#6b7280" text-anchor="start">Coordinates (decision 011): origin = field center, +X toward far wall, +Y toward red wall, in inches. Blue = Red rotated 180Â°. Stay on your own side in AUTO (G402).</text>
+<text x="60.0" y="865.6" font-family="Helvetica, Arial, sans-serif" font-size="10.0" fill="#6b7280" text-anchor="start">Coordinates (decision 011): origin = field center, +X toward far wall, +Y toward red wall, in inches. Blue = Red rotated 180°. Stay on your own side in AUTO (G402).</text>
 <text x="60.0" y="880.6" font-family="Helvetica, Arial, sans-serif" font-size="10.0" fill="#6b7280" text-anchor="start">HIVE: the UP CELLS shown are at MATCH START (Red: audience side, Blue: far side). Every TIP flips which CELL of that HIVE is up.</text>
 <text x="60.0" y="908.6" font-family="Helvetica, Arial, sans-serif" font-size="15.0" fill="#111827" text-anchor="start" font-weight="bold">Notes</text>
 <line x1="60" y1="938.6" x2="790" y2="938.6" stroke="#c4c8d0" stroke-width="1"/>

@@ -42,6 +42,7 @@ teamcode/
         ├── PinpointTest.java
         ├── RedCameraTest.java ← camera as RED: only tags 30-37 are targets
         ├── TestLauncher.java ← test whether the launcher flywheel motor spins (#5)
+        ├── testAuton.java / testAutonNear / testAutonFar ← the Basic Auton routes from a (0, 0) start, on any floor (#22)
         └── TurretTest.java ← turn the (continuous) turret with the dpad, learn the ELC encoder, calibrate (#31)
     └── archive/            ← old programs kept for reference, HIDDEN with @Disabled (decision 052)
         ├── manualDriver.java ← the team's first driving program (9/23)

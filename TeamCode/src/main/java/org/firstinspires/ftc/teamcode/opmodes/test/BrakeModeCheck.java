@@ -26,7 +26,6 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *   sticks     drive (let go of the sticks at full speed to compare stopping)
  */
 // Hidden on the Driver Station (decision 052). To use it: delete the @Disabled line below, then build and deploy.
-@Disabled
 @TeleOp(name = "Brake Mode Check", group = "Tests")
 public class BrakeModeCheck extends LinearOpMode {
 
