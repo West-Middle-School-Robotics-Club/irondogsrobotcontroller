@@ -486,9 +486,18 @@ def route_sheet(route, consts, routes):
     length, width = consts["ROBOT_LENGTH_IN"], consts["ROBOT_WIDTH_IN"]
     where = {"NEAR": "our alliance wall, next to the LOADING ZONE",
              "FAR": "the audience wall (Red) / far wall (Blue)"}[route]
-    out = [Field.text(50, 48, f"Basic Auton {route}: LEAVE + PARK  ({TEAM_NAME})", 21, INK, bold=True),
-           Field.text(50, 72, f"Robot's BACK against {where}. OpModes: \"Basic Auton RED {route}\" and "
-                      f"\"Basic Auton BLUE {route}\".", 12, GREY)]
+    # Decision 060: FAR = Main Auton (RED_FAR_PATH holds the same moves as MAIN_FAR_PATH),
+    # NEAR = Timed Auton (RED_NEAR_PATH holds Timed Auton NEAR's goal moves: forward 23, right 12, back 18)
+    auton = "Main Auton" if route == "FAR" else "Timed Auton"
+    out = [Field.text(50, 48, f"{auton} {route}: LEAVE + PARK  ({TEAM_NAME})", 21, INK, bold=True),
+           Field.text(50, 72, f"Robot's BACK against {where}. OpModes: \"{auton} RED {route}\" and "
+                      f"\"{auton} BLUE {route}\".", 12, GREY)]
+    if route == "FAR":
+        out.append(Field.text(50, 90, "PARK on the line between rows 4 and 5: partly in the LOADING ZONE, "
+                              "leaving the rest of row 5 for our partner.", 12, INK, bold=True))
+    else:
+        out.append(Field.text(50, 90, "Drives by TIME (TimedAuton.java: FORWARD_S, RIGHT_S, BACK_S). "
+                              "The positions below are the GOALS: forward 23, right 12, back 18 in.", 12, INK, bold=True))
 
     f = Field(left=95, top=120, scale=3.3)  # 475 units, leaves room for the SET UP panel on the right
     red_setup, blue_setup = consts["SETUP"][route]

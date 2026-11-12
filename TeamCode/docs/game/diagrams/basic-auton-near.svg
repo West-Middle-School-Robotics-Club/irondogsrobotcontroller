@@ -1,7 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="8.5in" height="11in" viewBox="0 0 850 1100">
 <rect width="850" height="1100" fill="white"/>
-<text x="50.0" y="48.0" font-family="Helvetica, Arial, sans-serif" font-size="21.0" fill="#111827" text-anchor="start" font-weight="bold">Basic Auton NEAR: LEAVE + PARK  (WMS Irondogs)</text>
-<text x="50.0" y="72.0" font-family="Helvetica, Arial, sans-serif" font-size="12.0" fill="#6b7280" text-anchor="start">Robot's BACK against our alliance wall, next to the LOADING ZONE. OpModes: "Basic Auton RED NEAR" and "Basic Auton BLUE NEAR".</text>
+<text x="50.0" y="48.0" font-family="Helvetica, Arial, sans-serif" font-size="21.0" fill="#111827" text-anchor="start" font-weight="bold">Timed Auton NEAR: LEAVE + PARK  (WMS Irondogs)</text>
+<text x="50.0" y="72.0" font-family="Helvetica, Arial, sans-serif" font-size="12.0" fill="#6b7280" text-anchor="start">Robot's BACK against our alliance wall, next to the LOADING ZONE. OpModes: "Timed Auton RED NEAR" and "Timed Auton BLUE NEAR".</text>
+<text x="50.0" y="90.0" font-family="Helvetica, Arial, sans-serif" font-size="12.0" fill="#111827" text-anchor="start" font-weight="bold">Drives by TIME (TimedAuton.java: FORWARD_S, RIGHT_S, BACK_S). The positions below are the GOALS: forward 23, right 12, back 18 in.</text>
 <rect x="620" y="105" width="200" height="490" fill="#fef9c3" stroke="#a16207" stroke-width="2" rx="8"/>
 <text x="720.0" y="135.0" font-family="Helvetica, Arial, sans-serif" font-size="24.0" fill="#111827" text-anchor="middle" font-weight="bold">SET UP</text>
 <text x="720.0" y="157.0" font-family="Helvetica, Arial, sans-serif" font-size="15.0" fill="#111827" text-anchor="middle" font-weight="bold">BACK against the wall</text>
@@ -132,7 +133,7 @@
 <polygon points="494.3,542.4 494.3,489.6 553.7,489.6 553.7,542.4" fill="none" fill-opacity="0.35" stroke="#1d4ed8" stroke-width="2.5" stroke-dasharray="6,4"/>
 <line x1="524.0" y1="516.0" x2="497.3" y2="516.0" stroke="#1d4ed8" stroke-width="2"/><polygon points="497.3,516.0 502.7,513.4 502.7,518.6" fill="#1d4ed8"/>
 <text x="50.0" y="645.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#111827" text-anchor="start">Filled box = START (arrow = FRONT, black bar = BACK on the wall).  Numbered circles = waypoints.  Dashed box = where it PARKS.</text>
-<text x="50.0" y="661.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start">Robot size used: 17.98 x 15.99 in (BasicAuton.ROBOT_LENGTH_IN / ROBOT_WIDTH_IN). Blue = Red rotated 180° (decision 011).</text>
+<text x="50.0" y="661.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start">Robot size used: 17.98 x 15.99 in (BasicAuton.ROBOT_LENGTH_IN / ROBOT_WIDTH_IN). Blue = Red rotated 180Â° (decision 011).</text>
 <text x="50.0" y="677.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start">HIVE: the UP CELLS shown are at MATCH START (Red: audience side, Blue: far side). Every TIP flips which CELL is up.</text>
 <text x="50.0" y="705.2" font-family="Helvetica, Arial, sans-serif" font-size="14.0" fill="#111827" text-anchor="start" font-weight="bold">The steps (from BasicAuton.java, in inches)</text>
 <text x="50.0" y="727.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">Step</text>
@@ -140,20 +141,20 @@
 <text x="250.0" y="727.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">BLUE x, y, heading</text>
 <text x="395.0" y="727.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#6b7280" text-anchor="start" font-weight="bold">What happens</text>
 <text x="50.0" y="747.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start" font-weight="bold">Start</text>
-<text x="105.0" y="747.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">60, 63.01, -90°</text>
-<text x="250.0" y="747.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-60, -63.01, 90°</text>
+<text x="105.0" y="747.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">60, 63.01, -90Â°</text>
+<text x="250.0" y="747.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-60, -63.01, 90Â°</text>
 <text x="395.0" y="747.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">Robot set up here. Nothing moves during INIT</text>
 <text x="50.0" y="766.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start" font-weight="bold">1</text>
-<text x="105.0" y="766.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">60, 40, -90°</text>
-<text x="250.0" y="766.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-60, -40, 90°</text>
+<text x="105.0" y="766.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">60, 40, -90Â°</text>
+<text x="250.0" y="766.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-60, -40, 90Â°</text>
 <text x="395.0" y="766.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">LEAVE: 23 in forward, off the red wall (y 63 -&gt; 40)</text>
 <text x="50.0" y="785.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start" font-weight="bold">2</text>
-<text x="105.0" y="785.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">48, 40, -90°</text>
-<text x="250.0" y="785.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-48, -40, 90°</text>
+<text x="105.0" y="785.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">48, 40, -90Â°</text>
+<text x="250.0" y="785.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-48, -40, 90Â°</text>
 <text x="395.0" y="785.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">12 in RIGHT, toward the audience (x 60 -&gt; 48), in front of the LOADING ZONE</text>
 <text x="50.0" y="804.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start" font-weight="bold">3</text>
-<text x="105.0" y="804.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">48, 58, -90°</text>
-<text x="250.0" y="804.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-48, -58, 90°</text>
+<text x="105.0" y="804.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#d62828" text-anchor="start">48, 58, -90Â°</text>
+<text x="250.0" y="804.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#1d4ed8" text-anchor="start">-48, -58, 90Â°</text>
 <text x="395.0" y="804.2" font-family="Helvetica, Arial, sans-serif" font-size="11.0" fill="#111827" text-anchor="start">PARK: 18 in back (y 40 -&gt; 58), into the LOADING ZONE. Back edge at y 67, 5 in</text>
 <text x="50.0" y="851.2" font-family="Helvetica, Arial, sans-serif" font-size="14.0" fill="#111827" text-anchor="start" font-weight="bold">Test log: 5 good runs in a row = ready for competition</text>
 <text x="50.0" y="873.2" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="bold">Run</text>

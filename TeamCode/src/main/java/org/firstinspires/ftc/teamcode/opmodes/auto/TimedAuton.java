@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Robot;
 
 /**
- * TIMED AUTON: the BACKUP for Basic Auton NEAR and FAR (decision 054). LEAVE + PARK with no sensors at all.
+ * TIMED AUTON: what we run for NEAR, and the backup for FAR (decisions 054, 060). LEAVE + PARK with no sensors at all.
  *
  * It does not know where the robot is. It just runs the wheels at a set power for a set TIME, one move after
  * another.

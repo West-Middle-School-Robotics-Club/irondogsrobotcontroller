@@ -17,8 +17,10 @@ import org.firstinspires.ftc.teamcode.Robot;
  *                 so the ball gets through. POLLEN still needs Y. Not while ejecting.
  *   A             INTAKE SYSTEM on / off (toggle): the intake AND the water wheel run together.
  *                 Starts ON when the match starts (INTAKE_ON_AT_START)
- *   B             DIRECTION (toggle): IN (intake in + water wheel UP) or OUT (intake out + water wheel DOWN, to
- *                 push balls out). Starts as IN. Works whether the system is on or off
+ *   B             does NOTHING for now (DIRECTION_TOGGLE_ENABLED = false): the direction is always IN.
+ *                 To push balls out, hold the left trigger (EJECT).
+ *                 When turned back on, B = DIRECTION (toggle): IN (intake in + water wheel UP) or OUT (intake out +
+ *                 water wheel DOWN, to push balls out). Starts as IN. Works whether the system is on or off
  *   Left trigger  HOLD to EJECT: water wheel DOWN + intake OUT, for a quick push out. Eject beats the toggles.
  *                 When you let go, the intake and water wheel are OFF.
  *   (TURRET_ENABLED = false for now, decision 050: the turret does NOT move, so X and the left stick do nothing.)
@@ -41,6 +43,10 @@ public class OperatorControls {
 
     // Does the intake system (intake + water wheel) start ON when the match starts? (A toggles it, decision 041)
     public static final boolean INTAKE_ON_AT_START = true;
+
+    // Can B flip the intake + water wheel to OUT? false = B does nothing, so the operator can't reverse them by
+    // accident (the left trigger EJECT still pushes balls out). Set true to turn the B toggle back on.
+    public static final boolean DIRECTION_TOGGLE_ENABLED = false;
 
     // Can the turret move in Main TeleOp? false = the left stick and X do nothing, and the turret does not move
     // at START either (MainTeleOp checks this too). Set true to turn the turret controls back on (decision 050).
@@ -71,7 +77,7 @@ public class OperatorControls {
         if (gamepad.aWasPressed()) {
             intakeSystemOn = !intakeSystemOn;
         }
-        if (gamepad.bWasPressed()) {
+        if (DIRECTION_TOGGLE_ENABLED && gamepad.bWasPressed()) {
             directionOut = !directionOut;
         }
 
