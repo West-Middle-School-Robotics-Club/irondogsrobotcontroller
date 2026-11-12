@@ -60,6 +60,7 @@ Test with **Main TeleOp**. Decisions 029, 030.
 | `TURRET_MAX_STICK_SPEED` | `1.0` | Fastest the left stick turns the turret (0 to 1) | Lower it if aiming by hand is too twitchy | 🔧 |
 | `TURRET_STICK_DEADZONE` | `0.05` | Ignore tiny stick movement | Raise it if the turret creeps with the stick released | ✅ |
 | `INTAKE_ON_AT_START` | `true` | Do the intake + water wheel start ON when the match starts? (A toggles them) | Operator's preference | 🔧 |
+| `DIRECTION_TOGGLE_ENABLED` | `false` | Can B flip the intake + water wheel to OUT? `false` = B does nothing, the direction is always IN (decision 061). The left trigger (EJECT) still pushes balls out | Set `true` to turn the B toggle back on | 🔧 |
 | `TURRET_ENABLED` | `false` | `OperatorControls.java`: can the turret move in Main TeleOp? `false` = left stick and X do nothing, and no move at START (decision 050) | Set `true` to turn the turret controls back on | 🔧 |
 | `TRIGGER_HELD` | `0.5` | How far the left trigger must be pressed to EJECT | Rarely changed | ✅ |
 | `AUTO_FIRE_NECTAR` | `true` | A NECTAR on a nectar detector switch opens the launcher trigger by itself (decision 059). `false` = only Y opens it | Operator's preference. Turn it off if it fires when it shouldn't | 🔧 |
@@ -100,15 +101,15 @@ The Pinpoint Test OpMode drives in BRAKE with straight-line assist ON and a dpad
 
 ## Basic Auton: `opmodes/auto/BasicAuton.java`
 Guide: `basic-auton-guide.pdf`, routes: `docs/game/diagrams/basic-auton-near.pdf` / `far.pdf`. Issue #22, decisions 026, 053.
-Positions are **field coordinates** (011). To tune a route on any clear floor, use **Test Auton** (`opmodes/test/testAuton.java`): it starts at (0, 0, 0) and holds the same moves as forward / left distances. Change one, change the other by hand (053).
+Positions are **field coordinates** (011). To tune a route on any clear floor, use **Main Auton** (`opmodes/auto/MainAuton.java`, was Test Auton): it starts at (0, 0, 0) and holds the moves as forward / left distances (`MAIN_NEAR_PATH`, `MAIN_FAR_PATH`). Since decision 060 Main Auton is what we run for FAR, and its moves were tuned on the floor, so they no longer match Basic Auton exactly.
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
 | `ROBOT_LENGTH_IN` | `17.98` | Robot length, front to back (inches) | Measured 11/3 | ✅ |
 | `ROBOT_WIDTH_IN` | `15.99` | Robot width, left to right (inches) | Measured 11/3 | ✅ |
-| `RED_NEAR_START`, `RED_NEAR_PATH` | (positions) | Where NEAR starts and drives to, for RED, in field coordinates. BLUE is calculated. The start HEADING decides which field direction is forward (NEAR faces -90: forward = -Y, right = -X) | Measure the moves with Test Auton on any floor, convert to field positions (each waypoint comment shows the move); re-run `make_diagrams.py` after changing | 🔧 |
+| `RED_NEAR_START`, `RED_NEAR_PATH` | (positions) | Where NEAR starts and drives to, for RED, in field coordinates. BLUE is calculated. The start HEADING decides which field direction is forward (NEAR faces -90: forward = -Y, right = -X) | Measure the moves with Main Auton on any floor, convert to field positions (each waypoint comment shows the move); re-run `make_diagrams.py` after changing | 🔧 |
 | `RED_FAR_START`, `RED_FAR_PATH` | (positions) | Same for FAR (faces 0: forward = +X, left = +Y) | Same | 🔧 |
-| `USE_ENCODER_SPEED_CONTROL` | `false` | Basic Auton's own copy of the drive mode: `false` = plain power, % of battery voltage, same as the whole robot (decision 055). Test Auton inherits it | Keep `false`. If a test ever sets it `true`, `MIN_DRIVE_POWER` / `MIN_TURN_POWER` can drop to 0.05 | ✅ |
+| `USE_ENCODER_SPEED_CONTROL` | `false` | Basic Auton's own copy of the drive mode: `false` = plain power, % of battery voltage, same as the whole robot (decision 055). Main Auton inherits it | Keep `false`. If a test ever sets it `true`, `MIN_DRIVE_POWER` / `MIN_TURN_POWER` can drop to 0.05 | ✅ |
 | `DRIVE_GAIN` | `0.02` | Power per inch away from the waypoint. Bigger = faster approach, but may overshoot | Taped field: overshoots? lower it. Crawls? raise it | 🔧 |
 | `MAX_DRIVE_POWER` | `0.5` | Fastest Basic Auton drives (plain power since 11/11; the team set 0.5 on the floor) | Same | 🔧 |
 | `MAX_SIDEWAYS_POWER` | `0.25` | Fastest it drives sideways (strafing). Blended with `MAX_DRIVE_POWER` by how sideways the move is | Slides past sideways waypoints? lower it | 🔧 |
@@ -132,7 +133,7 @@ Positions are **field coordinates** (011). To tune a route on any clear floor, u
 | `PARKED_COLOR` | `Light.Color.GREEN` | Lights at the end when parked | Team's choice | ✅ |
 | `STOPPED_EARLY_COLOR` | `Light.Color.YELLOW` | Lights at the end when it stopped early | Team's choice | ✅ |
 
-## Timed Auton (backup): `opmodes/auto/TimedAuton.java`
+## Timed Auton: `opmodes/auto/TimedAuton.java`
 The no-sensor backup for Basic Auton NEAR and FAR (decisions 054, 057): plain power for a set time, no Pinpoint, no encoders. Tune with a **charged battery**; a weak battery drives shorter.
 
 | Setting | Now | What it does | How to find it | Status |

@@ -27,13 +27,14 @@ teamcode/
     │   ├── MainTeleOpRed.java  ← "Main TeleOp RED": picks Alliance.RED (decision 022)
     │   └── MainTeleOpBlue.java ← "Main TeleOp BLUE": picks Alliance.BLUE
     ├── auto/
-    │   ├── BasicAuton.java     ← Basic Auton shared code: LEAVE + PARK with the Pinpoint (#22, decision 026)
-    │   ├── BasicAutonRedNear.java / RedFar / BlueNear / BlueFar ← pick alliance + route
-    │   ├── TimedAuton.java     ← BACKUP for NEAR and FAR: time-based moves, no sensors (decisions 054, 057)
-    │   ├── TimedAutonRedNear.java / BlueNear ← "Timed Auton RED / BLUE NEAR (backup)"
-    │   ├── TimedAutonRedFar.java / BlueFar ← "Timed Auton RED / BLUE FAR (backup)"
-    │   └── README.md           ← which Basic Auton to pick, and what to tune
-    ├── test/               ← test and tuning OpModes ("Tests" group). HIDDEN with @Disabled (decision 052)
+    │   ├── BasicAuton.java     ← Basic Auton shared code: LEAVE + PARK with the Pinpoint (#22, decision 026). Its 4 OpModes are in archive/ (060)
+    │   ├── MainAuton.java      ← THE FAR AUTO (060): BasicAuton driving, robot moves from a (0, 0, 0) start (was testAuton)
+    │   ├── MainAutonRedNear.java / RedFar / BlueNear / BlueFar ← "Main Auton RED / BLUE NEAR / FAR"
+    │   ├── TimedAuton.java     ← THE NEAR AUTO (060), and a FAR backup: time-based moves, no sensors (decisions 054, 057)
+    │   ├── TimedAutonRedNear.java / BlueNear ← "Timed Auton RED / BLUE NEAR"
+    │   ├── TimedAutonRedFar.java / BlueFar ← "Timed Auton RED / BLUE FAR"
+    │   └── README.md           ← which AUTO to pick, and what to tune
+    ├── test/               ← test and tuning OpModes ("Tests" group). HIDDEN with @Disabled (decision 052), except Intake Test (060)
         ├── AllianceCameraTest.java ← shared code for the red/blue camera tests (#7)
         ├── BlueCameraTest.java ← camera as BLUE: only tags 38-45 are targets
         ├── BrakeModeCheck.java
@@ -46,9 +47,9 @@ teamcode/
         ├── PinpointTest.java
         ├── RedCameraTest.java ← camera as RED: only tags 30-37 are targets
         ├── TestLauncher.java ← test whether the launcher flywheel motor spins (#5)
-        ├── testAuton.java / testAutonNear / testAutonFar ← the Basic Auton routes from a (0, 0) start, on any floor (#22)
         └── TurretTest.java ← turn the (continuous) turret with the dpad, learn the ELC encoder, calibrate (#31)
     └── archive/            ← old programs kept for reference, HIDDEN with @Disabled (decision 052)
+        ├── BasicAutonRedNear.java / RedFar / BlueNear / BlueFar ← the old Basic Auton OpModes (field coordinates, 058, 060)
         ├── manualDriver.java ← the team's first driving program (9/23)
         ├── TestDriveMotors.java ← test-only helper; never used by real robot code
         └── TurretServoRawTest.java ← the turret servo ALONE: joystick speed, no homing/limits (#31)

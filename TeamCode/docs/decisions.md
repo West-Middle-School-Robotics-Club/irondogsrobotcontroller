@@ -611,3 +611,17 @@ Issue: #4, #5
 Context: The nectar detector switches (028) already tell us when the next ball to launch is a NECTAR (lights turn purple). The operator then has to hold Y to open the launcher trigger. The mentor asked for NECTARs to shoot automatically.
 Decision: In `OperatorControls` (Main TeleOp), when either nectar detector switch is pressed, the launcher trigger opens (`fire()`) with no button. It stays open `AUTO_FIRE_HOLD_S` (0.5 s) after the switch lets go, because the ball moves off the switch as soon as the gate opens, and closing right then could clip it. Y still opens the trigger by hand (for POLLEN). Not while ejecting. No wait for "flywheel READY": the flywheel runs the whole match, and `READY_VELOCITY_THRESHOLD` is still a placeholder, so waiting on it could stop NECTARs from launching at all. `AUTO_FIRE_NECTAR = false` turns it off. Intake + Launcher Test does the same, to try it on the bench.
 Who: Mentor (11/11)
+
+## 060 – AUTO game plan: Timed Auton for NEAR, Main Auton for FAR; a short Driver Station list  (2026-11-12)
+Status: Accepted
+Issue: #22
+Context: Test Auton (053) drives the moves from a (0, 0, 0) start, and the team tuned those moves on the floor until they worked. Timed Auton NEAR already works on the robot. Basic Auton (field coordinates) is hidden (058). Before a competition the Driver Station should only list the OpModes the drive team needs.
+Decision: **NEAR = Timed Auton RED / BLUE NEAR. FAR = Main Auton RED / BLUE FAR.** Test Auton moves from `opmodes/test/` to `opmodes/auto/` and is renamed **Main Auton** (`MainAuton.java` + `MainAutonRedNear` / `RedFar` / `BlueNear` / `BlueFar`). It was RED only; now there is a BLUE of each. RED and BLUE drive the same robot moves (the field is rotated 180°, like Timed Auton); the alliance picks the lights, the SET UP line (the real field setup, back touching a wall, 046) and the Main TeleOp that comes next. The four Basic Auton OpModes move to `opmodes/archive/` (still `@Disabled`); `BasicAuton.java` stays in `auto/` because Main Auton and Timed Auton use it. The Driver Station shows only: **AUTO** = Main Auton RED / BLUE NEAR / FAR and Timed Auton RED / BLUE NEAR / FAR; **TeleOp** = Main TeleOp RED / BLUE and Intake Test. Brake Mode Check, Pinpoint Test and Intake + Launcher Test get `@Disabled` (052).
+Who: Mentor (11/12)
+
+## 061 – The operator's B button does nothing in Main TeleOp for now  (2026-11-12)
+Status: Accepted
+Issue: #4
+Context: B flipped the intake + water wheel to OUT (decision 041). Pressed by accident, the robot pushes balls out until B is pressed again. The left trigger (EJECT) already pushes balls out while held.
+Decision: New `OperatorControls.DIRECTION_TOGGLE_ENABLED = false`: B does nothing and the direction is always IN. Hold the left trigger to push balls out. Set it `true` to bring the B toggle back. Controller layout updated.
+Who: Mentor (11/12)

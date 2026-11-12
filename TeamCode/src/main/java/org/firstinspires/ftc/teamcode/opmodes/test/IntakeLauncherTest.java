@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes.test;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.lynx.commands.core.LynxGetADCCommand;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -58,7 +59,8 @@ import java.util.List;
  * INTAKE_SPEED / WATER_WHEEL_SPEED (Intake.java) or DEFAULT_SPIN_POWER (Launcher.java). For the trigger
  * positions, the flywheel's direction and variable power, use Launcher Test; for the switches, Intake Test.
  */
-// Shown on the Driver Station for testing. Before a competition, add @Disabled on the line below to hide it (decision 052).
+// Hidden on the Driver Station (decision 052). To use it: delete the @Disabled line below, then build and deploy.
+@Disabled
 @TeleOp(name = "Intake + Launcher Test", group = "Tests")
 public class IntakeLauncherTest extends LinearOpMode {
 

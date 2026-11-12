@@ -35,7 +35,7 @@ DRIVER = {
 OPERATOR = {  # decisions 029, 035
     "Y": ("LAUNCH (hold)", "trigger moves out of the way; NECTARs launch by themselves"),
     "X": ("TURRET REST SPOT (OFF for now)", "TURRET_ENABLED = false: does nothing"),
-    "B": ("DIRECTION (toggle)", "IN (intake in + wheel UP) or OUT (balls leave)"),
+    "B": ("DIRECTION (OFF for now)", "DIRECTION_TOGGLE_ENABLED = false: does nothing"),
     "A": ("INTAKE SYSTEM (toggle)", "intake + water wheel together, on / off"),
     "LT": ("EJECT (hold)", "water wheel DOWN + intake OUT; then all off"),
     "LS": ("TURRET (OFF for now)", "TURRET_ENABLED = false: does nothing"),

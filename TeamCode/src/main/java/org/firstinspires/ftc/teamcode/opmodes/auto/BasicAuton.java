@@ -33,7 +33,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  * CAREFUL when writing a waypoint: the start HEADING decides which field direction is "forward". NEAR starts facing
  * -90 (toward -Y), so "forward 23" LOWERS y by 23 and leaves x alone; "right" is -X there. FAR starts facing 0, so
  * forward is +X and left is +Y. Each waypoint comment below says the move in robot words (forward / right / left)
- * and the field numbers do the math. Test Auton (opmodes/test) runs the same moves from a (0, 0, 0) start on any floor.
+ * and the field numbers do the math. Main Auton (MainAuton.java, was Test Auton) runs robot moves from a (0, 0, 0) start (decision 060).
  *
  * Rules this code follows:
  *   - Nothing moves during INIT (G304.H). The drive team sets a start DELAY with the dpad during INIT
@@ -60,7 +60,7 @@ public abstract class BasicAuton extends LinearOpMode {
 
     /**
      * Where the robot starts, in the coordinates the Pinpoint will use: the RED field start for the route, rotated
-     * for BLUE. A test OpMode can override this (Test Auton starts at 0, 0, 0 on any clear floor).
+     * for BLUE. Main Auton overrides this (it starts at 0, 0, 0).
      */
     protected Pose2D startPose() {
         return forAlliance(route() == Route.NEAR ? RED_NEAR_START : RED_FAR_START, alliance());
@@ -90,7 +90,7 @@ public abstract class BasicAuton extends LinearOpMode {
     // ------------------------------------------------------------------------------------------------
     // RED positions (inches, degrees), field coordinates (decision 011). See TeamCode/docs/game/field.md for the map.
     // Every position is where the robot's CENTER is. The moves were measured on the floor 11/10-11/11 with Test Auton
-    // (testAuton.java has the same moves from a 0, 0, 0 start; keep the two in step). Re-run make_diagrams.py after
+    // (MainAuton.java started from the same moves; it has since been tuned on its own, decision 060). Re-run make_diagrams.py after
     // changing a position so the route sheets match.
     // Every Basic Auton starts with the robot's BACK touching a wall (decision 046), so the drive team has one rule.
     // ------------------------------------------------------------------------------------------------
@@ -99,10 +99,12 @@ public abstract class BasicAuton extends LinearOpMode {
     // Facing -90: forward = -Y, right = -X. Center starts at y = 72 - 9 = 63.
     static final Pose2D RED_NEAR_START = pose(60, 72 - ROBOT_LENGTH_IN / 2, -90);
     static final Pose2D[] RED_NEAR_PATH = {
-            pose(83, 40, -90),  // 12 in RIGHT, toward the audience (x 60 -> 48), in front of the LOADING ZONE
-            pose(83, 28, -90),
-            pose(65,28,-90)  // PARK: 18 in back (y 40 -> 58), into the LOADING ZONE. Back edge at y 67, 5 in off the wall
+            pose(60, 40, -90),  // LEAVE: 23 in forward, off the red wall (y 63 -> 40)
+            pose(48, 40, -90),  // 12 in RIGHT, toward the audience (x 60 -> 48), in front of the LOADING ZONE
+            pose(48, 58, -90),  // PARK: 18 in back (y 40 -> 58), into the LOADING ZONE. Back edge at y 67, 5 in off the wall
     };
+    // Same goal moves as Timed Auton NEAR (forward 23, right 12, back 18), which is what we run for NEAR (060), so the
+    // route sheet shows it. Before 11/12 this held (83, 40), (83, 28), (65, 28): x 83 is past the red wall (x 72).
     // LOADING ZONE: x 24.5 (audience end) to 47.5 (far-wall end), y 61 to 72. PARK only needs the robot PARTLY in it:
     // at (48, 58) the robot spans x 40-56, y 49-67, so its far-wall side is in. The audience end is left for our partner.
 
@@ -110,10 +112,12 @@ public abstract class BasicAuton extends LinearOpMode {
     // Facing 0: forward = +X, left = +Y. Center starts at x = -72 + 9 = -63.
     static final Pose2D RED_FAR_START = pose(-72 + ROBOT_LENGTH_IN / 2, 36, 0);
     static final Pose2D[] RED_FAR_PATH = {
-            pose(37, 36, 0),    // LEAVE + drive 100 in forward, up column B (x -63 -> 37). The HIVE is in column C, to the right
-            pose(37, 56, 0),    // PARK: 20 in LEFT (y 36 -> 56), into the LOADING ZONE. Robot spans y 48-64, so its left side is in
+            pose(22, 36, 0),    // LEAVE: 85 in forward, up column B (x -63 -> 22). The HIVE is in column C, to the right
+            pose(22, 58, 0),    // PARK: 22 in LEFT (y 36 -> 58), on the line between rows 4 and 5, partly in the LOADING ZONE
     };
-    // Partner check: (37, 56) is the middle of the LOADING ZONE along the wall, so agree with the partner where they park.
+    // Same moves as Main Auton FAR (MAIN_FAR_PATH: forward 85, left 22), so the route sheet shows what we run (060).
+    // Park between rows 4 and 5: the robot spans x 13-31, y 50-66; the row 4/5 line is x = 24. The LOADING ZONE is
+    // x 24.5-47.5, y 61-72, so the robot is partly in it, and x 31-47.5 (most of row 5) is left for our partner.
 
     // ------------------------------------------------------------------------------------------------
     // DRIVING. Tune on the robot (tuning-guide.md has a row for each).
@@ -123,7 +127,7 @@ public abstract class BasicAuton extends LinearOpMode {
     //   true  = encoder speed control (RUN_USING_ENCODER): power = % of top speed, the hub holds that speed.
     //           At very low powers the hub's speed loop surged (lurch, stop, lurch), which is why we stopped using it.
     //           If it ever goes back to true, the powers below mean something else: MIN_DRIVE_POWER can drop to ~0.05
-    // Test Auton inherits this.
+    // Main Auton inherits this.
     static final boolean USE_ENCODER_SPEED_CONTROL = false;
     static final double DRIVE_GAIN = 0.02;           // power per inch away. Slowing starts MAX_DRIVE_POWER / DRIVE_GAIN = 10 in out
     // Powers below are PLAIN POWER starting points (11/11). With encoders the team had 0.1 / 0.1 / 0.03; those mean
@@ -235,7 +239,7 @@ public abstract class BasicAuton extends LinearOpMode {
             robot.stop();
             return;
         }
-        odometry.setPose(start);   // the Pinpoint now reports FIELD positions (Test Auton: positions from its 0, 0, 0 start)
+        odometry.setPose(start);   // the Pinpoint now reports FIELD positions (Main Auton: positions from its 0, 0, 0 start)
 
         // Start delay, for when our partner's route crosses ours
         while (opModeIsActive() && autoTimer.seconds() < delaySeconds) {
@@ -381,7 +385,7 @@ public abstract class BasicAuton extends LinearOpMode {
                    : "tile E6, BACK touching the FAR wall, FRONT facing the AUDIENCE";
     }
 
-    /** A position, in inches and degrees (a RED field position, or a Test Auton position from its 0, 0, 0 start). */
+    /** A position, in inches and degrees (a RED field position, or a Main Auton position from its 0, 0, 0 start). */
     protected static Pose2D pose(double xInches, double yInches, double headingDegrees) {
         return new Pose2D(DistanceUnit.INCH, xInches, yInches, AngleUnit.DEGREES, headingDegrees);
     }
