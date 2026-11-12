@@ -29,8 +29,9 @@ teamcode/
     ├── auto/
     │   ├── BasicAuton.java     ← Basic Auton shared code: LEAVE + PARK with the Pinpoint (#22, decision 026)
     │   ├── BasicAutonRedNear.java / RedFar / BlueNear / BlueFar ← pick alliance + route
-    │   ├── TimedAuton.java     ← BACKUP for NEAR: time-based box, no sensors (decision 054)
+    │   ├── TimedAuton.java     ← BACKUP for NEAR and FAR: time-based moves, no sensors (decisions 054, 057)
     │   ├── TimedAutonRedNear.java / BlueNear ← "Timed Auton RED / BLUE NEAR (backup)"
+    │   ├── TimedAutonRedFar.java / BlueFar ← "Timed Auton RED / BLUE FAR (backup)"
     │   └── README.md           ← which Basic Auton to pick, and what to tune
     ├── test/               ← test and tuning OpModes ("Tests" group). HIDDEN with @Disabled (decision 052)
         ├── AllianceCameraTest.java ← shared code for the red/blue camera tests (#7)
@@ -40,6 +41,7 @@ teamcode/
         ├── EncoderModeToggle.java ← drive and switch encoder mode with Y (#11)
         ├── FlowerFlipperTest.java ← shake the flower flipper, find its positions
         ├── IntakeTest.java ← hold buttons to run the intake and water wheel (#4)
+        ├── IntakeLauncherTest.java ← Intake Test + Launcher Test in one: check a ball goes in, up and out (#4, #5)
         ├── LightTest.java ← check the colors on both lights
         ├── PinpointTest.java
         ├── RedCameraTest.java ← camera as RED: only tags 30-37 are targets

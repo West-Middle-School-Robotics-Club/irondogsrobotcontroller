@@ -33,7 +33,7 @@ DRIVER = {
     "A": ("STRAIGHT ASSIST on/off", "rumble: 1 blip = ON, 2 = OFF. Starts ON"),
 }
 OPERATOR = {  # decisions 029, 035
-    "Y": ("LAUNCH (hold)", "trigger moves out of the way; let go = blocked"),
+    "Y": ("LAUNCH (hold)", "trigger moves out of the way; NECTARs launch by themselves"),
     "X": ("TURRET REST SPOT (OFF for now)", "TURRET_ENABLED = false: does nothing"),
     "B": ("DIRECTION (toggle)", "IN (intake in + wheel UP) or OUT (balls leave)"),
     "A": ("INTAKE SYSTEM (toggle)", "intake + water wheel together, on / off"),

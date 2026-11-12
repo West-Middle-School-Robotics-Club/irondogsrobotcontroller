@@ -590,3 +590,24 @@ Issue: #4
 Context: The water wheel (the intake's lifting wheel, decision 028) was driven by a continuous rotation servo. The team swapped it for a **goBILDA 5203-2402-0051 Yellow Jacket motor** (117 RPM, 50.9:1) for more torque and speed.
 Decision: The config name follows the naming rule's type suffix (024): **`waterWheelMotor`** (⚠️ rename it in the Driver Station config and pick the exact goBILDA 5203 type). `Intake` drives it as a `DcMotor` on plain power (`RUN_WITHOUT_ENCODER`, like every motor, 055) with **BRAKE** when stopped, so the weight of the balls can't turn the wheel back. The methods (`waterWheelUp()`, `waterWheelDown()`, `runWaterWheel()`, `stopWaterWheel()`) and `WATER_WHEEL_SPEED` / `WATER_WHEEL_REVERSED` keep their names, so no OpMode changed. Both values must be re-tuned with Intake Test: the direction has not been checked on the motor, and 1.0 on a 117 RPM motor is about twice the old servo's speed. Expansion Hub servo 1 is free; the motor's port is written in `hardware-config.md` once wired.
 Who: Mentor (11/11)
+
+## 057 – Timed Auton FAR: the backup for Basic Auton FAR too  (2026-11-11)
+Status: Accepted
+Issue: #22
+Context: Decision 054 added a time-based backup for Basic Auton NEAR only. If the Pinpoint or the encoders misbehave when we start FAR, we would still have no AUTO.
+Decision: Add **Timed Auton RED FAR (backup)** / **BLUE FAR (backup)**, in the same `TimedAuton.java`. They drive the same moves as Basic Auton FAR and Test Auton FAR: **forward 100 in** up column B (LEAVE), then **left 20 in** into the LOADING ZONE (PARK), each at `DRIVE_POWER` for a set time (`FAR_FORWARD_S`, `FAR_LEFT_S`). Same setup as Basic Auton FAR. Each OpMode file picks NEAR or FAR with `route()`, like Basic Auton (it reuses `BasicAuton.Route`). Everything else from 054 stays: no sensors, no telemetry, Basic Auton stays the plan, times tuned on the robot with a charged battery.
+Who: Mentor (11/11)
+
+## 058 – Hide Basic Auton for now; run the Timed Auton backups  (2026-11-11)
+Status: Accepted
+Issue: #22
+Context: Now that Timed Auton covers NEAR and FAR for both alliances (054, 057), there is a no-sensor AUTO for every start. Basic Auton was still having movement problems on the floor.
+Decision: Put `@Disabled` on the four Basic Auton OpModes (`BasicAutonRedNear`, `BasicAutonBlueNear`, `BasicAutonRedFar`, `BasicAutonBlueFar`), so only the **Timed Auton** OpModes show in AUTO on the Driver Station. This changes 054's "Basic Auton stays the plan" for now. The code stays as it is (`BasicAuton.java`, Test Auton still use it); to bring one back, delete its `@Disabled` line.
+Who: Mentor (11/11)
+
+## 059 – NECTARs launch by themselves in Main TeleOp  (2026-11-11)
+Status: Accepted
+Issue: #4, #5
+Context: The nectar detector switches (028) already tell us when the next ball to launch is a NECTAR (lights turn purple). The operator then has to hold Y to open the launcher trigger. The mentor asked for NECTARs to shoot automatically.
+Decision: In `OperatorControls` (Main TeleOp), when either nectar detector switch is pressed, the launcher trigger opens (`fire()`) with no button. It stays open `AUTO_FIRE_HOLD_S` (0.5 s) after the switch lets go, because the ball moves off the switch as soon as the gate opens, and closing right then could clip it. Y still opens the trigger by hand (for POLLEN). Not while ejecting. No wait for "flywheel READY": the flywheel runs the whole match, and `READY_VELOCITY_THRESHOLD` is still a placeholder, so waiting on it could stop NECTARs from launching at all. `AUTO_FIRE_NECTAR = false` turns it off. Intake + Launcher Test does the same, to try it on the bench.
+Who: Mentor (11/11)

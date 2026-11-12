@@ -1,6 +1,8 @@
 # Autonomous OpModes
 
 ## Basic Auton (issue #22, decisions 014, 020, 026): LEAVE + PARK, drive-only
+⚠️ **Hidden for now (decision 058):** all four have `@Disabled`, so they don't show on the Driver Station; we run the **Timed Auton** backups below. To bring one back, delete its `@Disabled` line, then build and deploy.
+
 Four OpModes in the **Basic Auton** group on the Driver Station. Pick the one that matches our alliance and starting spot:
 
 | OpMode | Start | Route |
@@ -35,12 +37,13 @@ In `BasicAuton.java` (every value has a row in `docs/tuning-guide.md`):
 - `USE_ENCODER_SPEED_CONTROL`: `false`, plain power like the whole robot (decision 055). If it is ever set back to `true`, re-tune the powers
 - Needs the Pinpoint tuned on this robot first (#21): wrong pod offsets = wrong positions
 
-## Timed Auton (BACKUP for NEAR, decision 054)
-Two OpModes in the **Timed Auton** group: **Timed Auton RED NEAR (backup)** and **Timed Auton BLUE NEAR (backup)**. Same setup as Basic Auton NEAR (back touching our wall, front facing into the field).
-- Drives the same box (forward, right, back) by **time**: `DRIVE_POWER` for `FORWARD_S`, `RIGHT_S`, `BACK_S` seconds, with `PAUSE_S` between moves. All in `TimedAuton.java`
+## Timed Auton (BACKUP for NEAR and FAR, decisions 054, 057)
+Four OpModes in the **Timed Auton** group: **Timed Auton RED / BLUE NEAR (backup)** and **Timed Auton RED / BLUE FAR (backup)**. Same setups as Basic Auton (back touching a wall, decision 046).
+- NEAR drives the same box as Basic Auton NEAR (forward, right, back) by **time**: `DRIVE_POWER` for `FORWARD_S`, `RIGHT_S`, `BACK_S` seconds, with `PAUSE_S` between moves
+- FAR drives an L: forward 85 in, then left 23 in (shorter forward and a bit more left than Basic Auton FAR's 100 / 20): `FAR_FORWARD_S`, then `FAR_LEFT_S`. All in `TimedAuton.java`
 - **No Pinpoint, no encoders, no telemetry, no lights.** Nothing to calibrate, nothing to wait for. But battery level and bumps change how far it goes
 - RED and BLUE are the same moves (the field is rotated 180°); the two files only pick the name and the TeleOp that comes next
-- Only use it if Basic Auton isn't reliable. Tune the seconds with a charged battery (rows in `docs/tuning-guide.md`)
+- For now these are the AUTOs we run (decision 058: Basic Auton is hidden). Before 058: only use it if Basic Auton isn't reliable. Tune the seconds with a charged battery (rows in `docs/tuning-guide.md`)
 
 ## Advanced Auton (issue #25)
 Pedro Pathing, later. Launching, the turret and the camera belong there, not in Basic Auton (decision 020).

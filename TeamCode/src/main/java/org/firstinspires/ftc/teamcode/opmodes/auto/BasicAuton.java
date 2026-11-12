@@ -46,6 +46,9 @@ public abstract class BasicAuton extends LinearOpMode {
     /** Measures the time between telemetry updates = one pass of the loop (shown as "Loop"). */
     private final ElapsedTime loopTimer = new ElapsedTime();
 
+    /** The robot, kept here so every status screen can show the four wheel powers. Set at the start of runOpMode(). */
+    private Robot robot;
+
     /** Which starting spot. NEAR = against our alliance wall, next to the LOADING ZONE. FAR = against the audience wall. */
     public enum Route { NEAR, FAR }
 
@@ -156,7 +159,7 @@ public abstract class BasicAuton extends LinearOpMode {
         Alliance alliance = alliance();
         Route route = route();
 
-        Robot robot = new Robot(hardwareMap);
+        robot = new Robot(hardwareMap);
         Odometry odometry = new Odometry(hardwareMap);   // resets the Pinpoint: robot must be STILL in INIT
         Light leftLight = new Light(hardwareMap, Light.LEFT_LIGHT_NAME);
         Light rightLight = new Light(hardwareMap, Light.RIGHT_LIGHT_NAME);
@@ -361,6 +364,9 @@ public abstract class BasicAuton extends LinearOpMode {
         if (target != null) {
             telemetry.addData("Target", poseText(target));
         }
+        // The power each of the 4 wheels is getting right now (-1 to 1), plus the drive mode and BRAKE / FLOAT.
+        // Driving straight forward: all 4 the same. Strafing: front-left and back-right the opposite of the other two.
+        robot.drivetrain.addTelemetry(telemetry);
         telemetry.update();
     }
 

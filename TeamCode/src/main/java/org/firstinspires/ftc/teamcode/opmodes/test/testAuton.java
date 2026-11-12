@@ -48,8 +48,8 @@ public abstract class testAuton extends BasicAuton {
 
     /** FAR moves, relative to the start (BasicAuton.RED_FAR_PATH in robot directions). */
     static final Pose2D[] TEST_FAR_PATH = {
-            pose(100, 0, 0),   // LEAVE + the long drive: 100 in forward
-            pose(100, 20, 0),  // PARK: 20 in left
+            pose(85, 0, 0),   // LEAVE + the long drive: 100 in forward
+            pose(85, 22, 0),  // PARK: 20 in left
     };
 
     /** The paths above are written as moves; the test never rotates them for BLUE. Only the INIT lights use this. */

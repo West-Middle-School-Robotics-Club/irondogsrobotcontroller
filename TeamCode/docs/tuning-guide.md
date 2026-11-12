@@ -62,6 +62,8 @@ Test with **Main TeleOp**. Decisions 029, 030.
 | `INTAKE_ON_AT_START` | `true` | Do the intake + water wheel start ON when the match starts? (A toggles them) | Operator's preference | 🔧 |
 | `TURRET_ENABLED` | `false` | `OperatorControls.java`: can the turret move in Main TeleOp? `false` = left stick and X do nothing, and no move at START (decision 050) | Set `true` to turn the turret controls back on | 🔧 |
 | `TRIGGER_HELD` | `0.5` | How far the left trigger must be pressed to EJECT | Rarely changed | ✅ |
+| `AUTO_FIRE_NECTAR` | `true` | A NECTAR on a nectar detector switch opens the launcher trigger by itself (decision 059). `false` = only Y opens it | Operator's preference. Turn it off if it fires when it shouldn't | 🔧 |
+| `AUTO_FIRE_HOLD_S` | `0.5` | Seconds the trigger stays open after the switch lets go, so it doesn't close on the ball | Intake + Launcher Test: NECTAR gets clipped by the gate? longer. A POLLEN right behind it also gets launched? shorter | 🔧 |
 
 ## Main TeleOp start-up: `opmodes/teleop/MainTeleOp.java`
 Test with **Main TeleOp**. Decision 041.
@@ -131,14 +133,16 @@ Positions are **field coordinates** (011). To tune a route on any clear floor, u
 | `STOPPED_EARLY_COLOR` | `Light.Color.YELLOW` | Lights at the end when it stopped early | Team's choice | ✅ |
 
 ## Timed Auton (backup): `opmodes/auto/TimedAuton.java`
-The no-sensor backup for Basic Auton NEAR (decision 054): plain power for a set time, no Pinpoint, no encoders. Tune with a **charged battery**; a weak battery drives shorter.
+The no-sensor backup for Basic Auton NEAR and FAR (decisions 054, 057): plain power for a set time, no Pinpoint, no encoders. Tune with a **charged battery**; a weak battery drives shorter.
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
 | `DRIVE_POWER` | `0.3` | Wheel power for every move (plain power = % of the battery) | Pick a power that doesn't slide or spin the wheels, then tune the times. Change the power = re-tune all the times | 🔧 |
-| `FORWARD_S` | `1.0` | Seconds driving forward off the wall (goal: 23 in) | Run it, measure how far it went, scale: new time = time × 23 / inches measured | 🔧 |
-| `RIGHT_S` | `0.8` | Seconds strafing right, toward the audience (goal: 12 in) | Same, × 12 / measured. Strafing is slower than driving, so it needs more time per inch | 🔧 |
-| `BACK_S` | `0.8` | Seconds driving back into the LOADING ZONE (goal: 18 in) | Same, × 18 / measured. Must stop before hitting the wall | 🔧 |
+| `FORWARD_S` | `1.0` | Seconds driving forward off the wall (goal: 23 in) | Run it, measure how far it went, scale: new time = time × 23 / inches measured. **Worked on the robot 11/11 (Timed Auton NEAR, RED and BLUE)** | ✅ |
+| `RIGHT_S` | `0.8` | Seconds strafing right, toward the audience (goal: 12 in) | Same, × 12 / measured. Strafing is slower than driving, so it needs more time per inch. **Worked on the robot 11/11 (Timed Auton NEAR, RED and BLUE)** | ✅ |
+| `BACK_S` | `0.8` | Seconds driving back into the LOADING ZONE (goal: 18 in) | Same, × 18 / measured. Must stop before hitting the wall. **Worked on the robot 11/11 (Timed Auton NEAR, RED and BLUE)** | ✅ |
+| `FAR_FORWARD_S` | `3.7` | FAR: seconds driving forward up column B, the long drive (goal: 85 in, was 100 until 11/11). Starting guess scaled from `FORWARD_S` | Same, × 85 / measured. Too short = no LEAVE; too long = into the far end of the field | 🔧 |
+| `FAR_LEFT_S` | `1.5` | FAR: seconds strafing left into the LOADING ZONE (goal: 23 in, was 20 until 11/11). Starting guess scaled from `RIGHT_S` | Same, × 23 / measured. Must stop before hitting the wall | 🔧 |
 | `PAUSE_S` | `0.5` | Sit still between moves so one slide doesn't carry into the next | Moves blend together? longer | 🔧 |
 | `START_DELAY_S` | `0.0` | Wait after START before moving (no dpad: change it in the code before the match) | Agree with the partner | 🔧 |
 
@@ -148,7 +152,7 @@ Worksheet: `intake-test.pdf`. Test with **Intake Test**. Issue #4.
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
 | `INTAKE_SPEED` | `1.0` | Intake servo speed (0 to 1). 1.0 since 11/8 testing (was 0.65, decision 041) | Intake Test: dpad up / down changes the speed of both live (0.05 steps), then copy the number here. Lower it if balls bounce off | 🔧 |
-| `WATER_WHEEL_SPEED` | `1.0` | Water wheel MOTOR power (0 to 1). Since 11/11 the water wheel is a goBILDA 117 RPM motor (decision 056), about twice as fast as the old servo at the same number, so 1.0 may be too fast: re-tune. (Servo history: 1.0 since 11/8, was 0.65) | Intake Test: same dpad speed as the intake; use X = water wheel only to tune it alone, then copy the number here. Lower it if balls jam at the top | 🔧 |
+| `WATER_WHEEL_SPEED` | `0.4` | Water wheel MOTOR power (0 to 1). Since 11/11 the water wheel is a goBILDA 117 RPM motor (decision 056), about twice as fast as the old servo at the same number, so 1.0 may be too fast: re-tune. (Servo history: 1.0 since 11/8, was 0.65) | Intake Test: same dpad speed as the intake; use X = water wheel only to tune it alone, then copy the number here. Lower it if balls jam at the top | 🔧 |
 | `INTAKE_REVERSED` | `true` | Set `true` if "intake IN" pushes balls OUT. 11/7: Main TeleOp ran OUT at start, so `true`. Confirmed 11/7: IN at start, eject pushes balls out | Intake Test, A button | ✅ |
 | `WATER_WHEEL_REVERSED` | `true` | Set `true` if "water wheel UP" moves balls DOWN. Was confirmed 11/7 for the old servo; the new motor (11/11) has NOT been checked | Intake Test step 2: X = water wheel only, A, balls must go UP | 🔧 |
 | `NECTAR_SWITCH_WIRING` | `NORMALLY_CLOSED` | How the NECTAR switches are wired. If "PRESSED" shows when NOT pressed, use `NORMALLY_CLOSED` | Intake Test: press each lever | ✅ |

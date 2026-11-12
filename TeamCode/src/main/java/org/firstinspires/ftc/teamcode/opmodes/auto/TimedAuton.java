@@ -6,21 +6,30 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Robot;
 
 /**
- * TIMED AUTON: the BACKUP for Basic Auton NEAR (decision 054). LEAVE + PARK with no sensors at all.
+ * TIMED AUTON: the BACKUP for Basic Auton NEAR and FAR (decision 054). LEAVE + PARK with no sensors at all.
  *
  * It does not know where the robot is. It just runs the wheels at a set power for a set TIME, one move after
- * another, in a box:
+ * another.
+ *
+ * NEAR, a box (same moves as Basic Auton NEAR: forward 23 in, right 12 in, back 18 in):
  *   1. FORWARD off the wall        (FORWARD_S seconds)
  *   2. RIGHT, toward the audience  (RIGHT_S seconds)
  *   3. BACK into the LOADING ZONE  (BACK_S seconds)
- * Same moves as Basic Auton NEAR: forward 23 in, right 12 in, back 18 in.
+ *
+ * FAR, an L: forward 85 in, left 23 in (changed 11/11 from Basic Auton FAR's 100 in / 20 in):
+ *   1. FORWARD up column B, the long drive (FAR_FORWARD_S seconds). LEAVE
+ *   2. LEFT into the LOADING ZONE         (FAR_LEFT_S seconds). PARK
  *
  * No Pinpoint, no encoders (plain power, RUN_WITHOUT_ENCODER), no telemetry. If the Pinpoint or the encoders
  * misbehave at a match, this still drives. The price: battery level, bumps and wheel slip all change how far it goes.
  *
- * SET UP: same as Basic Auton NEAR. RED: tile A6, BACK touching the RED wall, FRONT facing into the field.
+ * SET UP: same as Basic Auton.
+ *   NEAR  RED: tile A6, BACK touching the RED wall, FRONT facing into the field.
  *         BLUE: tile F1, BACK touching the BLUE wall, FRONT facing into the field.
- * RED and BLUE drive the SAME moves: BLUE is RED rotated 180 degrees, so "forward, right, back" works for both.
+ *   FAR   RED: tile B1, BACK touching the AUDIENCE wall, FRONT facing the FAR wall.
+ *         BLUE: tile E6, BACK touching the FAR wall, FRONT facing the AUDIENCE.
+ * RED and BLUE drive the SAME moves: BLUE is RED rotated 180 degrees, so "forward, right, back" (or "forward, left")
+ * works for both.
  *
  * TUNE on the robot (tuning guide): change the SECONDS to change how far each move goes. Test with a charged battery.
  */
@@ -34,6 +43,10 @@ public abstract class TimedAuton extends LinearOpMode {
     static final double RIGHT_S = 0.8;     // 2. strafe right, toward the audience (goal: 12 in)
     static final double BACK_S = 0.8;      // 3. back into the LOADING ZONE (goal: 18 in; stop before the wall)
 
+    // FAR: STARTING GUESSES, scaled from the NEAR times that worked (about 23 in per second forward, 15 in per second sideways).
+    static final double FAR_FORWARD_S = 3.7; // 1. forward up column B (goal: 85 in). The HIVE is in column C, to the right
+    static final double FAR_LEFT_S = 1.5;    // 2. strafe left into the LOADING ZONE (goal: 23 in; stop before the wall)
+
     // Stop and sit still this long between moves, so one move's slide doesn't carry into the next.
     static final double PAUSE_S = 0.5;
 
@@ -41,6 +54,9 @@ public abstract class TimedAuton extends LinearOpMode {
     static final double START_DELAY_S = 0.0;
 
     private Robot robot;
+
+    /** Which starting spot. Each OpMode file (TimedAutonRedNear, ...) picks one. */
+    protected abstract BasicAuton.Route route();
 
     @Override
     public void runOpMode() {
@@ -51,13 +67,19 @@ public abstract class TimedAuton extends LinearOpMode {
 
         waitForStart();
 
-        // ---------- AUTO: the box, one move at a time ----------
+        // ---------- AUTO: one move at a time ----------
         hold(START_DELAY_S);
-        move(DRIVE_POWER, 0, FORWARD_S);    // 1. forward
-        hold(PAUSE_S);
-        move(0, -DRIVE_POWER, RIGHT_S);     // 2. right (+left = LEFT, decision 007, so right is minus)
-        hold(PAUSE_S);
-        move(-DRIVE_POWER, 0, BACK_S);      // 3. back
+        if (route() == BasicAuton.Route.NEAR) {
+            move(DRIVE_POWER, 0, FORWARD_S);    // 1. forward
+            hold(PAUSE_S);
+            move(0, -DRIVE_POWER, RIGHT_S);     // 2. right (+left = LEFT, decision 007, so right is minus)
+            hold(PAUSE_S);
+            move(-DRIVE_POWER, 0, BACK_S);      // 3. back
+        } else {
+            move(DRIVE_POWER, 0, FAR_FORWARD_S); // 1. forward, the long drive
+            hold(PAUSE_S);
+            move(0, DRIVE_POWER, FAR_LEFT_S);    // 2. left (plus = LEFT, decision 007)
+        }
 
         robot.stop();
     }

@@ -8,4 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  */
 @Autonomous(name = "Timed Auton RED NEAR (backup)", group = "Timed Auton", preselectTeleOp = "Main TeleOp RED")
 public class TimedAutonRedNear extends TimedAuton {
+
+    @Override
+    protected BasicAuton.Route route() {
+        return BasicAuton.Route.NEAR;
+    }
 }

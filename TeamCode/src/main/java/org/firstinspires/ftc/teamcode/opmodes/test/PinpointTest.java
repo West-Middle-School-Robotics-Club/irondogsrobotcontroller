@@ -93,6 +93,11 @@ public class PinpointTest extends LinearOpMode {
             telemetry.addLine("X = reset to 0,0,0     B = reset + recalibrate (keep STILL)");
             telemetry.addLine("A = straight-line assist     dpad up/down = speed dial");
             telemetry.addData("Speed dial (dpad)", "%.0f %%", speedDial * 100);
+            // Raw sticks, before the deadzone. Hands OFF the gamepad: all must read about 0.00. A value bigger than
+            // DriverControls.DEADZONE (0.05) here means the robot drives or turns on its own (worn stick or wrong
+            // gamepad mode). Right X is TURN.
+            telemetry.addData("Sticks raw  L x/y  R x", "%.2f  %.2f   %.2f   (hands off = 0)",
+                    gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
             driver.addTelemetry(telemetry, speed);
             robot.drivetrain.addTelemetry(telemetry);
             telemetry.addLine();
