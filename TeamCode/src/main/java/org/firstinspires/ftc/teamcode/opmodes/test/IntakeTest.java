@@ -3,6 +3,10 @@ package org.firstinspires.ftc.teamcode.opmodes.test;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Power;
@@ -36,6 +40,10 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *   - Run a NECTAR up to the launcher: YES. Run a POLLEN through: it should stay "no".
  * The switches work during INIT too (nothing moves).
  *
+ * Power check: the "POWER SENT" lines read straight from each device what power it is getting right now (-1 to 1),
+ * so you can see the code really sends what the screen says. The water wheel motor also shows its CURRENT (amps):
+ * it jumps when the wheel is jammed or stalled, and is near 0 if the motor isn't turning anything (loose gear/belt).
+ *
  * Printable worksheet (steps, Expected / Actual / Fix, numbers for the code): TeamCode/docs/worksheets/intake-test.pdf
  */
 // Hidden on the Driver Station (decision 052). To use it: delete the @Disabled line below, then build and deploy.
@@ -51,6 +59,10 @@ public class IntakeTest extends LinearOpMode {
     public void runOpMode() {
         Power power = new Power(hardwareMap); // battery voltage + current on every test
         Intake intake = new Intake(hardwareMap);
+        // Test-only: the same two devices, read directly to show the power they really get (code-structure rule 8).
+        // Missing from the Driver Station config = null, shown as OFFLINE.
+        CRServo intakeServo = hardwareMap.tryGet(CRServo.class, Intake.INTAKE_SERVO_NAME);
+        DcMotorEx waterWheelMotor = hardwareMap.tryGet(DcMotorEx.class, Intake.WATER_WHEEL_MOTOR_NAME);
 
         double intakeSpeed = Intake.INTAKE_SPEED;          // each starts at its Intake.java number
         double waterWheelSpeed = Intake.WATER_WHEEL_SPEED;
@@ -117,6 +129,14 @@ public class IntakeTest extends LinearOpMode {
             telemetry.addData("Water wheel speed", "%.2f   <- WATER_WHEEL_SPEED (motor) when it feels right", waterWheelSpeed);
             telemetry.addData("Direction", reversed ? "OUT + water wheel DOWN" : "IN + water wheel UP");
             telemetry.addData("Running", run == Run.BOTH ? "BOTH" : run == Run.INTAKE_ONLY ? "INTAKE only" : "WATER WHEEL only");
+            telemetry.addLine();
+            telemetry.addLine("POWER SENT (read back from each device, -1 to 1)");
+            telemetry.addData("  Intake servo", intakeServo != null
+                    ? String.format("%.2f", intakeServo.getPower())
+                    : "OFFLINE ('" + Intake.INTAKE_SERVO_NAME + "' not in DS config)");
+            telemetry.addData("  Water wheel motor", waterWheelMotor != null
+                    ? String.format("%.2f   current %.2f A", waterWheelMotor.getPower(), waterWheelMotor.getCurrent(CurrentUnit.AMPS))
+                    : "OFFLINE ('" + Intake.WATER_WHEEL_MOTOR_NAME + "' not in DS config)");
             telemetry.addLine();
             intake.addTelemetry(telemetry);
             power.addTelemetry(telemetry);
