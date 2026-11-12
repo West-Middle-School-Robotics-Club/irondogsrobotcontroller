@@ -130,6 +130,18 @@ Positions are **field coordinates** (011). To tune a route on any clear floor, u
 | `PARKED_COLOR` | `Light.Color.GREEN` | Lights at the end when parked | Team's choice | ✅ |
 | `STOPPED_EARLY_COLOR` | `Light.Color.YELLOW` | Lights at the end when it stopped early | Team's choice | ✅ |
 
+## Timed Auton (backup): `opmodes/auto/TimedAuton.java`
+The no-sensor backup for Basic Auton NEAR (decision 054): plain power for a set time, no Pinpoint, no encoders. Tune with a **charged battery**; a weak battery drives shorter.
+
+| Setting | Now | What it does | How to find it | Status |
+|---|---|---|---|---|
+| `DRIVE_POWER` | `0.3` | Wheel power for every move (plain power = % of the battery) | Pick a power that doesn't slide or spin the wheels, then tune the times. Change the power = re-tune all the times | 🔧 |
+| `FORWARD_S` | `1.0` | Seconds driving forward off the wall (goal: 23 in) | Run it, measure how far it went, scale: new time = time × 23 / inches measured | 🔧 |
+| `RIGHT_S` | `0.8` | Seconds strafing right, toward the audience (goal: 12 in) | Same, × 12 / measured. Strafing is slower than driving, so it needs more time per inch | 🔧 |
+| `BACK_S` | `0.8` | Seconds driving back into the LOADING ZONE (goal: 18 in) | Same, × 18 / measured. Must stop before hitting the wall | 🔧 |
+| `PAUSE_S` | `0.5` | Sit still between moves so one slide doesn't carry into the next | Moves blend together? longer | 🔧 |
+| `START_DELAY_S` | `0.0` | Wait after START before moving (no dpad: change it in the code before the match) | Agree with the partner | 🔧 |
+
 ## Intake and water wheel: `subsystems/Intake.java`
 Worksheet: `intake-test.pdf`. Test with **Intake Test**. Issue #4.
 
