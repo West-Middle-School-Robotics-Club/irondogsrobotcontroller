@@ -563,3 +563,15 @@ Context: While tuning on the floor (11/10-11/11) the NEAR route was hand-edited 
 Options: (a) Keep field coordinates (011) in Basic Auton and convert each measured move into a field position. (b) Drive every route relative to a (0, 0, 0) start, same moves for both alliances.
 Decision: **(a).** Basic Auton keeps the real field start (`RED_NEAR_START`, `RED_FAR_START`) and field waypoints (`RED_NEAR_PATH`, `RED_FAR_PATH`), BLUE rotated 180° as in 011, so the robot's position on the field means something (telemetry, route sheets, later Advanced Auton). Each waypoint comment says the move in robot words ("23 in forward", "12 in right") and the field numbers do the math; the header warns that the start heading decides which field direction is forward. **Test Auton** (`opmodes/test/testAuton.java`) overrides the start to (0, 0, 0) and holds the SAME moves as forward / left distances, so the routes can be repeated on any clear floor with no setup error. When a waypoint changes in one file, change it in the other by hand.
 Who: Mentor (11/11)
+
+## 054 – Timed Auton: a no-sensor backup for Basic Auton NEAR  (2026-11-12)
+Status: Accepted
+Issue: #22
+Context: Two days before the 11/14 competition, Basic Auton NEAR was still having movement problems on the floor (overshoot, a strafe instead of the first forward move). It depends on the Pinpoint, the gyro calibration and (until now) the motor encoders. If any of those misbehaves at a match, we have no AUTO.
+Decision:
+- **Add a backup, `Timed Auton RED NEAR (backup)` / `BLUE NEAR (backup)`** (`opmodes/auto/TimedAuton.java`): the same box as Basic Auton NEAR (forward, right, back), but **time-based**: each move runs the wheels at `DRIVE_POWER` for a set number of seconds. **No Pinpoint, no encoders (plain power), no telemetry.**
+- RED and BLUE drive the same robot moves (BLUE is RED rotated 180°), so the two OpModes share all the code and only differ in name and the TeleOp they queue up.
+- Same setup as Basic Auton NEAR: BACK touching our wall, FRONT facing into the field (046).
+- **Basic Auton stays the plan.** Use the backup only if Basic Auton isn't reliable at the competition. The times are tuned on the robot with a charged battery.
+- The start delay is a constant (`START_DELAY_S`), not a dpad setting: there is no screen to show it.
+Who: Mentor (11/12)
