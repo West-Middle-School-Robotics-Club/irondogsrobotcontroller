@@ -162,11 +162,12 @@ story = header_block(
     "Does the intake pull balls in, does the water wheel lift them, and do the two switches spot a NECTAR?  "
     "(issue #4, decisions 024, 025, 028)",
     "Intake Test",
-    c("intakeServo") + ", " + c("waterWheelServo") + " (Continuous Rotation Servo), " +
+    c("intakeServo") + " (Continuous Rotation Servo), " + c("waterWheelMotor") + " (goBILDA 5203 motor), " +
     c("nectarDetectorLeftSwitch") + ", " + c("nectarDetectorRightSwitch") + " (Digital Device)")
 story += controls([
     ["A / B", "spin ON-OFF (toggle) / STOP. Starts stopped"],
-    ["DPAD up / down", "speed of BOTH +/- 0.05.  The speed is not saved: copy the final number into Intake.java"],
+    ["DPAD up / down", "speed +/- 0.05 of whichever is running (BOTH = both). Intake and water wheel each have their own "
+                   "speed (the water wheel is a motor since 11/11). Not saved: copy the numbers into Intake.java"],
     ["DPAD left / right", "direction (toggle): IN + water wheel UP, or OUT + water wheel DOWN"],
     ["X", "which one runs: BOTH, INTAKE only, WATER WHEEL only. Use \"only\" to check one at a time"],
     ["(no button)", "the switches are read all the time, even in INIT. Watch the telemetry lines "
@@ -175,7 +176,7 @@ story += controls([
 story += steps([
     ["1", "X to INTAKE only, press A (direction IN)", "balls go IN", "", c("INTAKE_REVERSED = true")],
     ["2", "X to WATER WHEEL only, press A (direction UP)", "balls go UP toward the launcher", "", c("WATER_WHEEL_REVERSED = true")],
-    ["3", "X to BOTH, A on, 3 balls. Tune the speed with dpad up / down", "no jam, no ball flying out", "", "copy the speed from the screen into " + c("INTAKE_SPEED") + " / " +
+    ["3", "Tune each speed with X on its \"only\" setting and dpad up / down, then X to BOTH, A on, 3 balls", "no jam, no ball flying out", "", "copy the two speeds from the screen into " + c("INTAKE_SPEED") + " / " +
      c("WATER_WHEEL_SPEED") + " (0 to 1)"],
     ["4", "Nothing touching the levers", "both \"not pressed\", \"NECTAR detected: no\"", "",
      "says PRESSED: switch " + c("NECTAR_SWITCH_WIRING") + " to the other value"],
@@ -197,7 +198,7 @@ story += constants([
 ], "subsystems/Intake.java")
 story += section("Wiring, for " + c("hardware-config.md") + " (Intake table)",
           table([["Device", "Hub (CH / EH)", "Port"],
-                 [c("intakeServo"), "", "servo"], [c("waterWheelServo"), "", "servo"],
+                 [c("intakeServo"), "", "servo"], [c("waterWheelMotor"), "", "motor"],
                  [c("nectarDetectorLeftSwitch"), "", "digital"], [c("nectarDetectorRightSwitch"), "", "digital"]],
                 [2.6, 2.0, 2.4], row_height=0.32 * inch))
 story += after("#4", "docs/portfolio/2026-11-04-intake-and-nectar-detection.md")

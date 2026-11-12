@@ -20,7 +20,7 @@ If a name doesn't match, the OpMode crashes on INIT with an error like `Unable t
 |---|---|---|
 | **Mechanisms** | `<subsystem><Job><Type>` | `launcherTriggerServo`, `turretRotateServo`, `turretHomeSwitch`, `launcherMotor` |
 | **Lights** | `<side>IndicatorLight` | `leftIndicatorLight`, `rightIndicatorLight` |
-| **Exception: team names for intake parts** (decision 028) | The name the team uses for the part, still ending with the type | `waterWheelServo`, `nectarDetectorLeftSwitch`, `nectarDetectorRightSwitch` (all in `Intake`) |
+| **Exception: team names for intake parts** (decision 028) | The name the team uses for the part, still ending with the type | `waterWheelMotor` (was `waterWheelServo` until 11/11, decision 055), `nectarDetectorLeftSwitch`, `nectarDetectorRightSwitch` (all in `Intake`) |
 | **Exception: drive motors** | `<position>Drive` ("Drive" already means motor, and Pedro's setup uses these) | `frontLeftDrive`, `frontRightDrive`, `backLeftDrive`, `backRightDrive` |
 | **Exception: one-of-a-kind devices** | The standard name the SDK samples, Road Runner and Pedro Pathing use | `imu`, `pinpoint`, `limelight` |
 
@@ -56,7 +56,7 @@ Motor cabling (goBILDA): the motor has **3.5 mm bullet** power plugs → goBILDA
 Bullets aren't keyed: red to red, black to black, or the motor spins backwards. Encoder: 4-pin JST PH on the hub, black 4-pin 0.1" (TJC8) housing on the motor.
 
 ⚠️ **Set the correct motor type** for each drive motor in the Driver Station config (the exact goBILDA model / gear ratio, not a generic type).
-In encoder speed control mode (`RUN_USING_ENCODER`, decision 008), the SDK uses the configured motor type to know the motor's top speed.
+In encoder speed control mode (`RUN_USING_ENCODER`) the SDK uses the configured motor type to know the motor's top speed. Since decision 054 we drive on plain power (`RUN_WITHOUT_ENCODER`), so this only matters if a test switches encoder mode back on, but keep the type right anyway.
 A wrong type can make the robot much slower. Drive motor model / ratio: TBA
 
 ## Hubs
@@ -64,11 +64,13 @@ A wrong type can make the robot much slower. Drive motor model / ratio: TBA
 | Hub | Notes |
 |---|---|
 | Control Hub | Left drive motors (motors 0, 1), `launcherMotor` (motor 2), `imu` (I2C 0), Limelight (USB 3.0), `turretHoodServo` (servo 0, planned, not wired yet), `leftIndicatorLight` (servo 3), `turretHomeSwitch` (digital channel 1) |
-| Expansion Hub | Right drive motors (motors 0, 1), `pinpoint` (I2C 3), `turretEncoder` (encoder port 2, decision 019), `turretRotateServo` (servo 0), `waterWheelServo` (servo 1), `intakeServo` (servo 2), `launcherTriggerServo` (servo 4), `flowerFlipperServo` (servo 5), `rightIndicatorLight` (servo 3), `nectarDetectorLeftSwitch` (digital channel 1), `nectarDetectorRightSwitch` (digital channel 3). Connected by: REV JST PH **3-pin** Communication Cable (RS485 → RS485, REV-31-1417) + XT30 Extension Cable for power (REV-31-1392). Without the 3-pin cable the hub has power (LED blinks blue) but the Driver Station can't find its devices |
+| Expansion Hub | Right drive motors (motors 0, 1), `pinpoint` (I2C 3), `turretEncoder` (encoder port 2, decision 019), `turretRotateServo` (servo 0), `intakeServo` (servo 2), `launcherTriggerServo` (servo 4), `flowerFlipperServo` (servo 5), `rightIndicatorLight` (servo 3), `nectarDetectorLeftSwitch` (digital channel 1), `nectarDetectorRightSwitch` (digital channel 3). Connected by: REV JST PH **3-pin** Communication Cable (RS485 → RS485, REV-31-1417) + XT30 Extension Cable for power (REV-31-1392). Without the 3-pin cable the hub has power (LED blinks blue) but the Driver Station can't find its devices |
 
 Each motor port has a matching **encoder port** with the same number. Ports on the Expansion Hub count from 0 again.
 
-**Servo ports:** we use **8 servos** (`intakeServo`, `waterWheelServo`, `launcherTriggerServo`, `turretRotateServo`, `turretHoodServo`, `flowerFlipperServo`, `leftIndicatorLight`, `rightIndicatorLight`). Each hub has 6 servo ports, 12 in all. Check the **config type** for each: Continuous Rotation Servo for `intakeServo`, `waterWheelServo`, `turretRotateServo`; plain **Servo** for the rest.
+**Motor ports:** `waterWheelMotor` (new 11/11) needs a motor port: Control Hub motor 3 or Expansion Hub motor 3 are free (Expansion Hub motor 2 must stay empty, its encoder port is `turretEncoder`). Write the port in the Intake table below once it is wired. Expansion Hub servo 1 (the old `waterWheelServo`) is now free.
+
+**Servo ports:** we use **7 servos** (`intakeServo`, `launcherTriggerServo`, `turretRotateServo`, `turretHoodServo`, `flowerFlipperServo`, `leftIndicatorLight`, `rightIndicatorLight`). Each hub has 6 servo ports, 12 in all. Check the **config type** for each: Continuous Rotation Servo for `intakeServo`, `waterWheelServo`, `turretRotateServo`; plain **Servo** for the rest.
 
 ## IMU
 
@@ -87,7 +89,7 @@ Each motor port has a matching **encoder port** with the same number. Ports on t
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
 | `intakeServo` | Continuous Rotation Servo | Expansion Hub / servo port 2 | Pulls game elements in |
-| `waterWheelServo` | Continuous Rotation Servo | Expansion Hub / servo port 1 | The "water wheel": moves game elements up to the launcher (was `intakeLoaderServo`) |
+| `waterWheelMotor` | Motor, **goBILDA 5203-2402-0051** Yellow Jacket (117 RPM, 50.9:1). Pick that exact goBILDA type in the config | ___ / motor port ___ (not wired yet 11/11; CH 3 or EH 3 are free) | The "water wheel": moves game elements up to the launcher. **Was a continuous servo** (`waterWheelServo`, EH servo 1) until 11/11, decision 055. Runs on plain power, BRAKE when stopped. Direction not checked yet: Intake Test step 2 |
 | `nectarDetectorLeftSwitch` | Digital Device | Expansion Hub / digital port 0-1, **channel 1** (tested 11/6; channel 0 did not read) | (was `intakeNectarLeftSwitch`) goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**, left side of the ball path. Either switch pressed = the **next ball to launch is a NECTAR** (lights turn purple in Main TeleOp). Pressed by a **NECTAR** (~3.6 in), not by POLLEN (~2.8 in). Code: `intake.isNectarDetected()`. Wiring set by `Intake.NECTAR_SWITCH_WIRING` (normally open / closed); check with Intake Test. Digital ports have 2 channels (n, n+1): if it never changes, try the other |
 | `nectarDetectorRightSwitch` | Digital Device | Expansion Hub / digital port 2-3, **channel 3** (tested 11/6; channel 2 did not read) | (was `intakeNectarRightSwitch`) goBILDA Micro Limit Switch (Bump Lever), **3103-0001-0002**, right side of the ball path. Either switch pressed = the **next ball to launch is a NECTAR** (lights turn purple in Main TeleOp). Pressed by a **NECTAR** (~3.6 in), not by POLLEN (~2.8 in). Code: `intake.isNectarDetected()`. Wiring set by `Intake.NECTAR_SWITCH_WIRING` (normally open / closed); check with Intake Test. Digital ports have 2 channels (n, n+1): if it never changes, try the other |
 

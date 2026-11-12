@@ -10,13 +10,14 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
 /**
  * TEST: run the intake and the water wheel, and tune their speed (issue #4). Controls work like Launcher Test.
  *
- * Needs "intakeServo" and "waterWheelServo" as Continuous Rotation Servos in the Driver Station config.
+ * Needs "intakeServo" (Continuous Rotation Servo) and "waterWheelMotor" (goBILDA 5203 motor) in the Driver Station config.
  * A missing one shows OFFLINE.
  *
  * Controls (gamepad 1), after START. It starts STOPPED, at the speed saved in Intake.java:
  *   A                  spin ON / OFF (toggle)
  *   B                  STOP
- *   Dpad UP / DOWN     speed of BOTH, +0.05 / -0.05
+ *   Dpad UP / DOWN     speed +0.05 / -0.05 of whichever is running (BOTH = both). Each has its own speed, because
+ *                      the water wheel is a motor since 11/11 (decision 055) and wants a different number
  *   Dpad LEFT / RIGHT  direction (toggle): IN + UP, or OUT + DOWN
  *   X                  which one runs (toggle through): BOTH, INTAKE only, WATER WHEEL only.
  *                      Use "only" to check one at a time (the REVERSED settings)
@@ -38,7 +39,6 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  * Printable worksheet (steps, Expected / Actual / Fix, numbers for the code): TeamCode/docs/worksheets/intake-test.pdf
  */
 // Hidden on the Driver Station (decision 052). To use it: delete the @Disabled line below, then build and deploy.
-@Disabled
 @TeleOp(name = "Intake Test", group = "Tests")
 public class IntakeTest extends LinearOpMode {
 
@@ -52,7 +52,8 @@ public class IntakeTest extends LinearOpMode {
         Power power = new Power(hardwareMap); // battery voltage + current on every test
         Intake intake = new Intake(hardwareMap);
 
-        double testSpeed = Intake.INTAKE_SPEED;   // one speed for both; the screen shows it
+        double intakeSpeed = Intake.INTAKE_SPEED;          // each starts at its Intake.java number
+        double waterWheelSpeed = Intake.WATER_WHEEL_SPEED;
         boolean spinning = false;
         boolean reversed = false;                 // false = intake IN + water wheel UP
         Run run = Run.BOTH;
@@ -67,11 +68,15 @@ public class IntakeTest extends LinearOpMode {
         }
 
         while (opModeIsActive()) {
-            // Speed of both (0.1 to 1). Rounded to 2 decimals so 0.05 steps don't pick up tiny errors
-            if (gamepad1.dpadUpWasPressed()) {
-                testSpeed = Math.min(1.0, Math.round((testSpeed + SPEED_STEP) * 100) / 100.0);
-            } else if (gamepad1.dpadDownWasPressed()) {
-                testSpeed = Math.max(MIN_SPEED, Math.round((testSpeed - SPEED_STEP) * 100) / 100.0);
+            // Speed (0.1 to 1) of whichever is running: INTAKE only, WATER WHEEL only, or both together
+            double step = gamepad1.dpadUpWasPressed() ? SPEED_STEP : gamepad1.dpadDownWasPressed() ? -SPEED_STEP : 0.0;
+            if (step != 0.0) {
+                if (run != Run.WATER_WHEEL_ONLY) {
+                    intakeSpeed = stepSpeed(intakeSpeed, step);
+                }
+                if (run != Run.INTAKE_ONLY) {
+                    waterWheelSpeed = stepSpeed(waterWheelSpeed, step);
+                }
             }
 
             // Direction
@@ -93,14 +98,14 @@ public class IntakeTest extends LinearOpMode {
             }
 
             // Run. The intake and the water wheel always go the same way: both IN / UP, or both OUT / DOWN
-            double signedSpeed = reversed ? -testSpeed : testSpeed;
+            double sign = reversed ? -1.0 : 1.0;
             if (spinning && run != Run.WATER_WHEEL_ONLY) {
-                intake.runIntake(signedSpeed);
+                intake.runIntake(sign * intakeSpeed);
             } else {
                 intake.stopIntake();
             }
             if (spinning && run != Run.INTAKE_ONLY) {
-                intake.runWaterWheel(signedSpeed);
+                intake.runWaterWheel(sign * waterWheelSpeed);
             } else {
                 intake.stopWaterWheel();
             }
@@ -108,7 +113,8 @@ public class IntakeTest extends LinearOpMode {
             telemetry.addLine("A = spin on/off | B = STOP | Dpad UP/DOWN = speed | Dpad LEFT/RIGHT = direction | X = which one");
             telemetry.addLine();
             telemetry.addData("Spin", spinning ? "ON" : "OFF");
-            telemetry.addData("Speed (both)", "%.2f   <- put this in Intake.java when it feels right", testSpeed);
+            telemetry.addData("Intake speed", "%.2f   <- INTAKE_SPEED in Intake.java when it feels right", intakeSpeed);
+            telemetry.addData("Water wheel speed", "%.2f   <- WATER_WHEEL_SPEED (motor) when it feels right", waterWheelSpeed);
             telemetry.addData("Direction", reversed ? "OUT + water wheel DOWN" : "IN + water wheel UP");
             telemetry.addData("Running", run == Run.BOTH ? "BOTH" : run == Run.INTAKE_ONLY ? "INTAKE only" : "WATER WHEEL only");
             telemetry.addLine();
@@ -118,5 +124,11 @@ public class IntakeTest extends LinearOpMode {
         }
 
         intake.stop();
+    }
+
+    /** Add one dpad step to a speed and keep it between MIN_SPEED and 1. Rounded so 0.05 steps stay exact. */
+    private static double stepSpeed(double speed, double step) {
+        double next = Math.round((speed + step) * 100) / 100.0;
+        return Math.max(MIN_SPEED, Math.min(1.0, next));
     }
 }

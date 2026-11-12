@@ -96,9 +96,9 @@ public abstract class BasicAuton extends LinearOpMode {
     // Facing -90: forward = -Y, right = -X. Center starts at y = 72 - 9 = 63.
     static final Pose2D RED_NEAR_START = pose(60, 72 - ROBOT_LENGTH_IN / 2, -90);
     static final Pose2D[] RED_NEAR_PATH = {
-            pose(60, 40, -90),  // LEAVE: 23 in forward, off the red wall (y 63 -> 40)
-            pose(48, 40, -90),  // 12 in RIGHT, toward the audience (x 60 -> 48), in front of the LOADING ZONE
-            pose(48, 58, -90),  // PARK: 18 in back (y 40 -> 58), into the LOADING ZONE. Back edge at y 67, 5 in off the wall
+            pose(83, 40, -90),  // 12 in RIGHT, toward the audience (x 60 -> 48), in front of the LOADING ZONE
+            pose(83, 28, -90),
+            pose(65,28,-90)  // PARK: 18 in back (y 40 -> 58), into the LOADING ZONE. Back edge at y 67, 5 in off the wall
     };
     // LOADING ZONE: x 24.5 (audience end) to 47.5 (far-wall end), y 61 to 72. PARK only needs the robot PARTLY in it:
     // at (48, 58) the robot spans x 40-56, y 49-67, so its far-wall side is in. The audience end is left for our partner.
@@ -115,21 +115,23 @@ public abstract class BasicAuton extends LinearOpMode {
     // ------------------------------------------------------------------------------------------------
     // DRIVING. Tune on the robot (tuning-guide.md has a row for each).
     // ------------------------------------------------------------------------------------------------
-    // How the drive motors take "power" during Basic Auton (decision 008 is still open):
+    // How the drive motors take "power" during Basic Auton (decision 054: plain power everywhere):
+    //   false = plain power (RUN_WITHOUT_ENCODER): power = % of battery voltage. Same as Main TeleOp
     //   true  = encoder speed control (RUN_USING_ENCODER): power = % of top speed, the hub holds that speed.
-    //           Same as Main TeleOp today. At very low powers the hub's speed loop can surge (lurch, stop, lurch)
-    //   false = plain power (RUN_WITHOUT_ENCODER): power = % of battery voltage. Smoother at a crawl, but the
-    //           numbers below mean something different: MIN_DRIVE_POWER needs ~0.12-0.15 or the robot won't move
-    // If the robot still lurches back and forth at a waypoint, try false and re-tune the powers.
-    static final boolean USE_ENCODER_SPEED_CONTROL = true;
+    //           At very low powers the hub's speed loop surged (lurch, stop, lurch), which is why we stopped using it.
+    //           If it ever goes back to true, the powers below mean something else: MIN_DRIVE_POWER can drop to ~0.05
+    // Test Auton inherits this.
+    static final boolean USE_ENCODER_SPEED_CONTROL = false;
     static final double DRIVE_GAIN = 0.02;           // power per inch away. Slowing starts MAX_DRIVE_POWER / DRIVE_GAIN = 10 in out
-    static final double MAX_DRIVE_POWER = 0.3;       // fastest we drive forward/back
-    static final double MAX_SIDEWAYS_POWER = 0.15;   // fastest we drive sideways (strafing slides more, so a bit slower)
-    static final double MIN_DRIVE_POWER = 0.05;      // slowest we drive (a crawl; encoder speed control keeps it moving)
+    // Powers below are PLAIN POWER starting points (11/11). With encoders the team had 0.1 / 0.1 / 0.03; those mean
+    // "% of top speed" and are too low to move the robot on plain power. Re-tune on the floor.
+    static final double MAX_DRIVE_POWER = 0.5;       // fastest we drive forward/back
+    static final double MAX_SIDEWAYS_POWER = 0.25;   // fastest we drive sideways (strafing needs more power for the same speed, but slides more)
+    static final double MIN_DRIVE_POWER = 0.2;      // slowest we drive (a crawl). Plain power: below ~0.12 the robot doesn't move at all
     static final double BRAKE_LOOKAHEAD_S = 0.15;    // brake this many seconds early (forward/back): a moving robot slides past the spot otherwise
     static final double BRAKE_LOOKAHEAD_SIDEWAYS_S = 0.3; // same for sideways moves: braked mecanum wheels still roll sideways on their rollers, so brake earlier
     static final double TURN_GAIN = 0.02;            // turn power per degree away
-    static final double MIN_TURN_POWER = 0.05;       // slowest turn that still moves the robot (less and it sits 3 deg off forever)
+    static final double MIN_TURN_POWER = 0.12;       // slowest turn that still moves the robot (less and it sits 3 deg off forever). Was 0.05 with encoders
     static final double MAX_TURN_POWER = 0.2;
     static final double POSITION_TOLERANCE_IN = 1;   // "close enough" to a waypoint
     static final double HEADING_TOLERANCE_DEG = 2.0;

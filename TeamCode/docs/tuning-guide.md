@@ -73,7 +73,7 @@ Test with **Main TeleOp**. Decision 041.
 ## Drive motors: `subsystems/Drivetrain.java`
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `USE_ENCODER_SPEED_CONTROL` | `true` | `true` = motors hold a speed using their encoders; `false` = plain power | "Encoder Mode Toggle" test, issue #11 (decision 008 still open) | 🔧 |
+| `USE_ENCODER_SPEED_CONTROL` | `false` | `true` = motors hold a speed using their encoders; `false` = plain power (% of battery voltage). Every OpMode starts in this mode | Decision 054 (11/11): plain power everywhere, after encoder mode lurched at Basic Auton waypoints. "Encoder Mode Toggle" test compares the two | ✅ |
 
 The left motors are set to REVERSE in the constructor. That matches the robot's wiring; change it only if a side drives backwards.
 
@@ -106,22 +106,22 @@ Positions are **field coordinates** (011). To tune a route on any clear floor, u
 | `ROBOT_WIDTH_IN` | `15.99` | Robot width, left to right (inches) | Measured 11/3 | ✅ |
 | `RED_NEAR_START`, `RED_NEAR_PATH` | (positions) | Where NEAR starts and drives to, for RED, in field coordinates. BLUE is calculated. The start HEADING decides which field direction is forward (NEAR faces -90: forward = -Y, right = -X) | Measure the moves with Test Auton on any floor, convert to field positions (each waypoint comment shows the move); re-run `make_diagrams.py` after changing | 🔧 |
 | `RED_FAR_START`, `RED_FAR_PATH` | (positions) | Same for FAR (faces 0: forward = +X, left = +Y) | Same | 🔧 |
-| `USE_ENCODER_SPEED_CONTROL` | `true` | `true` = motors hold a speed with their encoders (same as Main TeleOp); `false` = plain power (smoother at a crawl, but then `MIN_DRIVE_POWER` needs ~0.12-0.15) | Robot lurches back and forth at a waypoint? try `false` and re-tune the powers (decision 008 still open) | 🔧 |
+| `USE_ENCODER_SPEED_CONTROL` | `false` | Basic Auton's own copy of the drive mode: `false` = plain power, % of battery voltage, same as the whole robot (decision 054). Test Auton inherits it | Keep `false`. If a test ever sets it `true`, `MIN_DRIVE_POWER` / `MIN_TURN_POWER` can drop to 0.05 | ✅ |
 | `DRIVE_GAIN` | `0.02` | Power per inch away from the waypoint. Bigger = faster approach, but may overshoot | Taped field: overshoots? lower it. Crawls? raise it | 🔧 |
-| `MAX_DRIVE_POWER` | `0.2` | Fastest Basic Auton drives | Same | 🔧 |
-| `MAX_SIDEWAYS_POWER` | `0.15` | Fastest it drives sideways (strafing). Blended with `MAX_DRIVE_POWER` by how sideways the move is | Slides past sideways waypoints? lower it | 🔧 |
-| `MIN_DRIVE_POWER` | `0.05` | Slowest it drives (lower and the robot may not move) | Lower until the robot just still moves, then add a little | 🔧 |
+| `MAX_DRIVE_POWER` | `0.5` | Fastest Basic Auton drives (plain power since 11/11; the team set 0.5 on the floor) | Same | 🔧 |
+| `MAX_SIDEWAYS_POWER` | `0.25` | Fastest it drives sideways (strafing). Blended with `MAX_DRIVE_POWER` by how sideways the move is | Slides past sideways waypoints? lower it | 🔧 |
+| `MIN_DRIVE_POWER` | `0.2` | Slowest it drives (lower and the robot may not move). Plain power since 11/11; the team set 0.2 on the floor | Lower until the robot just still moves, then add a little | 🔧 |
 | `BRAKE_LOOKAHEAD_S` | `0.15` | Brake this many seconds early. The code aims the spot the robot will reach in this time (speed from the Pinpoint) at the waypoint, so it doesn't slide past | Still overshoots? raise it. Stops short and crawls the last bit? lower it | 🔧 |
 | `BRAKE_LOOKAHEAD_SIDEWAYS_S` | `0.3` | Brake lookahead for sideways moves. Braked mecanum wheels still roll sideways on their rollers, so strafes need to brake earlier | Still slides past sideways? raise it. Stops short? lower it | 🔧 |
 | `TURN_GAIN` | `0.02` | Turn power per degree away from the heading | Wobbles? lower it | 🔧 |
-| `MIN_TURN_POWER` | `0.05` | Slowest turn that still moves the robot. Without it a 3° error gives a power too small to budge, and the waypoint never counts | Sits a few degrees off and never finishes? raise it. Twitches? lower it | 🔧 |
+| `MIN_TURN_POWER` | `0.12` | Slowest turn that still moves the robot. Without it a 3° error gives a power too small to budge, and the waypoint never counts | Sits a few degrees off and never finishes? raise it. Twitches? lower it | 🔧 |
 | `MAX_TURN_POWER` | `0.2` | Fastest it turns | | 🔧 |
 | `POSITION_TOLERANCE_IN` | `1` | "Close enough" to a waypoint (inches) | Stops and jitters at a waypoint? raise it | 🔧 |
 | `HEADING_TOLERANCE_DEG` | `2.0` | "Close enough" heading (degrees) | | 🔧 |
 | `SETTLED_SPEED_IN_PER_S` | `2.0` | "Stopped" = slower than this. A waypoint only counts once the robot is close enough AND stopped, so a slide through the spot doesn't count | Takes long to "finish" each waypoint? raise it a little | 🔧 |
 | `WAYPOINT_TIMEOUT_S` | `4.0` | Give up on one waypoint after this many seconds, plus the per-inch time below | | ✅ |
 | `WAYPOINT_TIMEOUT_PER_INCH_S` | `0.15` | Extra timeout per inch of the move (100 in = 4 + 15 = 19 s). A fixed 8 s gave up on the long FAR drive | Times out on a drive that was going fine? raise it | 🔧 |
-| `WAYPOINT_PAUSE_S` | `1.0` | After each waypoint, stop and sit still this long before the next move (lets the robot settle; telemetry shows the Pinpoint position) | Longer = easier to watch and measure; shorter = faster run. Everything must still finish by `STOP_BY_S` | 🔧 |
+| `WAYPOINT_PAUSE_S` | `2.0` | After each waypoint, stop and sit still this long before the next move (lets the robot settle; telemetry shows the Pinpoint position) | Longer = easier to watch and measure; shorter = faster run. Everything must still finish by `STOP_BY_S` | 🔧 |
 | `STOP_BY_S` | `28.0` | Stop everything by this time (AUTO is 30 s) | Keep below 30 | 🔒 |
 | `MAX_DELAY_S` | `10` | Longest start delay the drive team can pick in INIT | | ✅ |
 | `RECALIBRATE_AT_START` | `true` | Re-calibrate the Pinpoint gyro at START, when the robot is surely still. If someone bumps the robot during INIT's calibration the heading drifts all run | Keep on. Costs about half a second of AUTO | ✅ |
@@ -136,9 +136,9 @@ Worksheet: `intake-test.pdf`. Test with **Intake Test**. Issue #4.
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
 | `INTAKE_SPEED` | `1.0` | Intake servo speed (0 to 1). 1.0 since 11/8 testing (was 0.65, decision 041) | Intake Test: dpad up / down changes the speed of both live (0.05 steps), then copy the number here. Lower it if balls bounce off | 🔧 |
-| `WATER_WHEEL_SPEED` | `1.0` | Water wheel speed (0 to 1). 1.0 since 11/8 testing (was 0.65, decision 041) | Intake Test: same dpad speed as the intake; use X = water wheel only to tune it alone, then copy the number here. Lower it if balls jam at the top | 🔧 |
+| `WATER_WHEEL_SPEED` | `1.0` | Water wheel MOTOR power (0 to 1). Since 11/11 the water wheel is a goBILDA 117 RPM motor (decision 055), about twice as fast as the old servo at the same number, so 1.0 may be too fast: re-tune. (Servo history: 1.0 since 11/8, was 0.65) | Intake Test: same dpad speed as the intake; use X = water wheel only to tune it alone, then copy the number here. Lower it if balls jam at the top | 🔧 |
 | `INTAKE_REVERSED` | `true` | Set `true` if "intake IN" pushes balls OUT. 11/7: Main TeleOp ran OUT at start, so `true`. Confirmed 11/7: IN at start, eject pushes balls out | Intake Test, A button | ✅ |
-| `WATER_WHEEL_REVERSED` | `true` | Set `true` if "water wheel UP" moves balls DOWN. 11/7: set `true` with the intake. Confirmed 11/7 in Main TeleOp | Intake Test, X button | ✅ |
+| `WATER_WHEEL_REVERSED` | `true` | Set `true` if "water wheel UP" moves balls DOWN. Was confirmed 11/7 for the old servo; the new motor (11/11) has NOT been checked | Intake Test step 2: X = water wheel only, A, balls must go UP | 🔧 |
 | `NECTAR_SWITCH_WIRING` | `NORMALLY_CLOSED` | How the NECTAR switches are wired. If "PRESSED" shows when NOT pressed, use `NORMALLY_CLOSED` | Intake Test: press each lever | ✅ |
 
 ## Launcher (flywheel + trigger gate): `subsystems/Launcher.java`

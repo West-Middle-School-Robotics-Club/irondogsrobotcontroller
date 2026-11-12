@@ -41,10 +41,10 @@ public abstract class testAuton extends BasicAuton {
 
     /** NEAR moves, relative to the start (BasicAuton.RED_NEAR_PATH in robot directions). */
     static final Pose2D[] TEST_NEAR_PATH = {
-            pose(23, 0, 0),    // LEAVE: 23 in forward
-            pose(23, -12, 0),  // 12 in right
-            pose(5, -12, 0),   // PARK: 18 in back
-    };
+            pose(24, 0, 0),    // LEAVE: 24 in forward
+            pose(23, -15, 0),  // 15 in right
+            pose(2, -15, 0),   // PARK: 18 in back
+    }; //new test coordinates
 
     /** FAR moves, relative to the start (BasicAuton.RED_FAR_PATH in robot directions). */
     static final Pose2D[] TEST_FAR_PATH = {

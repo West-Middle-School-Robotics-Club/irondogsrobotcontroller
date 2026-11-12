@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -14,8 +15,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  *
  * Hardware (decision 024 names):
  *   intakeServo        CONTINUOUS servo: pulls game elements into the robot
- *   waterWheelServo    CONTINUOUS servo: the "water wheel" (the team's name, from how it looks).
- *                      Moves game elements up to the launcher
+ *   waterWheelMotor    MOTOR (goBILDA 5203-2402-0051 Yellow Jacket, 117 RPM, since 11/11, decision 055): the
+ *                      "water wheel" (the team's name, from how it looks). Moves game elements up to the launcher.
+ *                      It was a continuous servo (waterWheelServo) before; the motor is stronger and faster
  *   nectarDetectorLeftSwitch, nectarDetectorRightSwitch
  *                      goBILDA micro limit switches (bump lever), one on each side of the ball path.
  *                      A NECTAR (~3.6 in ball) is wide enough to press them; a POLLEN (~2.8 in) is not.
@@ -24,14 +26,15 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  *                      switch's raw reading (set NECTAR_SWITCH_WIRING once, below).
  * (These names don't start with "intake": the team picked them, decision 028.)
  *
- * Driver Station config types: "Continuous Rotation Servo" for the two servos, "Digital Device" for the switches.
+ * Driver Station config types: "Continuous Rotation Servo" for the intake servo, the exact goBILDA 5203 type for the
+ * water wheel motor, "Digital Device" for the switches.
  * A device that isn't in the config shows OFFLINE instead of crashing every OpMode.
  */
 public class Intake {
 
     // Config names (decisions 009, 024). Must match the Driver Station robot configuration.
     public static final String INTAKE_SERVO_NAME = "intakeServo";
-    public static final String WATER_WHEEL_SERVO_NAME = "waterWheelServo";
+    public static final String WATER_WHEEL_MOTOR_NAME = "waterWheelMotor";
     public static final String NECTAR_LEFT_SWITCH_NAME = "nectarDetectorLeftSwitch";
     public static final String NECTAR_RIGHT_SWITCH_NAME = "nectarDetectorRightSwitch";
 
@@ -52,15 +55,18 @@ public class Intake {
     //Note 11/6: changed from 1.0 to 0.8 for intake and water wheel
     // Note 11/7: 0.65 (decision 041). Note 11/8: back to 1.0 after testing with Intake Test.
     public static final double INTAKE_SPEED = 1.0;
+    // Water wheel MOTOR power (plain power, % of battery voltage). The 117 RPM motor at 1.0 is about twice as fast as
+    // the old servo was, so this may need to come down. TODO(#4): tune with Intake Test (X = water wheel only).
     public static final double WATER_WHEEL_SPEED = 1.0;
 
     // TODO(#4): set to true if "in" / "waterWheelUp" spins the wrong way.
     // Note 11/7: Main TeleOp started with the intake system going OUT instead of IN, so both changed to true.
     public static final boolean INTAKE_REVERSED = true;
+    // Note 11/11: new motor, direction NOT checked yet. Intake Test step 2: water wheel UP must move balls UP.
     public static final boolean WATER_WHEEL_REVERSED = true;
 
     private final CRServo intakeServo;        // null if not in the Driver Station config
-    private final CRServo waterWheelServo;  // null if not in the Driver Station config
+    private final DcMotor waterWheelMotor;    // null if not in the Driver Station config
     private final DigitalChannel nectarDetectorLeftSwitch;   // null if not in the Driver Station config
     private final DigitalChannel nectarDetectorRightSwitch;  // null if not in the Driver Station config
     private double intakeSpeed = 0.0;
@@ -68,7 +74,7 @@ public class Intake {
 
     public Intake(HardwareMap hardwareMap) {
         intakeServo = hardwareMap.tryGet(CRServo.class, INTAKE_SERVO_NAME);
-        waterWheelServo = hardwareMap.tryGet(CRServo.class, WATER_WHEEL_SERVO_NAME);
+        waterWheelMotor = hardwareMap.tryGet(DcMotor.class, WATER_WHEEL_MOTOR_NAME);
         nectarDetectorLeftSwitch = hardwareMap.tryGet(DigitalChannel.class, NECTAR_LEFT_SWITCH_NAME);
         nectarDetectorRightSwitch = hardwareMap.tryGet(DigitalChannel.class, NECTAR_RIGHT_SWITCH_NAME);
         if (nectarDetectorLeftSwitch != null) {
@@ -81,8 +87,12 @@ public class Intake {
         if (intakeServo != null) {
             intakeServo.setDirection(INTAKE_REVERSED ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
         }
-        if (waterWheelServo != null) {
-            waterWheelServo.setDirection(WATER_WHEEL_REVERSED ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
+        if (waterWheelMotor != null) {
+            waterWheelMotor.setDirection(WATER_WHEEL_REVERSED ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
+            // Plain power, like every motor on the robot (decision 054). The encoder isn't used.
+            waterWheelMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            // BRAKE: when stopped, the wheel holds still instead of being turned by the weight of the balls on it.
+            waterWheelMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
         // Nothing spins until the first command (game rule G304.H: INIT must not move).
     }
@@ -165,8 +175,8 @@ public class Intake {
 
     private void setWaterWheelSpeed(double speed) {
         waterWheelSpeed = speed;
-        if (waterWheelServo != null) {
-            waterWheelServo.setPower(speed);
+        if (waterWheelMotor != null) {
+            waterWheelMotor.setPower(speed);
         }
     }
 
@@ -174,8 +184,8 @@ public class Intake {
     public void addTelemetry(Telemetry telemetry) {
         telemetry.addData("Intake", intakeServo != null ? String.format("%.2f", intakeSpeed)
                 : "OFFLINE ('" + INTAKE_SERVO_NAME + "' not in DS config)");
-        telemetry.addData("Water wheel", waterWheelServo != null ? String.format("%.2f", waterWheelSpeed)
-                : "OFFLINE ('" + WATER_WHEEL_SERVO_NAME + "' not in DS config)");
+        telemetry.addData("Water wheel", waterWheelMotor != null ? String.format("%.2f", waterWheelSpeed)
+                : "OFFLINE ('" + WATER_WHEEL_MOTOR_NAME + "' not in DS config)");
         telemetry.addData("NECTAR detected", isNectarDetected() ? "YES (next ball is a NECTAR)" : "no");
         telemetry.addData("  Nectar left switch", switchStatus(nectarDetectorLeftSwitch, NECTAR_LEFT_SWITCH_NAME));
         telemetry.addData("  Nectar right switch", switchStatus(nectarDetectorRightSwitch, NECTAR_RIGHT_SWITCH_NAME));

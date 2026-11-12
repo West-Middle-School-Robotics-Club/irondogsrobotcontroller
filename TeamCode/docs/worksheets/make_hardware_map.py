@@ -31,7 +31,7 @@ DEVICES = [
     ("Odometry", "pinpoint", "goBILDA Pinpoint + 2 pods", "goBILDA Pinpoint", "I2C bus", "EH", "3", "Not bus 0 (built-in IMU)"),
     ("Odometry", "imu", "Control Hub built-in IMU", "(built in)", "I2C bus", "CH", "0", "Built in, can't move"),
     ("Intake", "intakeServo", "Servo (continuous)", "Continuous Rotation Servo", "Servo", "EH", "2", "Pulls game elements in"),
-    ("Intake", "waterWheelServo", "Servo (continuous)", "Continuous Rotation Servo", "Servo", "EH", "1", "Water wheel: up to the launcher"),
+    ("Intake", "waterWheelMotor", "goBILDA 5203-2402-0051 (117 RPM)", "goBILDA 5203 Series", "Motor", "", "", "Water wheel: up to the launcher. Was a servo (EH servo 1) until 11/11"),
     ("Intake", "nectarDetectorLeftSwitch", "goBILDA micro limit switch", "Digital Device", "Digital", "EH", "0-1", "Channel 1. Either one = NECTAR"),
     ("Intake", "nectarDetectorRightSwitch", "goBILDA micro limit switch", "Digital Device", "Digital", "EH", "2-3", "Channel 3. Either one = NECTAR"),
     ("Launcher", "launcherMotor", "goBILDA 5203 Yellow Jacket", "goBILDA 5203 Series", "Motor", "CH", "2", "The flywheel"),

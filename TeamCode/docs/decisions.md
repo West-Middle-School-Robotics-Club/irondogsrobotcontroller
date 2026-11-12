@@ -71,7 +71,7 @@ Decision: **Match the Pinpoint**: +X forward, +Y left, +heading counter-clockwis
 Who: Team
 
 ## 008 – Drive motor encoder mode  (2026-09-24, updated 2026-10-07)
-Status: **Open**. The team is still discussing this in #11
+Status: **Decided in 054** (plain power, `RUN_WITHOUT_ENCODER`, everywhere)
 Issue: #11, #25
 Context: Our drive motors have encoders, and the hub can run them in two modes:
 - `RUN_WITHOUT_ENCODER`: power = % of battery voltage. Full top speed. Speed drops as the battery drains, and wheels can run at slightly different speeds
@@ -562,4 +562,19 @@ Issue: #22
 Context: While tuning on the floor (11/10-11/11) the NEAR route was hand-edited with its start at heading -90 and waypoints written as if +X were forward. The Pinpoint's frame is set by the start pose, so with heading -90 its +X is the robot's LEFT: the robot strafed 23 in instead of driving forward. The origin never mattered; the start heading did. The question was whether to keep field waypoints in Basic Auton at all.
 Options: (a) Keep field coordinates (011) in Basic Auton and convert each measured move into a field position. (b) Drive every route relative to a (0, 0, 0) start, same moves for both alliances.
 Decision: **(a).** Basic Auton keeps the real field start (`RED_NEAR_START`, `RED_FAR_START`) and field waypoints (`RED_NEAR_PATH`, `RED_FAR_PATH`), BLUE rotated 180° as in 011, so the robot's position on the field means something (telemetry, route sheets, later Advanced Auton). Each waypoint comment says the move in robot words ("23 in forward", "12 in right") and the field numbers do the math; the header warns that the start heading decides which field direction is forward. **Test Auton** (`opmodes/test/testAuton.java`) overrides the start to (0, 0, 0) and holds the SAME moves as forward / left distances, so the routes can be repeated on any clear floor with no setup error. When a waypoint changes in one file, change it in the other by hand.
+Who: Mentor (11/11)
+
+## 054 – Drive motors run on plain power (RUN_WITHOUT_ENCODER) everywhere  (2026-11-11)
+Status: Accepted (closes 008)
+Issue: #11, #22
+Context: Decision 008 left the drive motor mode open. Floor tests of Basic Auton on 11/10-11/11 showed the robot lurching back and forth at waypoints: with `RUN_USING_ENCODER` the hub's own speed loop sits between our code and the wheels, and at the tiny speed targets used near a waypoint it winds up against friction, breaks free in a surge, and our Pinpoint-based controller sees a robot that jumps. Encoder mode also depends on the exact motor type set in the Driver Station config, and a loose encoder cable makes one wheel run at full speed.
+Options: Encoders everywhere; plain power everywhere; a mix per OpMode.
+Decision: **Plain power everywhere.** `Drivetrain.USE_ENCODER_SPEED_CONTROL = false`, so every OpMode starts in `RUN_WITHOUT_ENCODER`; Basic Auton and Pinpoint Test also set it explicitly. Power means "% of battery voltage". One mode for TeleOp, Basic Auton and (later) Pedro, so the robot always behaves the same and Pedro is tuned in the mode it runs in (008's finding). The Pinpoint closes the position loop in autonomous, so a second speed loop in the hub isn't needed. Trade-off: speed drops a little as the battery drains (swap batteries between matches, `Power` shows the voltage). `Drivetrain.setEncoderSpeedControl()` stays, so an OpMode can switch if a test needs it. The Basic Auton powers were reset for plain power (`MIN_DRIVE_POWER` 0.12, `MAX_DRIVE_POWER` 0.3, `MAX_SIDEWAYS_POWER` 0.25, `MIN_TURN_POWER` 0.12) and must be re-tuned on the floor.
+Who: Mentor (11/11)
+
+## 055 – The water wheel is a motor: `waterWheelMotor`  (2026-11-11)
+Status: Accepted
+Issue: #4
+Context: The water wheel (the intake's lifting wheel, decision 028) was driven by a continuous rotation servo. The team swapped it for a **goBILDA 5203-2402-0051 Yellow Jacket motor** (117 RPM, 50.9:1) for more torque and speed.
+Decision: The config name follows the naming rule's type suffix (024): **`waterWheelMotor`** (⚠️ rename it in the Driver Station config and pick the exact goBILDA 5203 type). `Intake` drives it as a `DcMotor` on plain power (`RUN_WITHOUT_ENCODER`, like every motor, 054) with **BRAKE** when stopped, so the weight of the balls can't turn the wheel back. The methods (`waterWheelUp()`, `waterWheelDown()`, `runWaterWheel()`, `stopWaterWheel()`) and `WATER_WHEEL_SPEED` / `WATER_WHEEL_REVERSED` keep their names, so no OpMode changed. Both values must be re-tuned with Intake Test: the direction has not been checked on the motor, and 1.0 on a 117 RPM motor is about twice the old servo's speed. Expansion Hub servo 1 is free; the motor's port is written in `hardware-config.md` once wired.
 Who: Mentor (11/11)

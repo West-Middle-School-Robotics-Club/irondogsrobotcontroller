@@ -28,8 +28,9 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *   dpad up / down   speed dial: raise / lower the driving speed (starts at SPEED_DIAL_START)
  *   sticks     drive (bumper = slow, trigger = turbo, as in Main TeleOp, times the speed dial)
  *
- * The drive motors run with encoder speed control and BRAKE when the sticks are released (same as Main TeleOp and
- * Basic Auton, decisions 008, 023, 049), so the robot stops where you let go and a measured drive ends cleanly. It is harder to push by hand; for the
+ * The drive motors run on plain power (no encoder speed control) and BRAKE when the sticks are released, the same as
+ * Main TeleOp and Basic Auton (decisions 054, 023, 049), so the robot stops where you let go and a measured drive
+ * ends cleanly. It is harder to push by hand; for the
  * push-by-hand steps, push slowly or drive instead.
  *
  * Printable worksheet (steps, Expected / Actual / Fix, numbers for the code): TeamCode/docs/worksheets/pinpoint-test.pdf
@@ -53,7 +54,7 @@ public class PinpointTest extends LinearOpMode {
         GoBildaPinpointDriver pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, Odometry.PINPOINT_NAME);
 
         robot.drivetrain.setBrakeOnStop(true);          // stop where the sticks are released (BRAKE, decision 023)
-        robot.drivetrain.setEncoderSpeedControl(true);  // encoder speed control, like Main TeleOp (decision 008 open)
+        robot.drivetrain.setEncoderSpeedControl(false); // plain power, like every OpMode (decision 054)
         double speedDial = SPEED_DIAL_START;
 
         // Wait for START, showing whether the IMU calibration has finished.
