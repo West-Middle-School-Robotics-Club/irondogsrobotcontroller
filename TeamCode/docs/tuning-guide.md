@@ -73,7 +73,7 @@ Test with **Main TeleOp**. Decision 041.
 ## Drive motors: `subsystems/Drivetrain.java`
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `USE_ENCODER_SPEED_CONTROL` | `false` | `true` = motors hold a speed using their encoders; `false` = plain power (% of battery voltage). Every OpMode starts in this mode | Decision 054 (11/11): plain power everywhere, after encoder mode lurched at Basic Auton waypoints. "Encoder Mode Toggle" test compares the two | ✅ |
+| `USE_ENCODER_SPEED_CONTROL` | `false` | `true` = motors hold a speed using their encoders; `false` = plain power (% of battery voltage). Every OpMode starts in this mode | Decision 055 (11/11): plain power everywhere, after encoder mode lurched at Basic Auton waypoints. "Encoder Mode Toggle" test compares the two | ✅ |
 
 The left motors are set to REVERSE in the constructor. That matches the robot's wiring; change it only if a side drives backwards.
 
@@ -106,7 +106,7 @@ Positions are **field coordinates** (011). To tune a route on any clear floor, u
 | `ROBOT_WIDTH_IN` | `15.99` | Robot width, left to right (inches) | Measured 11/3 | ✅ |
 | `RED_NEAR_START`, `RED_NEAR_PATH` | (positions) | Where NEAR starts and drives to, for RED, in field coordinates. BLUE is calculated. The start HEADING decides which field direction is forward (NEAR faces -90: forward = -Y, right = -X) | Measure the moves with Test Auton on any floor, convert to field positions (each waypoint comment shows the move); re-run `make_diagrams.py` after changing | 🔧 |
 | `RED_FAR_START`, `RED_FAR_PATH` | (positions) | Same for FAR (faces 0: forward = +X, left = +Y) | Same | 🔧 |
-| `USE_ENCODER_SPEED_CONTROL` | `false` | Basic Auton's own copy of the drive mode: `false` = plain power, % of battery voltage, same as the whole robot (decision 054). Test Auton inherits it | Keep `false`. If a test ever sets it `true`, `MIN_DRIVE_POWER` / `MIN_TURN_POWER` can drop to 0.05 | ✅ |
+| `USE_ENCODER_SPEED_CONTROL` | `false` | Basic Auton's own copy of the drive mode: `false` = plain power, % of battery voltage, same as the whole robot (decision 055). Test Auton inherits it | Keep `false`. If a test ever sets it `true`, `MIN_DRIVE_POWER` / `MIN_TURN_POWER` can drop to 0.05 | ✅ |
 | `DRIVE_GAIN` | `0.02` | Power per inch away from the waypoint. Bigger = faster approach, but may overshoot | Taped field: overshoots? lower it. Crawls? raise it | 🔧 |
 | `MAX_DRIVE_POWER` | `0.5` | Fastest Basic Auton drives (plain power since 11/11; the team set 0.5 on the floor) | Same | 🔧 |
 | `MAX_SIDEWAYS_POWER` | `0.25` | Fastest it drives sideways (strafing). Blended with `MAX_DRIVE_POWER` by how sideways the move is | Slides past sideways waypoints? lower it | 🔧 |
@@ -130,13 +130,25 @@ Positions are **field coordinates** (011). To tune a route on any clear floor, u
 | `PARKED_COLOR` | `Light.Color.GREEN` | Lights at the end when parked | Team's choice | ✅ |
 | `STOPPED_EARLY_COLOR` | `Light.Color.YELLOW` | Lights at the end when it stopped early | Team's choice | ✅ |
 
+## Timed Auton (backup): `opmodes/auto/TimedAuton.java`
+The no-sensor backup for Basic Auton NEAR (decision 054): plain power for a set time, no Pinpoint, no encoders. Tune with a **charged battery**; a weak battery drives shorter.
+
+| Setting | Now | What it does | How to find it | Status |
+|---|---|---|---|---|
+| `DRIVE_POWER` | `0.3` | Wheel power for every move (plain power = % of the battery) | Pick a power that doesn't slide or spin the wheels, then tune the times. Change the power = re-tune all the times | 🔧 |
+| `FORWARD_S` | `1.0` | Seconds driving forward off the wall (goal: 23 in) | Run it, measure how far it went, scale: new time = time × 23 / inches measured | 🔧 |
+| `RIGHT_S` | `0.8` | Seconds strafing right, toward the audience (goal: 12 in) | Same, × 12 / measured. Strafing is slower than driving, so it needs more time per inch | 🔧 |
+| `BACK_S` | `0.8` | Seconds driving back into the LOADING ZONE (goal: 18 in) | Same, × 18 / measured. Must stop before hitting the wall | 🔧 |
+| `PAUSE_S` | `0.5` | Sit still between moves so one slide doesn't carry into the next | Moves blend together? longer | 🔧 |
+| `START_DELAY_S` | `0.0` | Wait after START before moving (no dpad: change it in the code before the match) | Agree with the partner | 🔧 |
+
 ## Intake and water wheel: `subsystems/Intake.java`
 Worksheet: `intake-test.pdf`. Test with **Intake Test**. Issue #4.
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
 | `INTAKE_SPEED` | `1.0` | Intake servo speed (0 to 1). 1.0 since 11/8 testing (was 0.65, decision 041) | Intake Test: dpad up / down changes the speed of both live (0.05 steps), then copy the number here. Lower it if balls bounce off | 🔧 |
-| `WATER_WHEEL_SPEED` | `1.0` | Water wheel MOTOR power (0 to 1). Since 11/11 the water wheel is a goBILDA 117 RPM motor (decision 055), about twice as fast as the old servo at the same number, so 1.0 may be too fast: re-tune. (Servo history: 1.0 since 11/8, was 0.65) | Intake Test: same dpad speed as the intake; use X = water wheel only to tune it alone, then copy the number here. Lower it if balls jam at the top | 🔧 |
+| `WATER_WHEEL_SPEED` | `1.0` | Water wheel MOTOR power (0 to 1). Since 11/11 the water wheel is a goBILDA 117 RPM motor (decision 056), about twice as fast as the old servo at the same number, so 1.0 may be too fast: re-tune. (Servo history: 1.0 since 11/8, was 0.65) | Intake Test: same dpad speed as the intake; use X = water wheel only to tune it alone, then copy the number here. Lower it if balls jam at the top | 🔧 |
 | `INTAKE_REVERSED` | `true` | Set `true` if "intake IN" pushes balls OUT. 11/7: Main TeleOp ran OUT at start, so `true`. Confirmed 11/7: IN at start, eject pushes balls out | Intake Test, A button | ✅ |
 | `WATER_WHEEL_REVERSED` | `true` | Set `true` if "water wheel UP" moves balls DOWN. Was confirmed 11/7 for the old servo; the new motor (11/11) has NOT been checked | Intake Test step 2: X = water wheel only, A, balls must go UP | 🔧 |
 | `NECTAR_SWITCH_WIRING` | `NORMALLY_CLOSED` | How the NECTAR switches are wired. If "PRESSED" shows when NOT pressed, use `NORMALLY_CLOSED` | Intake Test: press each lever | ✅ |

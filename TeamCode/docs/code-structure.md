@@ -29,6 +29,8 @@ teamcode/
     ├── auto/
     │   ├── BasicAuton.java     ← Basic Auton shared code: LEAVE + PARK with the Pinpoint (#22, decision 026)
     │   ├── BasicAutonRedNear.java / RedFar / BlueNear / BlueFar ← pick alliance + route
+    │   ├── TimedAuton.java     ← BACKUP for NEAR: time-based box, no sensors (decision 054)
+    │   ├── TimedAutonRedNear.java / BlueNear ← "Timed Auton RED / BLUE NEAR (backup)"
     │   └── README.md           ← which Basic Auton to pick, and what to tune
     ├── test/               ← test and tuning OpModes ("Tests" group). HIDDEN with @Disabled (decision 052)
         ├── AllianceCameraTest.java ← shared code for the red/blue camera tests (#7)

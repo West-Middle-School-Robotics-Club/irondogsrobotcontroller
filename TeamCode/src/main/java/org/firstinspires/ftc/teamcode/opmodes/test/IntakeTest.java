@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *   A                  spin ON / OFF (toggle)
  *   B                  STOP
  *   Dpad UP / DOWN     speed +0.05 / -0.05 of whichever is running (BOTH = both). Each has its own speed, because
- *                      the water wheel is a motor since 11/11 (decision 055) and wants a different number
+ *                      the water wheel is a motor since 11/11 (decision 056) and wants a different number
  *   Dpad LEFT / RIGHT  direction (toggle): IN + UP, or OUT + DOWN
  *   X                  which one runs (toggle through): BOTH, INTAKE only, WATER WHEEL only.
  *                      Use "only" to check one at a time (the REVERSED settings)

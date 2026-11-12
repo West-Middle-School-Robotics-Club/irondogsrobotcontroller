@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  *
  * Hardware (decision 024 names):
  *   intakeServo        CONTINUOUS servo: pulls game elements into the robot
- *   waterWheelMotor    MOTOR (goBILDA 5203-2402-0051 Yellow Jacket, 117 RPM, since 11/11, decision 055): the
+ *   waterWheelMotor    MOTOR (goBILDA 5203-2402-0051 Yellow Jacket, 117 RPM, since 11/11, decision 056): the
  *                      "water wheel" (the team's name, from how it looks). Moves game elements up to the launcher.
  *                      It was a continuous servo (waterWheelServo) before; the motor is stronger and faster
  *   nectarDetectorLeftSwitch, nectarDetectorRightSwitch
@@ -89,7 +89,7 @@ public class Intake {
         }
         if (waterWheelMotor != null) {
             waterWheelMotor.setDirection(WATER_WHEEL_REVERSED ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
-            // Plain power, like every motor on the robot (decision 054). The encoder isn't used.
+            // Plain power, like every motor on the robot (decision 055). The encoder isn't used.
             waterWheelMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             // BRAKE: when stopped, the wheel holds still instead of being turned by the weight of the balls on it.
             waterWheelMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

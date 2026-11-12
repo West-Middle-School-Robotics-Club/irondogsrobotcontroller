@@ -115,7 +115,7 @@ public abstract class BasicAuton extends LinearOpMode {
     // ------------------------------------------------------------------------------------------------
     // DRIVING. Tune on the robot (tuning-guide.md has a row for each).
     // ------------------------------------------------------------------------------------------------
-    // How the drive motors take "power" during Basic Auton (decision 054: plain power everywhere):
+    // How the drive motors take "power" during Basic Auton (decision 055: plain power everywhere):
     //   false = plain power (RUN_WITHOUT_ENCODER): power = % of battery voltage. Same as Main TeleOp
     //   true  = encoder speed control (RUN_USING_ENCODER): power = % of top speed, the hub holds that speed.
     //           At very low powers the hub's speed loop surged (lurch, stop, lurch), which is why we stopped using it.

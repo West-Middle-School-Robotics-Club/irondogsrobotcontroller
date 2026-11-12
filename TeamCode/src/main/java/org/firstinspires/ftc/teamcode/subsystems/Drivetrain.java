@@ -25,7 +25,7 @@ public class Drivetrain {
     public static final String BACK_LEFT_DRIVE_NAME   = "backLeftDrive"; //2
     public static final String BACK_RIGHT_DRIVE_NAME  = "backRightDrive"; //4
 
-    // How the drive motors take "power" (decision 054: plain power everywhere):
+    // How the drive motors take "power" (decision 055: plain power everywhere):
     // false = RUN_WITHOUT_ENCODER (power = % of battery voltage, plain and simple)
     // true  = RUN_USING_ENCODER (power = % of top speed, the hub uses the encoders to hold that speed)
     // Note 11/11: false. With encoders the hub's speed loop surged at low powers in Basic Auton (lurch, stop, lurch).

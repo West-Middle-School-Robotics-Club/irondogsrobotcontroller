@@ -32,8 +32,15 @@ In `BasicAuton.java` (every value has a row in `docs/tuning-guide.md`):
 - `DRIVE_GAIN`, `MAX_DRIVE_POWER`, `MAX_SIDEWAYS_POWER`, `MIN_DRIVE_POWER`, the brake lookaheads, `TURN_GAIN`, `MIN_TURN_POWER`: how it drives
 - `POSITION_TOLERANCE_IN`, `HEADING_TOLERANCE_DEG`, `SETTLED_SPEED_IN_PER_S`: when a waypoint counts (close enough AND stopped)
 - `WAYPOINT_TIMEOUT_S` + `WAYPOINT_TIMEOUT_PER_INCH_S`: when to give up on a waypoint (long drives get longer)
-- `USE_ENCODER_SPEED_CONTROL`: if the robot lurches back and forth at a waypoint, try `false` (plain power) and re-tune the powers
+- `USE_ENCODER_SPEED_CONTROL`: `false`, plain power like the whole robot (decision 055). If it is ever set back to `true`, re-tune the powers
 - Needs the Pinpoint tuned on this robot first (#21): wrong pod offsets = wrong positions
+
+## Timed Auton (BACKUP for NEAR, decision 054)
+Two OpModes in the **Timed Auton** group: **Timed Auton RED NEAR (backup)** and **Timed Auton BLUE NEAR (backup)**. Same setup as Basic Auton NEAR (back touching our wall, front facing into the field).
+- Drives the same box (forward, right, back) by **time**: `DRIVE_POWER` for `FORWARD_S`, `RIGHT_S`, `BACK_S` seconds, with `PAUSE_S` between moves. All in `TimedAuton.java`
+- **No Pinpoint, no encoders, no telemetry, no lights.** Nothing to calibrate, nothing to wait for. But battery level and bumps change how far it goes
+- RED and BLUE are the same moves (the field is rotated 180°); the two files only pick the name and the TeleOp that comes next
+- Only use it if Basic Auton isn't reliable. Tune the seconds with a charged battery (rows in `docs/tuning-guide.md`)
 
 ## Advanced Auton (issue #25)
 Pedro Pathing, later. Launching, the turret and the camera belong there, not in Basic Auton (decision 020).
