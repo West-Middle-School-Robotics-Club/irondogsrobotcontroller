@@ -7,7 +7,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * All the code is in TimedAuton. BLUE drives the same moves as RED (the field is rotated 180 degrees).
  * This file only gives it a name and queues up Main TeleOp BLUE afterwards.
  */
-@Autonomous(name = "Timed Auton BLUE NEAR", group = "Timed Auton", preselectTeleOp = "Main TeleOp BLUE")
+// Driver Station name is just "Auton Blue Near" so the drive team isn't confused (decision 064)
+@Autonomous(name = "Auton Blue Near", group = "Auton", preselectTeleOp = "Main TeleOp BLUE")
 public class TimedAutonBlueNear extends TimedAuton {
 
     @Override

@@ -6,8 +6,8 @@ Printable diagrams for alliance planning, practice and the engineering portfolio
 |---|---|
 | `field-template.pdf` | Blank field to sketch routes and plans. Print a stack for the pit |
 | `alliance-sheet.pdf` | Bring to alliance planning before each match: what we can do, what the partner can do, a field to draw both AUTO routes, and the agreed plan |
-| `basic-auton-near.pdf` | **Basic Auton NEAR** route (#22): Red and Blue start, waypoints, park spot, the steps table, and a 5-run test log |
-| `basic-auton-far.pdf` | **Basic Auton FAR** route, same layout |
+| `auton-near.pdf` | **Auton NEAR** route (Timed Auton NEAR) (#22): Red and Blue start, waypoints, park spot, the steps table, and a 5-run test log |
+| `auton-far.pdf` | **Auton FAR** route (Main Auton FAR), same layout |
 
 **Drive team guide** (which OpMode to pick, the INIT screen, the **start delay**, the lights): `TeamCode/docs/worksheets/basic-auton-guide.pdf`
 

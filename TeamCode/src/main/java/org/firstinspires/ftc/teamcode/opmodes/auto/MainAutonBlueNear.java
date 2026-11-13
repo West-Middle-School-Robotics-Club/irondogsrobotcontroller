@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.Alliance;
 
@@ -9,6 +10,9 @@ import org.firstinspires.ftc.teamcode.Alliance;
  * All the code is in MainAuton (and BasicAuton); this file only picks the alliance and the route.
  * After AUTO, "Main TeleOp BLUE" is queued up automatically.
  */
+// Hidden on the Driver Station (decision 064): we run the other auton for this spot.
+// Delete @Disabled to bring it back.
+@Disabled
 @Autonomous(name = "Main Auton BLUE NEAR", group = "Main Auton", preselectTeleOp = "Main TeleOp BLUE")
 public class MainAutonBlueNear extends MainAuton {
 

@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
  * Gamepad 1 is the DRIVER (gamepad 2 is the OPERATOR, for the mechanisms):
  *   left stick   drive forward/back and strafe left/right
  *   right stick  turn (left/right)
+ *   (SPEED_MODES_ENABLED = false for now, decision 063: the bumpers and triggers do nothing, always NORMAL speed)
  *   hold either bumper   SLOW   (precise lining up)
  *   hold either trigger  TURBO  (full speed)
  *   A            STRAIGHT-LINE ASSIST on / off (issue #67). ON = a stick pointed almost straight drives
@@ -53,6 +54,10 @@ public class DriverControls {
      * If a bumper AND a trigger are held, SLOW wins (the safer choice).
      */
     public enum DriveSpeed { SLOW, NORMAL, TURBO }
+
+    // Can the bumpers (SLOW) and triggers (TURBO) change the speed? false = they do nothing, the robot always
+    // drives at NORMAL_SCALE (decision 063). Set true to turn SLOW and TURBO back on.
+    public static final boolean SPEED_MODES_ENABLED = false;
 
     // How much of full power each speed uses (1.0 = full power). TODO: tune with the drivers.
     public static final double SLOW_MODE_SCALE = 0.5;
@@ -127,6 +132,9 @@ public class DriverControls {
 
     /** Which speed the driver wants: either bumper = SLOW, either trigger = TURBO, otherwise NORMAL. */
     private static DriveSpeed pickSpeed(Gamepad gamepad) {
+        if (!SPEED_MODES_ENABLED) {
+            return DriveSpeed.NORMAL;  // SLOW and TURBO are switched off (decision 063)
+        }
         boolean bumperHeld  = gamepad.left_bumper || gamepad.right_bumper;
         boolean triggerHeld = gamepad.left_trigger > TRIGGER_HELD || gamepad.right_trigger > TRIGGER_HELD;
         if (bumperHeld) {

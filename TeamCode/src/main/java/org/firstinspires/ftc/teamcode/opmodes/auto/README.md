@@ -1,12 +1,12 @@
 # Autonomous OpModes
 
-## Game plan (decision 060)
-| Start | What we run |
-|---|---|
-| **NEAR** | **Timed Auton RED / BLUE NEAR** |
-| **FAR** | **Main Auton RED / BLUE FAR** |
+## Game plan (decisions 060, 064)
+| Start | Driver Station name | The code behind it |
+|---|---|---|
+| **NEAR** | **Auton Red Near** / **Auton Blue Near** | Timed Auton (`TimedAutonRedNear` / `BlueNear`) |
+| **FAR** | **Auton Red Far** / **Auton Blue Far** | Main Auton (`MainAutonRedFar` / `BlueFar`) |
 
-The Driver Station shows 8 AUTOs: Main Auton RED / BLUE NEAR / FAR and Timed Auton RED / BLUE NEAR / FAR. Pick the one for our alliance and start. Every start is BACK touching a wall (decision 046); the INIT screen says where.
+The Driver Station shows only these 4 AUTOs, in the **Auton** group (decision 064). The other four (Timed Auton RED / BLUE FAR, Main Auton RED / BLUE NEAR) are hidden with `@Disabled`; delete that line to bring one back. Pick the one for our alliance and start. Every start is BACK touching a wall (decision 046); the INIT screen says where.
 
 ## Main Auton (issue #22, decision 060): LEAVE + PARK with the Pinpoint, robot moves
 `MainAuton.java` (was `opmodes/test/testAuton.java`, "Test Auton") + four small files that pick the alliance and route: **Main Auton RED NEAR / RED FAR / BLUE NEAR / BLUE FAR**.
@@ -33,7 +33,7 @@ Four OpModes in the **Basic Auton** group on the Driver Station. Pick the one th
 - After AUTO, the matching **Main TeleOp** is queued up automatically.
 
 All the code is in `BasicAuton.java`. The four small files only pick the alliance and route.
-**Positions are written once, for RED** (field coordinates, decision 011). BLUE is calculated by rotating 180°. **The start heading decides which field direction is "forward"**: NEAR starts facing -90, so forward 23 means y goes from 63 to 40 and x stays 60 (decision 053). Each waypoint's comment says the move in robot words. The route sheets (`docs/game/diagrams/basic-auton-near.pdf` / `far.pdf`) are drawn from this code by `make_diagrams.py`.
+**Positions are written once, for RED** (field coordinates, decision 011). BLUE is calculated by rotating 180°. **The start heading decides which field direction is "forward"**: NEAR starts facing -90, so forward 23 means y goes from 63 to 40 and x stays 60 (decision 053). Each waypoint's comment says the move in robot words. The route sheets (`docs/game/diagrams/auton-near.pdf` / `auton-far.pdf`) are drawn from this code by `make_diagrams.py`.
 
 | Route | Moves (robot center) | RED field positions |
 |---|---|---|

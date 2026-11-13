@@ -632,3 +632,17 @@ Issue: #4
 Context: Decision 041 started the intake + water wheel ON at START. The team wants the operator to choose when they start.
 Decision: `OperatorControls.INTAKE_ON_AT_START = false`. At START the intake + water wheel are OFF. **A** starts them, A again stops them. They always run together the shooting way (intake IN + water wheel UP), since B is off (061). **L2 (left trigger)** held = EJECT: both run the opposite way (intake OUT + water wheel DOWN); let go = both OFF. This changes 041's "intake ON at START".
 Who: Mentor (11/12)
+
+## 063 – Driver SLOW / TURBO off; the controller layout shows only the buttons in use  (2026-11-13)
+Status: Accepted
+Issue: #3
+Context: The driver had three speeds (027): hold a bumper = SLOW, hold a trigger = TURBO. The team wants simpler driving for now. The controller layout sheet also listed switched-off buttons ("OFF for now") and free buttons, which confused the drive team.
+Decision: New `DriverControls.SPEED_MODES_ENABLED = false`: the bumpers and triggers do nothing, the robot always drives at `NORMAL_SCALE`. Set it `true` to bring SLOW and TURBO back (`SLOW_MODE_SCALE` / `TURBO_SCALE` are kept). The controller layout (`controller-layout.pdf`) now shows **only the buttons the drive team uses**: Driver = left stick (drive), right stick (turn), A (straight assist). Gamepad 2 is called **LAUNCHER** on the sheet: Y (launch), A (intake system on/off), left trigger (eject). Switched-off buttons are left off the sheet, not marked "OFF". The code still calls gamepad 2 the operator (`OperatorControls.java`). This changes 027's three speeds.
+Who: Mentor (11/13)
+
+## 064 – The Driver Station shows just 4 AUTOs: Auton Red / Blue Near / Far  (2026-11-13)
+Status: Accepted
+Issue: #22
+Context: Decision 060 left 8 AUTOs on the Driver Station (Main Auton and Timed Auton, each RED / BLUE NEAR / FAR). We only run Timed Auton for NEAR and Main Auton for FAR, and the "Timed" / "Main" names confused the drive team.
+Decision: The 4 we run are renamed on the Driver Station, all in the **Auton** group: **Auton Red Near** and **Auton Blue Near** (Timed Auton), **Auton Red Far** and **Auton Blue Far** (Main Auton). The Java class names don't change. The other 4 (Timed Auton RED / BLUE FAR, Main Auton RED / BLUE NEAR) get `@Disabled` (052); delete that line to bring one back. The route sheets (`auton-near.pdf`, `auton-far.pdf`) show the new names in bold under the title. This changes 060's Driver Station list.
+Who: Mentor (11/13)
