@@ -625,3 +625,10 @@ Issue: #4
 Context: B flipped the intake + water wheel to OUT (decision 041). Pressed by accident, the robot pushes balls out until B is pressed again. The left trigger (EJECT) already pushes balls out while held.
 Decision: New `OperatorControls.DIRECTION_TOGGLE_ENABLED = false`: B does nothing and the direction is always IN. Hold the left trigger to push balls out. Set it `true` to bring the B toggle back. Controller layout updated.
 Who: Mentor (11/12)
+
+## 062 – Main TeleOp: the intake + water wheel start OFF; A starts and stops them  (2026-11-12)
+Status: Accepted
+Issue: #4
+Context: Decision 041 started the intake + water wheel ON at START. The team wants the operator to choose when they start.
+Decision: `OperatorControls.INTAKE_ON_AT_START = false`. At START the intake + water wheel are OFF. **A** starts them, A again stops them. They always run together the shooting way (intake IN + water wheel UP), since B is off (061). **L2 (left trigger)** held = EJECT: both run the opposite way (intake OUT + water wheel DOWN); let go = both OFF. This changes 041's "intake ON at START".
+Who: Mentor (11/12)
