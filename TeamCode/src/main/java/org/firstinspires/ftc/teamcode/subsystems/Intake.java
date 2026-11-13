@@ -57,7 +57,7 @@ public class Intake {
     public static final double INTAKE_SPEED = 1.0;
     // Water wheel MOTOR power (plain power, % of battery voltage). The 117 RPM motor at 1.0 is about twice as fast as
     // the old servo was, so this may need to come down. TODO(#4): tune with Intake Test (X = water wheel only).
-    public static final double WATER_WHEEL_SPEED = 0.4;
+    public static final double WATER_WHEEL_SPEED = 0.2;
 
     // TODO(#4): set to true if "in" / "waterWheelUp" spins the wrong way.
     // Note 11/7: Main TeleOp started with the intake system going OUT instead of IN, so both changed to true.
