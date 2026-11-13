@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Power;
-
+@Disabled
 /**
  * TEST: run the intake and the water wheel, and tune their speed (issue #4). Controls work like Launcher Test.
  *
