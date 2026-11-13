@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  * During the match both lights turn PURPLE (VIOLET) while the next ball to launch is a NECTAR
  * (either nectar detector switch pressed), then go back to the alliance color (decision 028).
  *
- * Gamepad 1 = DRIVER: driving goes through DriverControls (sticks, bumpers = SLOW, triggers = TURBO, A = assist), so every
+ * Gamepad 1 = DRIVER: driving goes through DriverControls (sticks, A = assist; SLOW / TURBO are off, decision 063), so every
  * TeleOp drives consistently. Gamepad 2 = OPERATOR: mechanism buttons, in OperatorControls (decision 029).
  * The flywheel (launcherMotor) starts when START is pressed and runs the whole match (not in INIT: G304.H).
  * When START is pressed (decision 041): the launcher trigger goes to REST (blocks balls), the flywheel runs at

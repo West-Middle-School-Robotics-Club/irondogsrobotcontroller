@@ -1,14 +1,15 @@
 """
 Makes the printable CONTROLLER LAYOUT: one page per gamepad.
-  Page 1  Gamepad 1 = DRIVER    (filled in: what DriverControls.java does)
-  Page 2  Gamepad 2 = OPERATOR  (filled in: what OperatorControls.java does. Empty OPERATOR = blanks to decide)
+  Page 1  Gamepad 1 = DRIVER    (what DriverControls.java does)
+  Page 2  Gamepad 2 = LAUNCHER  (what OperatorControls.java does. Empty LAUNCHER = blanks to decide)
+Only the buttons the drive team uses are shown; switched-off ones (SLOW / TURBO, turret, B) are left out (decision 063).
 
 Run:   python3 make_controller_layout.py
 Needs: pip install reportlab
 Makes: controller-layout.pdf (in this folder)
 
-Keep DRIVER in sync with opmodes/teleop/DriverControls.java and OPERATOR with OperatorControls.java.
-Set OPERATOR = {} to print a blank operator page again (for planning a new layout).
+Keep DRIVER in sync with opmodes/teleop/DriverControls.java and LAUNCHER with OperatorControls.java.
+Set LAUNCHER = {} to print a blank gamepad 2 page again (for planning a new layout).
 """
 import os
 from datetime import date
@@ -18,27 +19,21 @@ from reportlab.lib.pagesizes import landscape, letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 
-from code_values import now, pct   # speeds and the assist angle, read from DriverControls.java (never out of date)
+from code_values import now   # the assist angle, read from DriverControls.java (never out of date)
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "controller-layout.pdf")
 
-# What each control does. Missing or "" = a blank to fill in. None = shown as "(free)".
+# What each control does. ONLY the buttons listed here are shown, so the drive team sees just the buttons they use.
+# Buttons that are switched off in the code (SLOW / TURBO, turret, B) are left out on purpose (decision 063).
 DRIVER = {
-    "LT": ("TURBO (hold)", "full speed: " + pct("TURBO_SCALE")),
-    "RT": ("TURBO (hold)", "full speed: " + pct("TURBO_SCALE")),
-    "LB": ("SLOW (hold)", "lining up: " + pct("SLOW_MODE_SCALE")),
-    "RB": ("SLOW (hold)", "lining up: " + pct("SLOW_MODE_SCALE")),
     "LS": ("DRIVE", "almost straight = exactly straight (±%g°)" % float(now("SNAP_ANGLE_DEGREES"))),
     "RS": ("TURN", "push left / right"),
     "A": ("STRAIGHT ASSIST on/off", "rumble: 1 blip = ON, 2 = OFF. Starts ON"),
 }
-OPERATOR = {  # decisions 029, 035
-    "Y": ("LAUNCH (hold)", "trigger moves out of the way; NECTARs launch by themselves"),
-    "X": ("TURRET REST SPOT (OFF for now)", "TURRET_ENABLED = false: does nothing"),
-    "B": ("DIRECTION (OFF for now)", "DIRECTION_TOGGLE_ENABLED = false: does nothing"),
-    "A": ("INTAKE SYSTEM (toggle)", "intake IN + water wheel UP, on / off. Starts OFF"),
-    "LT": ("EJECT (hold)", "water wheel DOWN + intake OUT; then all off"),
-    "LS": ("TURRET (OFF for now)", "TURRET_ENABLED = false: does nothing"),
+LAUNCHER = {  # gamepad 2 (OperatorControls.java), decisions 029, 035, 062
+    "Y": ("LAUNCH (hold)", "NECTARs launch by themselves"),
+    "A": ("INTAKE SYSTEM on/off", "Starts OFF: you MUST press A to start it!"),
+    "LT": ("EJECT (hold)", "pushes balls out; let go = all off"),
 }
 
 # (key, button name, anchor x, anchor y). Positions are in inches on a landscape page.
@@ -204,7 +199,9 @@ def page(c, jobs, title, subtitle, blank_default):
     draw_gamepad(c)
     for side, rows in (("L", LEFT), ("R", RIGHT)):
         for (key, name, ax, ay), top in zip(rows, LABEL_TOPS):
-            job = jobs.get(key, "" if blank_default else None)
+            if key not in jobs and not blank_default:
+                continue  # not used: don't show it at all
+            job = jobs.get(key, "")
             dx, dy = EDGE.get(key, (0.0, 0.0))
             callout(c, side, top, name, (ax + dx, ay + dy + GAMEPAD_LIFT), job)
 
@@ -217,30 +214,18 @@ c.setAuthor("WMS Irondogs")
 page(c, DRIVER, "Gamepad 1: DRIVER",
      "Drives the robot. Pick it on the Driver Station with START + A. Same in every TeleOp (DriverControls.java).",
      blank_default=False)
-box(c, 0.45, 0.55, 4.9, 1.85, "Three driving speeds", [
-    [("SLOW  ", True), ("hold either bumper: " + pct("SLOW_MODE_SCALE") + " power, for lining up", False)],
-    [("NORMAL  ", True), ("nothing held: " + pct("NORMAL_SCALE") + " power, everyday driving", False)],
-    [("TURBO  ", True), ("hold either trigger: " + pct("TURBO_SCALE") + " power, crossing the field", False)],
-    [("Both held? ", True), ("SLOW wins (the safer choice).", False)],
-    "The Driver Station shows \"Drive speed\" during the match.",
-    "These numbers come from SLOW_MODE_SCALE, NORMAL_SCALE and",
-    "TURBO_SCALE in DriverControls.java (reprint after changing them).",
-])
-box(c, 5.65, 0.55, 4.9, 1.85, "Good to know", [
-    "Directions match the robot: stick forward = drive forward,",
-    "stick left = strafe left, right stick left = turn left.",
-    [("Straight-line assist (A): ", True), ("left stick within %g° of" % float(now("SNAP_ANGLE_DEGREES")), False)],
-    "straight forward / back / left / right drives exactly straight (#67).",
-    "Let go of the sticks and the robot stops quickly (BRAKE, decision 049).",
-    "Nothing moves during INIT (game rule G304.H).",
-    [("Free buttons ", True), ("(B X Y, dpad, stick presses) can get", False)],
-    "driver jobs later, e.g. \"turret to forward\".",
-])
+box(c, 0.45, 0.55, 10.1, 1.2, "Good to know", [
+    "Directions match the robot: left stick forward = drive forward, left stick left = strafe left, right stick left = turn left.",
+    [("Straight assist (A): ", True), ("left stick within %g° of straight forward / back / left / right drives exactly straight."
+                                       % float(now("SNAP_ANGLE_DEGREES")), False)],
+    "Let go of the sticks and the robot stops quickly.",
+    "Nothing moves during INIT.",
+], size=9.5)
 c.showPage()
 
-# ---------- Page 2: OPERATOR ----------
-decided = bool(OPERATOR)
-page(c, OPERATOR, "Gamepad 2: OPERATOR",
+# ---------- Page 2: LAUNCHER (gamepad 2) ----------
+decided = bool(LAUNCHER)
+page(c, LAUNCHER, "Gamepad 2: LAUNCHER",
      "Runs the mechanisms. Pick it on the Driver Station with START + B. " +
      ("" if decided else "Write each job next to a button (pencil!), then tell the coders."),
      blank_default=not decided)
@@ -267,20 +252,15 @@ if not decided:
         "4. Lights: what should they show?",
     ], size=8.6)
 else:
-    box(c, 0.45, 0.55, 5.6, 1.85, "How it works", [
-        [("Flywheel: ", True), ("starts when START is pressed and runs the whole match.", False)],
-        "It is NOT on a button. Watch \"Launcher Status\" for READY.",
-        [("A ", True), ("= intake + water wheel on / off.  ", False), ("B ", True), ("= switch IN / OUT.", False)],
-        [("X ", True), ("= turret rest spot. TURRET OFF for now (TURRET_ENABLED = false): X and the left stick do nothing.", False)],
-        [("EJECT ", True), ("beats everything; let go and the intake + water wheel are OFF.", False)],
+    box(c, 0.45, 0.55, 10.1, 1.4, "Good to know", [
+        [("You MUST press A after START! ", True), ("The intake + water wheel start OFF, so no balls come in until "
+                                                    "you press A.", False)],
+        [("Flywheel: ", True), ("starts by itself when START is pressed and runs the whole match. "
+                                "Watch \"Launcher Status\" for READY.", False)],
+        [("NECTARs ", True), ("launch by themselves. Hold ", False), ("Y", True), (" to launch POLLEN.", False)],
+        [("EJECT ", True), ("(left trigger) beats everything; let go and the intake + water wheel are OFF.", False)],
         [("Lights: ", True), ("PURPLE = the next ball to launch is a NECTAR.", False)],
-    ], size=8.6)
-    box(c, 6.25, 0.55, 4.3, 1.85, "Not on a button yet", [
-        "Turret: OFF in Main TeleOp for now (decision 050). Hood up / down,",
-        "turret auto-aim (later, #7). Flower flipper: waiting to see if built.",
-        "Free: dpad, bumpers, right trigger, right stick.",
-        "Code: opmodes/teleop/OperatorControls.java",
-    ], size=8.6)
+    ], size=9.5)
 c.showPage()
 c.save()
 print("Wrote", OUT)

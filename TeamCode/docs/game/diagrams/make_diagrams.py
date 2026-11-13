@@ -489,25 +489,30 @@ def route_sheet(route, consts, routes):
     # Decision 060: FAR = Main Auton (RED_FAR_PATH holds the same moves as MAIN_FAR_PATH),
     # NEAR = Timed Auton (RED_NEAR_PATH holds Timed Auton NEAR's goal moves: forward 23, right 12, back 18)
     auton = "Main Auton" if route == "FAR" else "Timed Auton"
-    out = [Field.text(50, 48, f"{auton} {route}: LEAVE + PARK  ({TEAM_NAME})", 21, INK, bold=True),
-           Field.text(50, 72, f"Robot's BACK against {where}. OpModes: \"{auton} RED {route}\" and "
-                      f"\"{auton} BLUE {route}\".", 12, GREY)]
+    # The title is just "Auton NEAR" / "Auton FAR" so the drive team isn't confused by Basic / Timed / Main;
+    # the OpMode names to pick on the Driver Station are in the line under it.
+    out = [Field.text(50, 48, f"Auton {route}: LEAVE + PARK  ({TEAM_NAME})", 21, INK, bold=True),
+           # The OpModes to pick, as a heading, so the drive team finds them fast
+           # Driver Station names (decision 064): just "Auton Red Near" etc.; the Java code behind it is {auton}
+           Field.text(50, 78, f"OpMode:  Auton Red {route.title()}  or  Auton Blue {route.title()}", 16, INK, bold=True),
+           Field.text(50, 100, f"Robot's BACK against {where}.", 12, GREY)]
     if route == "FAR":
-        out.append(Field.text(50, 90, "PARK on the line between rows 4 and 5: partly in the LOADING ZONE, "
+        out.append(Field.text(50, 118, "PARK on the line between rows 4 and 5: partly in the LOADING ZONE, "
                               "leaving the rest of row 5 for our partner.", 12, INK, bold=True))
     else:
-        out.append(Field.text(50, 90, "Drives by TIME (TimedAuton.java: FORWARD_S, RIGHT_S, BACK_S). "
+        out.append(Field.text(50, 118, "Drives by TIME (TimedAuton.java: FORWARD_S, RIGHT_S, BACK_S). "
                               "The positions below are the GOALS: forward 23, right 12, back 18 in.", 12, INK, bold=True))
 
-    f = Field(left=95, top=120, scale=3.3)  # 475 units, leaves room for the SET UP panel on the right
+    top = 156  # the field starts under the heading lines
+    f = Field(left=95, top=top, scale=3.3)  # 475 units, leaves room for the SET UP panel on the right
     red_setup, blue_setup = consts["SETUP"][route]
-    out.append(setup_panel(620, 105, 200, route, red_setup, blue_setup))
+    out.append(setup_panel(620, top - 15, 200, route, red_setup, blue_setup))
     out.append(f.draw(show_axes=False))
     out.append(draw_route(f, start, path, length, width, RED))
     out.append(draw_route(f, to_blue(start), [(to_blue(p), n) for p, n in path], length, width, BLUE))
 
     # Key
-    ky = 120 + f.size() + 50
+    ky = top + f.size() + 50
     out.append(Field.text(50, ky, "Filled box = START (arrow = FRONT, black bar = BACK on the wall).  Numbered circles = waypoints.  "
                           "Dashed box = where it PARKS.", 10.5, INK))
     out.append(Field.text(50, ky + 16, f"Robot size used: {length:g} x {width:g} in (BasicAuton.ROBOT_LENGTH_IN / ROBOT_WIDTH_IN). "
@@ -517,7 +522,7 @@ def route_sheet(route, consts, routes):
 
     # Steps table, straight from the code
     ty = ky + 60
-    out.append(Field.text(50, ty, "The steps (from BasicAuton.java, in inches)", 14, INK, bold=True))
+    out.append(Field.text(50, ty, "The steps (in inches)", 14, INK, bold=True))
     cols = [50, 105, 250, 395]
     heads = ["Step", "RED x, y, heading", "BLUE x, y, heading", "What happens"]
     for c, h in zip(cols, heads):
@@ -550,7 +555,7 @@ def route_sheet(route, consts, routes):
 def save(name, svg):
     here = os.path.dirname(os.path.abspath(__file__))
     path = os.path.join(here, name + ".svg")
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:  # utf-8 so ° prints right on Windows too
         f.write(svg)
     print("wrote", path)
     try:
@@ -570,4 +575,4 @@ if __name__ == "__main__":
     save("alliance-sheet", alliance_sheet())
     consts, routes = read_basic_auton()
     for route in ("NEAR", "FAR"):
-        save("basic-auton-" + route.lower(), route_sheet(route, consts, routes))
+        save("auton-" + route.lower(), route_sheet(route, consts, routes))

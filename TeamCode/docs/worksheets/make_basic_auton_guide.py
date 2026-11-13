@@ -95,8 +95,8 @@ story = [
     p("Basic Auton: Drive Team Guide", TITLE),
     p("Basic Auton scores <b>LEAVE (3)</b> + <b>PARK (5)</b> in the 30-second AUTO period. "
       "If <b>both</b> robots on our alliance do it, that's 16 points and the <b>SWARM ranking point</b>. "
-      "Route pictures: <font face='Courier'>docs/game/diagrams/basic-auton-near.pdf</font> and "
-      "<font face='Courier'>basic-auton-far.pdf</font>."),
+      "Route pictures: <font face='Courier'>docs/game/diagrams/auton-near.pdf</font> and "
+      "<font face='Courier'>auton-far.pdf</font>."),
 
     p("1. Pick the right OpMode", H2),
     p("On the Driver Station, open the <b>Basic Auton</b> group. Pick our alliance color and starting spot. "

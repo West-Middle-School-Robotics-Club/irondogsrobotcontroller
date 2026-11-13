@@ -190,9 +190,9 @@ public abstract class BasicAuton extends LinearOpMode {
                 delaySeconds = Math.max(0, delaySeconds - 1);
             }
 
-            telemetry.addData("BASIC AUTON", "%s  %s  (lights are %s)", alliance, route, allianceColor);
+            telemetry.addData("AUTON", "%s  %s  (lights are %s)", alliance, route, allianceColor);
             telemetry.addLine("SET UP: " + setupInstructions());
-            telemetry.addLine("Wrong one? Stop and pick the right Basic Auton.");
+            telemetry.addLine("Wrong one? Stop and pick the right Auton."); // decision 064
             telemetry.addData("Start delay", "%d s   (dpad up/down to change)", delaySeconds);
             telemetry.addData("Start position", poseText(start));
             telemetry.addData("Pinpoint", "%s  (keep the robot STILL until READY)", odometry.getStatus());
@@ -359,7 +359,7 @@ public abstract class BasicAuton extends LinearOpMode {
     }
 
     private void showStatus(String step, ElapsedTime autoTimer, Odometry odometry, Pose2D target) {
-        telemetry.addData("BASIC AUTON", "%s  %s", alliance(), route());
+        telemetry.addData("AUTON", "%s  %s", alliance(), route());
         telemetry.addData("Step", step);
         telemetry.addData("Time", "%.1f s", autoTimer.seconds());
         telemetry.addData("Loop", "%.0f ms  (how often the position is refreshed)", loopTimer.milliseconds());

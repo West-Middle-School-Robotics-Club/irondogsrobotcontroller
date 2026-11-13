@@ -9,7 +9,8 @@ import org.firstinspires.ftc.teamcode.Alliance;
  * All the code is in MainAuton (and BasicAuton); this file only picks the alliance and the route.
  * After AUTO, "Main TeleOp RED" is queued up automatically.
  */
-@Autonomous(name = "Main Auton RED FAR", group = "Main Auton", preselectTeleOp = "Main TeleOp RED")
+// Driver Station name is just "Auton Red Far" so the drive team isn't confused (decision 064)
+@Autonomous(name = "Auton Red Far", group = "Auton", preselectTeleOp = "Main TeleOp RED")
 public class MainAutonRedFar extends MainAuton {
 
     @Override

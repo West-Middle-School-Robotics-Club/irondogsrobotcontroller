@@ -29,12 +29,13 @@ teamcode/
     ├── auto/
     │   ├── BasicAuton.java     ← Basic Auton shared code: LEAVE + PARK with the Pinpoint (#22, decision 026). Its 4 OpModes are in archive/ (060)
     │   ├── MainAuton.java      ← THE FAR AUTO (060): BasicAuton driving, robot moves from a (0, 0, 0) start (was testAuton)
-    │   ├── MainAutonRedNear.java / RedFar / BlueNear / BlueFar ← "Main Auton RED / BLUE NEAR / FAR"
+    │   ├── MainAutonRedFar.java / BlueFar ← "Auton Red Far" / "Auton Blue Far" on the Driver Station (064)
+    │   ├── MainAutonRedNear.java / BlueNear ← hidden (@Disabled, 064)
     │   ├── TimedAuton.java     ← THE NEAR AUTO (060), and a FAR backup: time-based moves, no sensors (decisions 054, 057)
-    │   ├── TimedAutonRedNear.java / BlueNear ← "Timed Auton RED / BLUE NEAR"
-    │   ├── TimedAutonRedFar.java / BlueFar ← "Timed Auton RED / BLUE FAR"
+    │   ├── TimedAutonRedNear.java / BlueNear ← "Auton Red Near" / "Auton Blue Near" on the Driver Station (064)
+    │   ├── TimedAutonRedFar.java / BlueFar ← hidden (@Disabled, 064)
     │   └── README.md           ← which AUTO to pick, and what to tune
-    ├── test/               ← test and tuning OpModes ("Tests" group). HIDDEN with @Disabled (decision 052), except Intake Test (060)
+    ├── test/               ← test and tuning OpModes ("Tests" group). ALL HIDDEN with @Disabled (decision 052), Intake Test too since 11/13
         ├── AllianceCameraTest.java ← shared code for the red/blue camera tests (#7)
         ├── BlueCameraTest.java ← camera as BLUE: only tags 38-45 are targets
         ├── BrakeModeCheck.java

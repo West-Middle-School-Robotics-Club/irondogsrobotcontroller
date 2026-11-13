@@ -27,8 +27,8 @@ Most of these have a **printable worksheet** in `TeamCode/docs/worksheets/` (see
 | Setting | File | Now | What it does |
 |---|---|---|---|
 | `NORMAL_SCALE` | `opmodes/teleop/DriverControls.java` | `0.8` | Everyday driving speed (80% power) |
-| `SLOW_MODE_SCALE` | `opmodes/teleop/DriverControls.java` | `0.5` | Hold a bumper: slow, for lining up |
-| `TURBO_SCALE` | `opmodes/teleop/DriverControls.java` | `1.0` | Hold a trigger: full speed |
+| `SLOW_MODE_SCALE` | `opmodes/teleop/DriverControls.java` | `0.5` | Hold a bumper: slow, for lining up (OFF for now: `SPEED_MODES_ENABLED = false`) |
+| `TURBO_SCALE` | `opmodes/teleop/DriverControls.java` | `1.0` | Hold a trigger: full speed (OFF for now: `SPEED_MODES_ENABLED = false`) |
 | `SNAP_ANGLE_DEGREES` | `opmodes/teleop/DriverControls.java` | `20.0` | Straight-line assist: how forgiving it is |
 | `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `0.75` | Flywheel power (it runs the whole match) |
 | `X_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the X odometry pod is, sideways from the turning center |
@@ -43,9 +43,10 @@ Worksheet: `driver-tuning.pdf`. Test with **Main TeleOp**. Issues #3, #67.
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `SLOW_MODE_SCALE` | `0.5` | Power while a bumper is held (0 to 1) | Drivers try lining up on a goal; pick what feels controllable | 🔧 |
+| `SPEED_MODES_ENABLED` | `false` | Can the bumpers (SLOW) and triggers (TURBO) change the speed? `false` = they do nothing, the robot always drives at `NORMAL_SCALE` (decision 063) | Set `true` to turn SLOW and TURBO back on | 🔧 |
+| `SLOW_MODE_SCALE` | `0.5` | Power while a bumper is held (0 to 1). Only used when `SPEED_MODES_ENABLED = true` | Drivers try lining up on a goal; pick what feels controllable | 🔧 |
 | `NORMAL_SCALE` | `0.8` | Power with nothing held | Drivers drive laps; fast but still controllable | 🔧 |
-| `TURBO_SCALE` | `1.0` | Power while a trigger is held | Usually leave at 1.0 (full power) | ✅ |
+| `TURBO_SCALE` | `1.0` | Power while a trigger is held. Only used when `SPEED_MODES_ENABLED = true` | Usually leave at 1.0 (full power) | ✅ |
 | `ASSIST_ON_AT_START` | `true` | Is straight-line assist ON when a TeleOp starts? (A toggles it) | Drivers' preference | 🔧 |
 | `SNAP_ANGLE_DEGREES` | `20.0` | Stick within this many degrees of straight = drive exactly straight. Bigger = more forgiving, but diagonals need a bigger push | Try 10, 15, 20 | 🔧 |
 | `STRAFE_CORRECTION` | `1.1` | Boosts sideways driving, because mecanum strafes slower than it drives forward | Strafe 48 in and drive 48 in at the same stick: raise it if strafing is shorter | 🔧 |
@@ -100,7 +101,7 @@ The Pinpoint Test OpMode drives in BRAKE with straight-line assist ON and a dpad
 | `SPEED_DIAL_MIN` | `opmodes/test/PinpointTest.java` | `0.1` | The dial never goes below this | ✅ |
 
 ## Basic Auton: `opmodes/auto/BasicAuton.java`
-Guide: `basic-auton-guide.pdf`, routes: `docs/game/diagrams/basic-auton-near.pdf` / `far.pdf`. Issue #22, decisions 026, 053.
+Guide: `basic-auton-guide.pdf`, routes: `docs/game/diagrams/auton-near.pdf` / `auton-far.pdf`. Issue #22, decisions 026, 053.
 Positions are **field coordinates** (011). To tune a route on any clear floor, use **Main Auton** (`opmodes/auto/MainAuton.java`, was Test Auton): it starts at (0, 0, 0) and holds the moves as forward / left distances (`MAIN_NEAR_PATH`, `MAIN_FAR_PATH`). Since decision 060 Main Auton is what we run for FAR, and its moves were tuned on the floor, so they no longer match Basic Auton exactly.
 
 | Setting | Now | What it does | How to find it | Status |
