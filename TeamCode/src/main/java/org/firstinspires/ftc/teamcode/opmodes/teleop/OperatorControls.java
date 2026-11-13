@@ -16,7 +16,8 @@ import org.firstinspires.ftc.teamcode.Robot;
  *                 detector switch, the trigger opens, and stays open AUTO_FIRE_HOLD_S after the switch lets go,
  *                 so the ball gets through. POLLEN still needs Y. Not while ejecting.
  *   A             INTAKE SYSTEM on / off (toggle): the intake AND the water wheel run together.
- *                 Starts ON when the match starts (INTAKE_ON_AT_START)
+ *                 Starts OFF (INTAKE_ON_AT_START = false): press A to start them, A again to stop.
+ *                 They always run the SHOOTING way: intake IN + water wheel UP
  *   B             does NOTHING for now (DIRECTION_TOGGLE_ENABLED = false): the direction is always IN.
  *                 To push balls out, hold the left trigger (EJECT).
  *                 When turned back on, B = DIRECTION (toggle): IN (intake in + water wheel UP) or OUT (intake out +
@@ -42,7 +43,7 @@ public class OperatorControls {
     public static final double TRIGGER_HELD = 0.5;
 
     // Does the intake system (intake + water wheel) start ON when the match starts? (A toggles it, decision 041)
-    public static final boolean INTAKE_ON_AT_START = true;
+    public static final boolean INTAKE_ON_AT_START = false;
 
     // Can B flip the intake + water wheel to OUT? false = B does nothing, so the operator can't reverse them by
     // accident (the left trigger EJECT still pushes balls out). Set true to turn the B toggle back on.

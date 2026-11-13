@@ -30,7 +30,7 @@ Most of these have a **printable worksheet** in `TeamCode/docs/worksheets/` (see
 | `SLOW_MODE_SCALE` | `opmodes/teleop/DriverControls.java` | `0.5` | Hold a bumper: slow, for lining up |
 | `TURBO_SCALE` | `opmodes/teleop/DriverControls.java` | `1.0` | Hold a trigger: full speed |
 | `SNAP_ANGLE_DEGREES` | `opmodes/teleop/DriverControls.java` | `20.0` | Straight-line assist: how forgiving it is |
-| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `1.0` | Flywheel power (it runs the whole match) |
+| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `0.75` | Flywheel power (it runs the whole match) |
 | `X_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the X odometry pod is, sideways from the turning center |
 | `Y_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the Y odometry pod is, forward from the turning center |
 
@@ -59,7 +59,7 @@ Test with **Main TeleOp**. Decisions 029, 030.
 |---|---|---|---|---|
 | `TURRET_MAX_STICK_SPEED` | `1.0` | Fastest the left stick turns the turret (0 to 1) | Lower it if aiming by hand is too twitchy | 🔧 |
 | `TURRET_STICK_DEADZONE` | `0.05` | Ignore tiny stick movement | Raise it if the turret creeps with the stick released | ✅ |
-| `INTAKE_ON_AT_START` | `true` | Do the intake + water wheel start ON when the match starts? (A toggles them) | Operator's preference | 🔧 |
+| `INTAKE_ON_AT_START` | `false` | Do the intake + water wheel start ON when the match starts? `false` = they start OFF, the operator presses A to start them (decision 062) | Operator's preference | 🔧 |
 | `DIRECTION_TOGGLE_ENABLED` | `false` | Can B flip the intake + water wheel to OUT? `false` = B does nothing, the direction is always IN (decision 061). The left trigger (EJECT) still pushes balls out | Set `true` to turn the B toggle back on | 🔧 |
 | `TURRET_ENABLED` | `false` | `OperatorControls.java`: can the turret move in Main TeleOp? `false` = left stick and X do nothing, and no move at START (decision 050) | Set `true` to turn the turret controls back on | 🔧 |
 | `TRIGGER_HELD` | `0.5` | How far the left trigger must be pressed to EJECT | Rarely changed | ✅ |
@@ -153,7 +153,7 @@ Worksheet: `intake-test.pdf`. Test with **Intake Test**. Issue #4.
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
 | `INTAKE_SPEED` | `1.0` | Intake servo speed (0 to 1). 1.0 since 11/8 testing (was 0.65, decision 041) | Intake Test: dpad up / down changes the speed of both live (0.05 steps), then copy the number here. Lower it if balls bounce off | 🔧 |
-| `WATER_WHEEL_SPEED` | `0.4` | Water wheel MOTOR power (0 to 1). Since 11/11 the water wheel is a goBILDA 117 RPM motor (decision 056), about twice as fast as the old servo at the same number, so 1.0 may be too fast: re-tune. (Servo history: 1.0 since 11/8, was 0.65) | Intake Test: same dpad speed as the intake; use X = water wheel only to tune it alone, then copy the number here. Lower it if balls jam at the top | 🔧 |
+| `WATER_WHEEL_SPEED` | `0.2` | Water wheel MOTOR power (0 to 1). Since 11/11 the water wheel is a goBILDA 117 RPM motor (decision 056); 0.2 since 11/12 (was 0.4). About twice as fast as the old servo at the same number, so 1.0 may be too fast: re-tune. (Servo history: 1.0 since 11/8, was 0.65) | Intake Test: same dpad speed as the intake; use X = water wheel only to tune it alone, then copy the number here. Lower it if balls jam at the top | 🔧 |
 | `INTAKE_REVERSED` | `true` | Set `true` if "intake IN" pushes balls OUT. 11/7: Main TeleOp ran OUT at start, so `true`. Confirmed 11/7: IN at start, eject pushes balls out | Intake Test, A button | ✅ |
 | `WATER_WHEEL_REVERSED` | `true` | Set `true` if "water wheel UP" moves balls DOWN. Was confirmed 11/7 for the old servo; the new motor (11/11) has NOT been checked | Intake Test step 2: X = water wheel only, A, balls must go UP | 🔧 |
 | `NECTAR_SWITCH_WIRING` | `NORMALLY_CLOSED` | How the NECTAR switches are wired. If "PRESSED" shows when NOT pressed, use `NORMALLY_CLOSED` | Intake Test: press each lever | ✅ |
@@ -163,7 +163,7 @@ Worksheet: `launcher-test.pdf`. Test with **Launcher Test**. Issue #5, decision 
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `DEFAULT_SPIN_POWER` | `1.0` | Flywheel power (0 to 1). Runs the whole match. 1.0 since 11/8 testing (was 0.45, decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
+| `DEFAULT_SPIN_POWER` | `0.75` | Flywheel power (0 to 1). Runs the whole match. 0.75 since 11/12 (was 1.0 from 11/8 testing, 0.45 before, decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
 | `MOTOR_REVERSED` | `true` | Flywheel direction | Launcher Test: balls must go OUT | 🔧 |
 | `READY_VELOCITY_THRESHOLD` | `1000.0` | The flywheel counts as READY at this speed (ticks/second) | Launcher Test: read "Launcher Velocity" once settled; use ~90% of it | 🔧 placeholder |
 | `TRIGGER_REST_POSITION` | `0.0` | Trigger gate position that **blocks** the balls (0 to 1) | Launcher Test, left bumper | 🔧 |

@@ -24,7 +24,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  * TeleOp drives consistently. Gamepad 2 = OPERATOR: mechanism buttons, in OperatorControls (decision 029).
  * The flywheel (launcherMotor) starts when START is pressed and runs the whole match (not in INIT: G304.H).
  * When START is pressed (decision 041): the launcher trigger goes to REST (blocks balls), the flywheel runs at
- * Launcher.DEFAULT_SPIN_POWER, the intake + water wheel run (OperatorControls.INTAKE_ON_AT_START), and the turret
+ * Launcher.DEFAULT_SPIN_POWER, the intake + water wheel stay OFF until the operator presses A
+ * (OperatorControls.INTAKE_ON_AT_START = false, decision 062), and the turret
  * turns to its rest spot, the home magnet (if it is homed). The lights turn GREEN while the turret is homed and turning there.
  * Camera, Light and Power are created here, not in Robot.java, until they're configured on every robot
  * (see code-structure.md).
