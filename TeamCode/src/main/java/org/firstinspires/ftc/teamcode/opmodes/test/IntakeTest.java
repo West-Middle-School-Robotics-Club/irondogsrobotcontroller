@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Power;
-@Disabled
+
 /**
  * TEST: run the intake and the water wheel, and tune their speed (issue #4). Controls work like Launcher Test.
  *
@@ -46,7 +46,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  *
  * Printable worksheet (steps, Expected / Actual / Fix, numbers for the code): TeamCode/docs/worksheets/intake-test.pdf
  */
-// Shown on the Driver Station on purpose (decision 060). To hide it: add @Disabled on the line below (decision 052).
+// Hidden on the Driver Station (decision 052). To use it: delete the @Disabled line below, then build and deploy.
+@Disabled
 @TeleOp(name = "Intake Test", group = "Tests")
 public class IntakeTest extends LinearOpMode {
 
