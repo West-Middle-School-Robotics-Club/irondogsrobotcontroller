@@ -38,7 +38,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 public abstract class MainAuton extends BasicAuton {
 
     /** Every run starts here: 0, 0, facing 0. +X = forward, +Y = left. */
-    static final Pose2D MAIN_START = pose(0, 0, 0);
+    protected static final Pose2D MAIN_START = pose(0, 0, 0);
 
     /** NEAR moves, relative to the start. */
     static final Pose2D[] MAIN_NEAR_PATH = {
@@ -47,8 +47,8 @@ public abstract class MainAuton extends BasicAuton {
             pose(2, -15, 0),   // PARK: back
     };
 
-    /** FAR moves, relative to the start. */
-    static final Pose2D[] MAIN_FAR_PATH = {
+    /** FAR moves, relative to the start. Shoot Auton (opmodes/test) drives these too, after it shoots. */
+    protected static final Pose2D[] MAIN_FAR_PATH = {
             pose(85, 0, 0),   // LEAVE + the long drive: 85 in forward
             pose(85, 22, 0),  // PARK: 22 in left
     };

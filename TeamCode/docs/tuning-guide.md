@@ -30,7 +30,7 @@ Most of these have a **printable worksheet** in `TeamCode/docs/worksheets/` (see
 | `SLOW_MODE_SCALE` | `opmodes/teleop/DriverControls.java` | `0.5` | Hold a bumper: slow, for lining up (OFF for now: `SPEED_MODES_ENABLED = false`) |
 | `TURBO_SCALE` | `opmodes/teleop/DriverControls.java` | `1.0` | Hold a trigger: full speed (OFF for now: `SPEED_MODES_ENABLED = false`) |
 | `SNAP_ANGLE_DEGREES` | `opmodes/teleop/DriverControls.java` | `20.0` | Straight-line assist: how forgiving it is |
-| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `0.75` | Flywheel power (it runs the whole match) |
+| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `0.70` | Flywheel power (it runs the whole match) |
 | `X_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the X odometry pod is, sideways from the turning center |
 | `Y_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the Y odometry pod is, forward from the turning center |
 
@@ -134,6 +134,15 @@ Positions are **field coordinates** (011). To tune a route on any clear floor, u
 | `PARKED_COLOR` | `Light.Color.GREEN` | Lights at the end when parked | Team's choice | ✅ |
 | `STOPPED_EARLY_COLOR` | `Light.Color.YELLOW` | Lights at the end when it stopped early | Team's choice | ✅ |
 
+## Shoot Auton (test): `opmodes/test/ShootAuton.java`
+Main Auton FAR, but it shoots first: 22.5 in right (RED B1 → C1, BLUE E6 → D6), shoot, back to the start, then `MAIN_FAR_PATH`. Hidden with `@Disabled` (052). Uses all the Basic Auton driving values above. The whole run must finish by `STOP_BY_S`.
+
+| Setting | Now | What it does | How to find it | Status |
+|---|---|---|---|---|
+| `SHOOT_SPOT` | `pose(0, -22.5, 0)` | Where it shoots, from the (0, 0, 0) start: 22.5 in to the RIGHT (-Y), one tile over | Robot lands short of / past the middle of C1 (D6)? change the -22.5 | 🔧 |
+| `FLYWHEEL_SPIN_UP_S` | `1.5` | Flywheel (and intake + water wheel) ON this long before the gate opens | First ball falls short? raise it. Running out of time? lower it | 🔧 |
+| `SHOOT_TIME_S` | `4.0` | Gate open this long, so the water wheel feeds all 4 balls through | Ball left in the robot? raise it. All 4 gone well before it ends? lower it | 🔧 |
+
 ## Timed Auton: `opmodes/auto/TimedAuton.java`
 The no-sensor backup for Basic Auton NEAR and FAR (decisions 054, 057): plain power for a set time, no Pinpoint, no encoders. Tune with a **charged battery**; a weak battery drives shorter.
 
@@ -164,7 +173,7 @@ Worksheet: `launcher-test.pdf`. Test with **Launcher Test**. Issue #5, decision 
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `DEFAULT_SPIN_POWER` | `0.75` | Flywheel power (0 to 1). Runs the whole match. 0.75 since 11/12 (was 1.0 from 11/8 testing, 0.45 before, decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
+| `DEFAULT_SPIN_POWER` | `0.70` | Flywheel power (0 to 1). Runs the whole match. 0.70 since 11/14 (overshooting in competition matches; 0.75 from 11/12) (was 1.0 from 11/8 testing, 0.45 before, decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
 | `MOTOR_REVERSED` | `true` | Flywheel direction | Launcher Test: balls must go OUT | 🔧 |
 | `READY_VELOCITY_THRESHOLD` | `1000.0` | The flywheel counts as READY at this speed (ticks/second) | Launcher Test: read "Launcher Velocity" once settled; use ~90% of it | 🔧 placeholder |
 | `TRIGGER_REST_POSITION` | `0.0` | Trigger gate position that **blocks** the balls (0 to 1) | Launcher Test, left bumper | 🔧 |
