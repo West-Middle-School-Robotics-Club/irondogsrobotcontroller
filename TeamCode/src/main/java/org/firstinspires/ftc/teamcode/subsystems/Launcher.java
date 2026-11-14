@@ -44,6 +44,7 @@ public class Launcher {
     public static final double DEFAULT_SPIN_POWER = 0.70;
     // Note 11/8: 1.0 after testing. Was 0.45 on 11/7 (decision 041) and 0.8 on 11/6.
     // Note 11/6: tuned to 0.8, needs to be checked again once we are actually able to launch a ball
+    // Note 11/14: tuned to 0.7 after noticing consistent overshooting in our competition matches
     // TODO(#5): confirm on the robot. true = the flywheel spins the right way with REVERSE set.
     public static final boolean MOTOR_REVERSED = true;
 
