@@ -208,7 +208,7 @@ build("intake-test.pdf", "Intake Test", "#4", story)
 story = header_block(
     "Launcher Test",
     "Does the flywheel spin the right way, where should the trigger gate sit, when is the wheel READY, "
-    "and do shots land?  (issue #5, decisions 029, 032)",
+    "do shots land, and can PIDF velocity control hold the speed?  (issue #5, decisions 029, 032)",
     "Launcher Test",
     c("launcherMotor") + " (Motor, exact goBILDA type), " + c("launcherTriggerServo") + " (Servo)")
 story += [warn("<b>The flywheel is fast and the ball comes out hard.</b> Nobody in front of the launcher. "
@@ -216,11 +216,14 @@ story += [warn("<b>The flywheel is fast and the ball comes out hard.</b> Nobody 
 story += controls([
     ["A", "start / stop the flywheel at the test power"],
     ["B", "STOP the flywheel"],
-    ["Dpad UP / DOWN", "test power +10% / -10%"],
-    ["X / Y", "test power 50% / 100%"],
-    ["HOLD right trigger", "power follows the trigger (0 to 100%)"],
+    ["RIGHT BUMPER", "switch POWER mode / VELOCITY (PIDF) mode"],
+    ["Dpad UP / DOWN", "POWER: test power +10% / -10%.  VELOCITY: target +/- 50 ticks/s"],
+    ["X / Y", "POWER only: test power 50% / 100%"],
+    ["HOLD right trigger", "POWER only: power follows the trigger (0 to 100%)"],
     ["Dpad LEFT / RIGHT", "flip the motor direction (for step 1)"],
-    ["HOLD left bumper", "trigger gate to FIRE (open). Let go = REST (closed)"],
+    ["HOLD left bumper", "trigger gate to FIRE (open). Let go = REST (closed). Also measures the shot"],
+    ["Gamepad 2: dpad L/R, U/D", "VELOCITY: pick P, I, D or F / raise or lower it (applies right away)"],
+    ["Gamepad 2: RB / LB", "VELOCITY: gain step x10 / divided by 10"],
 ])
 story += steps([
     ["1", "X, then A", "wheel spins so a ball would go OUT the launcher", "",
@@ -235,6 +238,21 @@ story += steps([
     ["6", "Launch one ball (A, wait READY, hold left bumper)", "ball comes out", "",
      "jam: check the gate positions and the water wheel"],
 ])
+story += steps([
+    ["7", "POWER mode, Y (100%), A. Wait 3 s. Read \"F estimate\"", "a steady number: F = ______", "",
+     "if it jumps around, wait longer"],
+    ["8", "POWER mode at " + now("DEFAULT_SPIN_POWER") + ". Read the steady \"Speed\"", "______ ticks/s = target", "",
+     "this is the speed we launch at today"],
+    ["9", "RB = VELOCITY. Gamepad 2: F from step 7, P = I = D = 0. Dpad to the target. A", "\"Speed error\" small", "",
+     "error stays big? adjust F a little"],
+    ["10", "Launch a ball (hold LB). Read \"Last shot\"", "back to speed fast", "",
+     "raise P (x10 steps, then smaller) until fast with NO wobble"],
+    ["11", "Speed shakes around the target?", "steady", "", "too much P: lower it"],
+], title="PIDF velocity control (VELOCITY mode, steps 7 to 11)")
+story += section("PIDF results (write them down: the test forgets them when it stops)",
+          table([["Target (ticks/s)", "P", "I", "D", "F", "Drop per shot (%)", "Back to speed (s)"],
+                 ["", "", "", "", "", "", ""], ["", "", "", "", "", "", ""], ["", "", "", "", "", "", ""]],
+                [1.1, 0.75, 0.75, 0.75, 0.75, 1.45, 1.45], row_height=0.36 * inch))
 story += section("Power vs distance",
           p("Put the robot a set distance from the goal. For each power, launch 5 balls. The hit-rate test at the end "
             "uses the best power.", BODY),
