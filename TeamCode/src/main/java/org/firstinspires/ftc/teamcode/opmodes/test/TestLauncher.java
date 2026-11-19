@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Launcher;
 
 /**
@@ -33,10 +34,11 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
  *   B                   STOP
  *   RIGHT BUMPER        Switch POWER / VELOCITY mode
  *   Dpad UP / DOWN      POWER: test power +/- 10%.  VELOCITY: target speed +/- TARGET_STEP ticks/s
- *   X / Y               POWER only: presets 50% (X) / 100% (Y)
+ *   Y                   POWER only: 100% power
  *   HOLD Right Trigger  POWER only: variable power (0 to 100%)
- *   Dpad LEFT / RIGHT   Toggle motor direction (FORWARD / REVERSE)
+ *   X                   Intake + water wheel ON / OFF, the shooting way (intake IN, water wheel UP), to feed balls
  *   HOLD Left Bumper    Trigger servo to FIRE (let go = REST). Also measures the shot (see "Last shot")
+ * The flywheel direction is set in Launcher.MOTOR_REVERSED (checked: true).
  * Gamepad 2 (VELOCITY gains, applied right away):
  *   Dpad LEFT / RIGHT   Pick P, I, D or F
  *   Dpad UP / DOWN      Raise / lower the picked gain by the step
@@ -45,7 +47,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
  * How to tune (also in the tuning guide, Launcher section):
  *   1. POWER mode, Y (100%), A. Wait 3 s, read "F estimate" (= 32767 x power / speed). VELOCITY mode, set F to it,
  *      P, I, D to 0. Set the target to the speed DEFAULT_SPIN_POWER gives today. "Speed error" should be small
- *   2. Raise P until the speed comes back quickly after a shot ("Last shot: back to speed in ...") without
+ *   2. X to feed balls. Raise P until the speed comes back quickly after a shot ("Last shot: back to speed in ...") without
  *      wobbling around the target. Too much P = the speed shakes. Then maybe a tiny I if it settles a bit low
  *   3. Write the P, I, D, F and target speed on the worksheet. Hit-rate test at that target
  * The gains are NOT saved: they reset to the hub's own values every time this test starts. Write them down!
@@ -75,6 +77,7 @@ public class TestLauncher extends LinearOpMode {
     @Override
     public void runOpMode() {
         Launcher launcher = new Launcher(hardwareMap);
+        Intake intake = new Intake(hardwareMap);  // X feeds balls to the launcher
 
         try {
             directMotor = hardwareMap.get(DcMotorEx.class, Launcher.FLYWHEEL_NAME);
@@ -94,7 +97,7 @@ public class TestLauncher extends LinearOpMode {
         int pickedGain = 3;      // start on F: the first one to set
         double gainStep = START_GAIN_STEP;
         boolean isSpinning = false;
-        boolean directionReversed = Launcher.MOTOR_REVERSED; // Locked to REVERSED by default
+        boolean intakeOn = false;  // intake + water wheel, the shooting way
 
         // Shot measuring: from the moment the gate opens, the lowest speed and how long until it's back up
         boolean watchingShot = false;
@@ -140,19 +143,20 @@ public class TestLauncher extends LinearOpMode {
                 } else if (gamepad1.dpadDownWasPressed()) {
                     testPower = Math.max(0.1, testPower - 0.1);
                 }
-                if (gamepad1.x) {
-                    testPower = 0.5;
-                }
                 if (gamepad1.y) {
                     testPower = 1.0;
                 }
             }
 
-            if (gamepad1.dpadLeftWasPressed() || gamepad1.dpadRightWasPressed()) {
-                directionReversed = !directionReversed;
-                if (directMotor != null) {
-                    directMotor.setDirection(directionReversed ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
-                }
+            // X = intake + water wheel on / off, the same way Main TeleOp shoots: intake IN, water wheel UP
+            if (gamepad1.xWasPressed()) {
+                intakeOn = !intakeOn;
+            }
+            if (intakeOn) {
+                intake.in();
+                intake.waterWheelUp();
+            } else {
+                intake.stop();
             }
 
             if (gamepad1.aWasPressed()) {
@@ -231,14 +235,15 @@ public class TestLauncher extends LinearOpMode {
             // ---------- Telemetry ----------
             telemetry.addLine("=== LAUNCHER TEST: " + (velocityMode ? "VELOCITY (PIDF)" : "POWER") + " mode ===");
             telemetry.addLine("GP1: A spin | B stop | RB switch mode | dpad U/D " + (velocityMode ? "target" : "power")
-                    + " | hold LB fire");
+                    + " | X intake | hold LB fire");
             if (velocityMode) {
                 telemetry.addLine("GP2: dpad L/R pick gain | dpad U/D change | RB/LB step x10 / 10");
             } else {
-                telemetry.addLine("X = 50% | Y = 100% | hold RT = variable power | dpad L/R direction");
+                telemetry.addLine("Y = 100% | hold RT = variable power");
             }
             telemetry.addLine();
             telemetry.addData("Spinning", isSpinning ? "ON" : "OFF");
+            telemetry.addData("Intake + water wheel", intakeOn ? "ON (feeding)" : "off   (X to start)");
             telemetry.addData("Speed", "%.0f ticks/s", speed);
             if (velocityMode) {
                 telemetry.addData("Target", "%.0f ticks/s", targetVelocity);
@@ -255,11 +260,11 @@ public class TestLauncher extends LinearOpMode {
                 }
             }
             telemetry.addData("Last shot", lastShot);
-            telemetry.addData("Motor Direction", directionReversed ? "REVERSED" : "FORWARD");
             telemetry.addLine();
 
             telemetry.addLine("--- Subsystem Telemetry ---");
             launcher.addTelemetry(telemetry);
+            intake.addTelemetry(telemetry);
             if (directMotor != null) {
                 telemetry.addData("Motor Current", "%.2f Amps", directMotor.getCurrent(CurrentUnit.AMPS));
             }
@@ -268,6 +273,7 @@ public class TestLauncher extends LinearOpMode {
 
         usePowerMode();
         launcher.stop();
+        intake.stop();
     }
 
     /** VELOCITY mode: the hub holds this speed with our gains. */

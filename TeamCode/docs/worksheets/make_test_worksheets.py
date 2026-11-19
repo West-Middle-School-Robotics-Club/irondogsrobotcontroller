@@ -218,16 +218,16 @@ story += controls([
     ["B", "STOP the flywheel"],
     ["RIGHT BUMPER", "switch POWER mode / VELOCITY (PIDF) mode"],
     ["Dpad UP / DOWN", "POWER: test power +10% / -10%.  VELOCITY: target +/- 50 ticks/s"],
-    ["X / Y", "POWER only: test power 50% / 100%"],
+    ["Y", "POWER only: test power 100%"],
     ["HOLD right trigger", "POWER only: power follows the trigger (0 to 100%)"],
-    ["Dpad LEFT / RIGHT", "flip the motor direction (for step 1)"],
+    ["X", "intake + water wheel ON / OFF (intake IN, water wheel UP: feeds balls)"],
     ["HOLD left bumper", "trigger gate to FIRE (open). Let go = REST (closed). Also measures the shot"],
     ["Gamepad 2: dpad L/R, U/D", "VELOCITY: pick P, I, D or F / raise or lower it (applies right away)"],
     ["Gamepad 2: RB / LB", "VELOCITY: gain step x10 / divided by 10"],
 ])
 story += steps([
-    ["1", "X, then A", "wheel spins so a ball would go OUT the launcher", "",
-     "flip with dpad; if FORWARD is right, " + c("MOTOR_REVERSED = false")],
+    ["1", "A", "wheel spins so a ball would go OUT the launcher", "",
+     "flip " + c("MOTOR_REVERSED") + " in Launcher.java"],
     ["2", "Wheel stopped. Put a ball in the path, let go of the left bumper", "gate at REST BLOCKS the ball", "",
      "change " + c("TRIGGER_REST_POSITION")],
     ["3", "Hold the left bumper", "gate at FIRE lets the ball pass freely", "", "change " +
@@ -235,7 +235,7 @@ story += steps([
     ["4", "Y, then A. Wait 3 s. Read \"Launcher Velocity\"", "a steady number: ______ ticks/s", "",
      c("READY_VELOCITY_THRESHOLD") + " = about 90% of it: ______"],
     ["5", "B, then A again. Count seconds until \"READY\"", "under 2 s", "", "note it; the operator must wait this long"],
-    ["6", "Launch one ball (A, wait READY, hold left bumper)", "ball comes out", "",
+    ["6", "Launch one ball (A, wait READY, X to feed, hold left bumper)", "ball comes out", "",
      "jam: check the gate positions and the water wheel"],
 ])
 story += steps([
@@ -245,7 +245,7 @@ story += steps([
      "this is the speed we launch at today"],
     ["9", "RB = VELOCITY. Gamepad 2: F from step 7, P = I = D = 0. Dpad to the target. A", "\"Speed error\" small", "",
      "error stays big? adjust F a little"],
-    ["10", "Launch a ball (hold LB). Read \"Last shot\"", "back to speed fast", "",
+    ["10", "X to feed, launch a ball (hold LB). Read \"Last shot\"", "back to speed fast", "",
      "raise P (x10 steps, then smaller) until fast with NO wobble"],
     ["11", "Speed shakes around the target?", "steady", "", "too much P: lower it"],
 ], title="PIDF velocity control (VELOCITY mode, steps 7 to 11)")
