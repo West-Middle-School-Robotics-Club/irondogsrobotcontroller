@@ -31,7 +31,7 @@ DRIVER = {
     "A": ("STRAIGHT ASSIST on/off", "rumble: 1 blip = ON, 2 = OFF. Starts ON"),
 }
 LAUNCHER = {  # gamepad 2 (OperatorControls.java), decisions 029, 035, 062
-    "Y": ("LAUNCH (hold)", "NECTARs launch by themselves"),
+    "Y": ("LAUNCH (hold)", "every ball: NECTAR and POLLEN"),
     "A": ("INTAKE SYSTEM on/off", "Starts OFF: you MUST press A to start it!"),
     "LT": ("EJECT (hold)", "pushes balls out; let go = all off"),
 }
@@ -258,9 +258,10 @@ def main():
                                                         "you press A.", False)],
             [("Flywheel: ", True), ("starts by itself when START is pressed and runs the whole match. "
                                     "Watch \"Launcher Status\" for READY.", False)],
-            [("NECTARs ", True), ("launch by themselves. Hold ", False), ("Y", True), (" to launch POLLEN.", False)],
+            [("Launch: ", True), ("hold ", False), ("Y", True), (" for every ball (NECTAR and POLLEN). Nothing launches "
+                                                    "by itself.", False)],
             [("EJECT ", True), ("(left trigger) beats everything; let go and the intake + water wheel are OFF.", False)],
-            [("Lights: ", True), ("PURPLE = the next ball to launch is a NECTAR.", False)],
+            [("Lights: ", True), ("our alliance color; GREEN while the turret turns to its rest spot.", False)],
         ], size=9.5)
     c.showPage()
     c.save()

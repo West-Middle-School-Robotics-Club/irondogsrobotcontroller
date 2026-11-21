@@ -37,7 +37,8 @@ import java.util.List;
  *   Right / Left BUMPER   flywheel power +0.1 / -0.1
  *   HOLD Right TRIGGER    trigger servo to FIRE (gate open). Let go = REST (gate closed)
  *   (no button)           a NECTAR on a nectar detector switch opens the gate by itself, like Main TeleOp
- *                         (decision 059; OperatorControls.AUTO_FIRE_NECTAR and AUTO_FIRE_HOLD_S)
+ *                         (decision 059; OperatorControls.AUTO_FIRE_NECTAR and AUTO_FIRE_HOLD_S).
+ *                         OFF while Intake.NECTAR_DETECTOR_ENABLED is false (decision 065)
  *   BOTH
  *   B                     STOP everything (intake, water wheel and flywheel; trigger back to REST)
  *

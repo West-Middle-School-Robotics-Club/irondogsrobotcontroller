@@ -164,6 +164,9 @@ story = header_block(
     "Intake Test",
     c("intakeServo") + " (Continuous Rotation Servo), " + c("waterWheelMotor") + " (goBILDA 5203 motor), " +
     c("nectarDetectorLeftSwitch") + ", " + c("nectarDetectorRightSwitch") + " (Digital Device)")
+if now("NECTAR_DETECTOR_ENABLED") == "false":
+    story += [warn("<b>The nectar detectors are OFF</b> (" + c("NECTAR_DETECTOR_ENABLED") + " = false in Intake.java, "
+                   "decision 065). Skip the switch steps (4 to 8), or set it true first.")]
 story += controls([
     ["A / B", "spin ON-OFF (toggle) / STOP. Starts stopped"],
     ["DPAD up / down", "speed +/- 0.05 of whichever is running (BOTH = both). Intake and water wheel each have their own "

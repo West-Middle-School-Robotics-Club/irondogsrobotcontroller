@@ -646,3 +646,10 @@ Issue: #22
 Context: Decision 060 left 8 AUTOs on the Driver Station (Main Auton and Timed Auton, each RED / BLUE NEAR / FAR). We only run Timed Auton for NEAR and Main Auton for FAR, and the "Timed" / "Main" names confused the drive team.
 Decision: The 4 we run are renamed on the Driver Station, all in the **Auton** group: **Auton Red Near** and **Auton Blue Near** (Timed Auton), **Auton Red Far** and **Auton Blue Far** (Main Auton). The Java class names don't change. The other 4 (Timed Auton RED / BLUE FAR, Main Auton RED / BLUE NEAR) get `@Disabled` (052); delete that line to bring one back. The route sheets (`auton-near.pdf`, `auton-far.pdf`) show the new names in bold under the title. This changes 060's Driver Station list.
 Who: Mentor (11/13)
+
+## 065 – Nectar detectors switched off; the code is kept  (2026-11-21)
+Status: Accepted
+Issue: #4, #5
+Context: The two nectar detector switches (028) tell the code when the next ball to launch is a NECTAR. Main TeleOp used them to launch NECTARs by themselves (059) and to turn the lights purple. The team is not using the nectar detectors now, but may want them back later.
+Decision: New `Intake.NECTAR_DETECTOR_ENABLED = false`. While it is `false`, `isNectarDetected()` always says false, so nothing auto-fires and the lights never turn purple, in every TeleOp, Auton and test (no Auton used them). The operator holds **Y** to launch every ball. Intake telemetry just says "NECTAR detector: OFF". All the nectar code stays where it is (switch reading, `NECTAR_SWITCH_WIRING`, `AUTO_FIRE_NECTAR`, `AUTO_FIRE_HOLD_S`, `NECTAR_COLOR`); set the flag `true` to bring it all back. The switches can stay in the Driver Station config. This changes 059 (auto-launch) and the purple lights of 028 for now.
+Who: Mentor (11/21)

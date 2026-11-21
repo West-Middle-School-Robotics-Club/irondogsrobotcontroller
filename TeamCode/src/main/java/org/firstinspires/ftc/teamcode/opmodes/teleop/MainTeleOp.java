@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  * field that the right OpMode is selected. Nothing moves during INIT (game rule G304.H).
  * During the match both lights turn PURPLE (VIOLET) while the next ball to launch is a NECTAR
  * (either nectar detector switch pressed), then go back to the alliance color (decision 028).
+ * The nectar detectors are OFF for now (Intake.NECTAR_DETECTOR_ENABLED = false, decision 065), so no purple.
  *
  * Gamepad 1 = DRIVER: driving goes through DriverControls (sticks, A = assist; SLOW / TURBO are off, decision 063), so every
  * TeleOp drives consistently. Gamepad 2 = OPERATOR: mechanism buttons, in OperatorControls (decision 029).
@@ -100,7 +101,8 @@ public abstract class MainTeleOp extends LinearOpMode {
             operator.update(robot, gamepad2);
             robot.turret.update(); // every loop: turns the turret and keeps it inside its limits
 
-            // Lights: PURPLE = the next ball to launch is a NECTAR (it matters most, so it wins).
+            // Lights: PURPLE = the next ball to launch is a NECTAR (it matters most, so it wins). Never while the
+            // nectar detectors are off (Intake.NECTAR_DETECTOR_ENABLED, decision 065).
             // GREEN = the turret is homed and turning to its rest spot. Otherwise our alliance color.
             Light.Color lightColor = allianceColor(alliance);
             if (robot.turret.isHomed() && robot.turret.isAutoMoving() && !robot.turret.isAtTarget()) {

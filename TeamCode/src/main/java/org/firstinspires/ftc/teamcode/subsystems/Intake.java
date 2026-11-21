@@ -25,6 +25,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  *                      Use isNectarDetected(): it gives a plain true/false, already translated from the
  *                      switch's raw reading (set NECTAR_SWITCH_WIRING once, below).
  * (These names don't start with "intake": the team picked them, decision 028.)
+ * The nectar detectors are switched OFF for now (NECTAR_DETECTOR_ENABLED = false, decision 065): isNectarDetected()
+ * always says false, so nothing auto-fires and the lights never turn purple. The code is kept to turn back on later.
  *
  * Driver Station config types: "Continuous Rotation Servo" for the intake servo, the exact goBILDA 5203 type for the
  * water wheel motor, "Digital Device" for the switches.
@@ -45,6 +47,11 @@ public class Intake {
      *   NORMALLY_CLOSED  pressing the lever BREAKS the circuit   (raw reading: pressed = true)
      */
     public enum SwitchWiring { NORMALLY_OPEN, NORMALLY_CLOSED }
+
+    // Are the nectar detector switches used? (decision 065) false = OFF everywhere: isNectarDetected() is always false,
+    // so Main TeleOp doesn't auto-fire NECTARs or turn the lights purple, and no test does either.
+    // Set true to turn them back on (everything below is kept as it was).
+    public static final boolean NECTAR_DETECTOR_ENABLED = false;
 
     // TODO(#4): check with "Intake Test": press a lever and "Nectar left/right" must say PRESSED.
     // If it says PRESSED when NOT pressed, change this to the other wiring.
@@ -137,9 +144,15 @@ public class Intake {
         setWaterWheelSpeed(0.0);
     }
 
-    /** True when the NEXT ball to be launched is a NECTAR: either nectar detector switch is pressed. */
+    /**
+     * True when the NEXT ball to be launched is a NECTAR: either nectar detector switch is pressed.
+     * Always false while NECTAR_DETECTOR_ENABLED is false (decision 065).
+     */
     // Note 11/6, have noticed for nectars it only ever really presses one of the detector switches which is fine, but noting it down
     public boolean isNectarDetected() {
+        if (!NECTAR_DETECTOR_ENABLED) {
+            return false;
+        }
         return isPressed(nectarDetectorLeftSwitch) || isPressed(nectarDetectorRightSwitch);
     }
 
@@ -186,6 +199,10 @@ public class Intake {
                 : "OFFLINE ('" + INTAKE_SERVO_NAME + "' not in DS config)");
         telemetry.addData("Water wheel", waterWheelMotor != null ? String.format("%.2f", waterWheelSpeed)
                 : "OFFLINE ('" + WATER_WHEEL_MOTOR_NAME + "' not in DS config)");
+        if (!NECTAR_DETECTOR_ENABLED) {
+            telemetry.addData("NECTAR detector", "OFF (NECTAR_DETECTOR_ENABLED = false)");
+            return;
+        }
         telemetry.addData("NECTAR detected", isNectarDetected() ? "YES (next ball is a NECTAR)" : "no");
         telemetry.addData("  Nectar left switch", switchStatus(nectarDetectorLeftSwitch, NECTAR_LEFT_SWITCH_NAME));
         telemetry.addData("  Nectar right switch", switchStatus(nectarDetectorRightSwitch, NECTAR_RIGHT_SWITCH_NAME));

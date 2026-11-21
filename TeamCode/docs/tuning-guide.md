@@ -64,7 +64,7 @@ Test with **Main TeleOp**. Decisions 029, 030.
 | `DIRECTION_TOGGLE_ENABLED` | `false` | Can B flip the intake + water wheel to OUT? `false` = B does nothing, the direction is always IN (decision 061). The left trigger (EJECT) still pushes balls out | Set `true` to turn the B toggle back on | 🔧 |
 | `TURRET_ENABLED` | `false` | `OperatorControls.java`: can the turret move in Main TeleOp? `false` = left stick and X do nothing, and no move at START (decision 050) | Set `true` to turn the turret controls back on | 🔧 |
 | `TRIGGER_HELD` | `0.5` | How far the left trigger must be pressed to EJECT | Rarely changed | ✅ |
-| `AUTO_FIRE_NECTAR` | `true` | A NECTAR on a nectar detector switch opens the launcher trigger by itself (decision 059). `false` = only Y opens it | Operator's preference. Turn it off if it fires when it shouldn't | 🔧 |
+| `AUTO_FIRE_NECTAR` | `true` | A NECTAR on a nectar detector switch opens the launcher trigger by itself (decision 059). `false` = only Y opens it. Does nothing while `Intake.NECTAR_DETECTOR_ENABLED` is `false` (065) | Operator's preference. Turn it off if it fires when it shouldn't | 🔧 |
 | `AUTO_FIRE_HOLD_S` | `0.5` | Seconds the trigger stays open after the switch lets go, so it doesn't close on the ball | Intake + Launcher Test: NECTAR gets clipped by the gate? longer. A POLLEN right behind it also gets launched? shorter | 🔧 |
 
 ## Main TeleOp start-up: `opmodes/teleop/MainTeleOp.java`
@@ -166,6 +166,7 @@ Worksheet: `intake-test.pdf`. Test with **Intake Test**. Issue #4.
 | `WATER_WHEEL_SPEED` | `0.2` | Water wheel MOTOR power (0 to 1). Since 11/11 the water wheel is a goBILDA 117 RPM motor (decision 056); 0.2 since 11/12 (was 0.4). About twice as fast as the old servo at the same number, so 1.0 may be too fast: re-tune. (Servo history: 1.0 since 11/8, was 0.65) | Intake Test: same dpad speed as the intake; use X = water wheel only to tune it alone, then copy the number here. Lower it if balls jam at the top | 🔧 |
 | `INTAKE_REVERSED` | `true` | Set `true` if "intake IN" pushes balls OUT. 11/7: Main TeleOp ran OUT at start, so `true`. Confirmed 11/7: IN at start, eject pushes balls out | Intake Test, A button | ✅ |
 | `WATER_WHEEL_REVERSED` | `true` | Set `true` if "water wheel UP" moves balls DOWN. Was confirmed 11/7 for the old servo; the new motor (11/11) has NOT been checked | Intake Test step 2: X = water wheel only, A, balls must go UP | 🔧 |
+| `NECTAR_DETECTOR_ENABLED` | `false` | Are the nectar detector switches used? `false` = OFF everywhere: no NECTAR auto-launch, no purple lights, Y launches every ball (decision 065) | Set `true` to turn them back on | 🔧 |
 | `NECTAR_SWITCH_WIRING` | `NORMALLY_CLOSED` | How the NECTAR switches are wired. If "PRESSED" shows when NOT pressed, use `NORMALLY_CLOSED` | Intake Test: press each lever | ✅ |
 
 ## Launcher (flywheel + trigger gate): `subsystems/Launcher.java`
@@ -233,7 +234,7 @@ Test with **Camera Test** / **Red/Blue Camera Test**. Issue #7 (the other mentor
 ## Lights
 | Setting | File | Now | What it does | Status |
 |---|---|---|---|---|
-| `NECTAR_COLOR` | `opmodes/teleop/MainTeleOp.java` | `Light.Color.VIOLET` | Both lights while the next ball is a NECTAR ("purple") | ✅ |
+| `NECTAR_COLOR` | `opmodes/teleop/MainTeleOp.java` | `Light.Color.VIOLET` | Both lights while the next ball is a NECTAR ("purple"). Never while the nectar detectors are off (065) | ✅ |
 | `TURRET_MOVING_COLOR` | `opmodes/teleop/MainTeleOp.java` | `Light.Color.GREEN` | Both lights while the turret is homed and turning to forward (NECTAR purple wins) | 🔧 |
 | `RED_ALLIANCE_COLOR` | `opmodes/teleop/MainTeleOp.java` | `Light.Color.RED` | Lights for RED (INIT, and when no NECTAR) | ✅ |
 | `BLUE_ALLIANCE_COLOR` | `opmodes/teleop/MainTeleOp.java` | `Light.Color.BLUE` | Lights for BLUE | ✅ |

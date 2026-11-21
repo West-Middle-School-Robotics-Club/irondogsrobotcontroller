@@ -34,6 +34,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  * The speed here is NOT saved: it goes back to the Intake.java numbers the next time you run this.
  *
  * Nectar switches ("nectarDetectorLeftSwitch", "nectarDetectorRightSwitch", Digital Device):
+ *   - OFF for now (decision 065): set Intake.NECTAR_DETECTOR_ENABLED = true first, or the screen just says "OFF".
  *   - Press each lever by hand: its line must say PRESSED, and "NECTAR detected" must say YES.
  *     Backwards (PRESSED when not pressed)? Change NECTAR_SWITCH_WIRING in Intake.java.
  *   - Never changes? Try the other channel of that digital port (each port has 2: n and n+1).

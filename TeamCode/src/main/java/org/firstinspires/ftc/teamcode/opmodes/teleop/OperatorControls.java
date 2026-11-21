@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
 /**
  * The ONE place that turns the OPERATOR's buttons (gamepad 2) into mechanism commands (decisions 029, 035).
@@ -12,9 +13,10 @@ import org.firstinspires.ftc.teamcode.Robot;
  *
  * Operator buttons:
  *   Y             HOLD to launch: the launcher trigger moves out of the way. Let go = back to rest (blocks launching)
- *   (no button)   NECTARs launch by THEMSELVES (AUTO_FIRE_NECTAR, decision 059): when a NECTAR presses a nectar
- *                 detector switch, the trigger opens, and stays open AUTO_FIRE_HOLD_S after the switch lets go,
- *                 so the ball gets through. POLLEN still needs Y. Not while ejecting.
+ *   (no button)   OFF for now (decision 065: Intake.NECTAR_DETECTOR_ENABLED = false), so Y launches every ball.
+ *                 When turned back on: NECTARs launch by THEMSELVES (AUTO_FIRE_NECTAR, decision 059): when a NECTAR
+ *                 presses a nectar detector switch, the trigger opens, and stays open AUTO_FIRE_HOLD_S after the
+ *                 switch lets go, so the ball gets through. POLLEN still needs Y. Not while ejecting.
  *   A             INTAKE SYSTEM on / off (toggle): the intake AND the water wheel run together.
  *                 Starts OFF (INTAKE_ON_AT_START = false): press A to start them, A again to stop.
  *                 They always run the SHOOTING way: intake IN + water wheel UP
@@ -58,7 +60,7 @@ public class OperatorControls {
     public static final double TURRET_MAX_STICK_SPEED = 1.0;
 
     // Launch NECTARs automatically: a nectar detector switch pressed = open the trigger (decision 059).
-    // false = only Y opens the trigger, like before.
+    // false = only Y opens the trigger, like before. Does nothing while Intake.NECTAR_DETECTOR_ENABLED is false (065).
     public static final boolean AUTO_FIRE_NECTAR = true;
 
     // After the switch lets go (the ball has moved on), keep the trigger open this long so it doesn't close on the ball.
@@ -140,7 +142,8 @@ public class OperatorControls {
         telemetry.addData("Operator", ejecting ? "EJECTING"
                 : String.format("intake system %s, direction %s", intakeSystemOn ? "ON" : "off",
                 directionOut ? "OUT (balls leave)" : "IN"));
-        telemetry.addData("NECTAR auto-launch", !AUTO_FIRE_NECTAR ? "OFF (AUTO_FIRE_NECTAR = false)"
+        telemetry.addData("NECTAR auto-launch", !Intake.NECTAR_DETECTOR_ENABLED ? "OFF (nectar detector off)"
+                : !AUTO_FIRE_NECTAR ? "OFF (AUTO_FIRE_NECTAR = false)"
                 : autoFiring ? "FIRING (trigger open)" : "on, waiting for a NECTAR");
     }
 }
