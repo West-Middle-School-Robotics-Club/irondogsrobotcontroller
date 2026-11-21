@@ -102,7 +102,7 @@ def main():
                 "The test starts here. Fixed power, like Main TeleOp today. R1 switches to VELOCITY mode (page 2).")
     box(c, 0.45, 0.55, 10.1, 1.25, "Good to know", [
         [("Starts at 50% power. ", True), ("Each press of R2 / L2 or dpad up / down changes it by " + POWER_STEP
-                                          + ", so 70%, 75%, 80%... can all be tested.", False)],
+                                          + ", so 70%, 72.5%, 75%... can all be tested.", False)],
         [("F estimate: ", True), ("Y (100%), A, wait 3 s, then read \"F estimate\" on the screen. "
                                   "That is the F to start with in VELOCITY mode.", False)],
         [("Last shot: ", True), ("after you fire, the screen shows how far the speed dropped and how long it took "

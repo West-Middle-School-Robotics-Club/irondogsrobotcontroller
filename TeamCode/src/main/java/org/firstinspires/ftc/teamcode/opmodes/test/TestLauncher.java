@@ -36,7 +36,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
  *   X                   Intake + water wheel ON / OFF, the shooting way (intake IN, water wheel UP), to feed balls
  *   HOLD Left Bumper    Trigger servo to FIRE (let go = REST). Also measures the shot (see "Last shot")
  *   POWER mode:
- *     Dpad UP / DOWN or R2 / L2   test power +/- POWER_STEP (5%)
+ *     Dpad UP / DOWN or R2 / L2   test power +/- POWER_STEP (2.5%)
  *     Y                           100% power
  *   VELOCITY mode:
  *     R2 / L2 (triggers)          target speed +/- TARGET_STEP ticks/s, one step per press
@@ -67,7 +67,7 @@ public class TestLauncher extends LinearOpMode {
 
     // ---- Test settings (not robot tunables) ----
     static final double START_TARGET_VELOCITY = 1500.0; // VELOCITY mode starts at this target (ticks/s)
-    static final double POWER_STEP = 0.05;              // POWER mode: dpad / R2 / L2 change of the test power (5%)
+    static final double POWER_STEP = 0.025;             // POWER mode: dpad / R2 / L2 change of the test power (2.5%)
     static final double TARGET_STEP = 50.0;             // R2 / L2 change of the target (ticks/s)
     static final double[] GAIN_STEPS = {0.001, 0.01, 0.1, 1.0, 10.0, 100.0};  // gain step sizes to pick from
     static final int START_STEP_INDEX = 3;              // start changing gains by GAIN_STEPS[3] = 1.0
@@ -286,7 +286,7 @@ public class TestLauncher extends LinearOpMode {
                 telemetry.addData("PIDF", gainText());
                 telemetry.addData("Changing", "%s, step %s", GAIN_NAMES[pickedGain], trim(GAIN_STEPS[stepIndex]));
             } else {
-                telemetry.addData("Test power", "%.0f%%", testPower * 100);
+                telemetry.addData("Test power", "%.1f%%", testPower * 100);
                 double power = launcher.getPower();
                 if (Math.abs(power) > 0.3 && Math.abs(speed) > 100) {
                     // REV's rule for the hub's F: F = 32767 / top speed. At less than full power, scale by the power.
@@ -331,9 +331,9 @@ public class TestLauncher extends LinearOpMode {
         }
     }
 
-    /** Round to 2 decimals, so 5% steps land exactly on 0.70, 0.75... (computers add 0.05 slightly off). */
+    /** Round to 3 decimals, so 2.5% steps land exactly on 0.700, 0.725, 0.750... (computers add 0.025 slightly off). */
     private static double roundPower(double power) {
-        return Math.round(power * 100.0) / 100.0;
+        return Math.round(power * 1000.0) / 1000.0;
     }
 
     private String gainText() {
