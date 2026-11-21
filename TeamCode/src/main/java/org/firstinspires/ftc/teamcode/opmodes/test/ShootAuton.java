@@ -33,7 +33,7 @@ public abstract class ShootAuton extends MainAuton {
 
     // Tune on the robot (tuning-guide.md has a row for each).
     static final Pose2D SHOOT_SPOT = pose(0, -22.5, 0); // 22.5 in RIGHT of the start: RED B1 -> C1, BLUE E6 -> D6
-    static final double FLYWHEEL_SPIN_UP_S = 1.5;       // flywheel ON this long before the gate opens (intake runs too)
+    static final double FLYWHEEL_SPIN_UP_S = 1.0;       // flywheel ON this long before the gate opens (intake runs too)
     static final double SHOOT_TIME_S = 4.0;             // gate open this long: enough for all 4 balls to go through
 
     /** The shooting happens at the first waypoint (SHOOT_SPOT). */
