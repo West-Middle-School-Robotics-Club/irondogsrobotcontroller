@@ -29,6 +29,7 @@ All six test sheets come from `make_test_worksheets.py`. Basic Auton has its own
 | Sheet | What | Script |
 |---|---|---|
 | `controller-layout.pdf` | driver (page 1) and operator (page 2) buttons | `make_controller_layout.py` |
+| `launcher-test-layout.pdf` | Launcher Test buttons: gamepad 1 POWER mode, gamepad 1 VELOCITY (PIDF) mode, gamepad 2 (optional) (#5) | `make_launcher_test_layout.py` |
 | `hardware-map.pdf` | every device by subsystem, blanks for hub and port | `make_hardware_map.py` |
 | `basic-auton-guide.pdf` | drive team guide for Basic Auton: OpMode choice, INIT screen, start delay, lights | `make_basic_auton_guide.py` |
 | `../game/diagrams/auton-near.pdf`, `auton-far.pdf` | Auton NEAR / FAR routes with a 5-run test log | `../game/diagrams/make_diagrams.py` |

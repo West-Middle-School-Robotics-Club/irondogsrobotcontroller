@@ -206,61 +206,66 @@ def page(c, jobs, title, subtitle, blank_default):
             callout(c, side, top, name, (ax + dx, ay + dy + GAMEPAD_LIFT), job)
 
 
-c = canvas.Canvas(OUT, pagesize=landscape(letter))
-c.setTitle("Controller Layout")
-c.setAuthor("WMS Irondogs")
+def main():
+    c = canvas.Canvas(OUT, pagesize=landscape(letter))
+    c.setTitle("Controller Layout")
+    c.setAuthor("WMS Irondogs")
 
-# ---------- Page 1: DRIVER ----------
-page(c, DRIVER, "Gamepad 1: DRIVER",
-     "Drives the robot. Pick it on the Driver Station with START + A. Same in every TeleOp (DriverControls.java).",
-     blank_default=False)
-box(c, 0.45, 0.55, 10.1, 1.2, "Good to know", [
-    "Directions match the robot: left stick forward = drive forward, left stick left = strafe left, right stick left = turn left.",
-    [("Straight assist (A): ", True), ("left stick within %g° of straight forward / back / left / right drives exactly straight."
-                                       % float(now("SNAP_ANGLE_DEGREES")), False)],
-    "Let go of the sticks and the robot stops quickly.",
-    "Nothing moves during INIT.",
-], size=9.5)
-c.showPage()
-
-# ---------- Page 2: LAUNCHER (gamepad 2) ----------
-decided = bool(LAUNCHER)
-page(c, LAUNCHER, "Gamepad 2: LAUNCHER",
-     "Runs the mechanisms. Pick it on the Driver Station with START + B. " +
-     ("" if decided else "Write each job next to a button (pencil!), then tell the coders."),
-     blank_default=not decided)
-if not decided:
-    box(c, 0.45, 0.55, 6.6, 1.85, "Jobs that need a button  (for each: HOLD it, TOGGLE on/off, or PRESS once?)", [
-        "", "", "", "",
-        "Tick each job once it has a button. A stick or trigger is good for",
-        "\"how much\" (turret speed); a button is good for on/off.",
-    ], size=8.6)
-    jobs = ["Intake IN", "Intake OUT", "Water wheel UP", "Water wheel DOWN (clear a jam)",
-            "Flywheel ON / OFF", "FIRE (the trigger)", "Flower flipper shake", "Turret LEFT / RIGHT",
-            "Turret to FORWARD", "Hood UP / DOWN", "Turret AUTO-AIM (later, #7)"]
-    c.setFont("Helvetica", 8.6)
-    c.setFillColor(colors.black)
-    for n, job in enumerate(jobs):
-        col, row = n // 4, n % 4
-        c.drawString((0.57 + col * 2.2) * inch, (1.98 - row * 0.155) * inch, "[   ]  " + job)
-    box(c, 7.25, 0.55, 3.3, 1.85, "Questions to decide", [
-        "1. Intake: hold, or toggle on/off?",
-        "2. Fire: one button for the whole shot",
-        "   (load, fire, reset) or a button each?",
-        "3. Anything automatic? e.g. stop the",
-        "   intake when a NECTAR is detected",
-        "4. Lights: what should they show?",
-    ], size=8.6)
-else:
-    box(c, 0.45, 0.55, 10.1, 1.4, "Good to know", [
-        [("You MUST press A after START! ", True), ("The intake + water wheel start OFF, so no balls come in until "
-                                                    "you press A.", False)],
-        [("Flywheel: ", True), ("starts by itself when START is pressed and runs the whole match. "
-                                "Watch \"Launcher Status\" for READY.", False)],
-        [("NECTARs ", True), ("launch by themselves. Hold ", False), ("Y", True), (" to launch POLLEN.", False)],
-        [("EJECT ", True), ("(left trigger) beats everything; let go and the intake + water wheel are OFF.", False)],
-        [("Lights: ", True), ("PURPLE = the next ball to launch is a NECTAR.", False)],
+    # ---------- Page 1: DRIVER ----------
+    page(c, DRIVER, "Gamepad 1: DRIVER",
+         "Drives the robot. Pick it on the Driver Station with START + A. Same in every TeleOp (DriverControls.java).",
+         blank_default=False)
+    box(c, 0.45, 0.55, 10.1, 1.2, "Good to know", [
+        "Directions match the robot: left stick forward = drive forward, left stick left = strafe left, right stick left = turn left.",
+        [("Straight assist (A): ", True), ("left stick within %g° of straight forward / back / left / right drives exactly straight."
+                                           % float(now("SNAP_ANGLE_DEGREES")), False)],
+        "Let go of the sticks and the robot stops quickly.",
+        "Nothing moves during INIT.",
     ], size=9.5)
-c.showPage()
-c.save()
-print("Wrote", OUT)
+    c.showPage()
+
+    # ---------- Page 2: LAUNCHER (gamepad 2) ----------
+    decided = bool(LAUNCHER)
+    page(c, LAUNCHER, "Gamepad 2: LAUNCHER",
+         "Runs the mechanisms. Pick it on the Driver Station with START + B. " +
+         ("" if decided else "Write each job next to a button (pencil!), then tell the coders."),
+         blank_default=not decided)
+    if not decided:
+        box(c, 0.45, 0.55, 6.6, 1.85, "Jobs that need a button  (for each: HOLD it, TOGGLE on/off, or PRESS once?)", [
+            "", "", "", "",
+            "Tick each job once it has a button. A stick or trigger is good for",
+            "\"how much\" (turret speed); a button is good for on/off.",
+        ], size=8.6)
+        jobs = ["Intake IN", "Intake OUT", "Water wheel UP", "Water wheel DOWN (clear a jam)",
+                "Flywheel ON / OFF", "FIRE (the trigger)", "Flower flipper shake", "Turret LEFT / RIGHT",
+                "Turret to FORWARD", "Hood UP / DOWN", "Turret AUTO-AIM (later, #7)"]
+        c.setFont("Helvetica", 8.6)
+        c.setFillColor(colors.black)
+        for n, job in enumerate(jobs):
+            col, row = n // 4, n % 4
+            c.drawString((0.57 + col * 2.2) * inch, (1.98 - row * 0.155) * inch, "[   ]  " + job)
+        box(c, 7.25, 0.55, 3.3, 1.85, "Questions to decide", [
+            "1. Intake: hold, or toggle on/off?",
+            "2. Fire: one button for the whole shot",
+            "   (load, fire, reset) or a button each?",
+            "3. Anything automatic? e.g. stop the",
+            "   intake when a NECTAR is detected",
+            "4. Lights: what should they show?",
+        ], size=8.6)
+    else:
+        box(c, 0.45, 0.55, 10.1, 1.4, "Good to know", [
+            [("You MUST press A after START! ", True), ("The intake + water wheel start OFF, so no balls come in until "
+                                                        "you press A.", False)],
+            [("Flywheel: ", True), ("starts by itself when START is pressed and runs the whole match. "
+                                    "Watch \"Launcher Status\" for READY.", False)],
+            [("NECTARs ", True), ("launch by themselves. Hold ", False), ("Y", True), (" to launch POLLEN.", False)],
+            [("EJECT ", True), ("(left trigger) beats everything; let go and the intake + water wheel are OFF.", False)],
+            [("Lights: ", True), ("PURPLE = the next ball to launch is a NECTAR.", False)],
+        ], size=9.5)
+    c.showPage()
+    c.save()
+    print("Wrote", OUT)
+
+
+if __name__ == "__main__":   # so make_launcher_test_layout.py can reuse the drawing code
+    main()
