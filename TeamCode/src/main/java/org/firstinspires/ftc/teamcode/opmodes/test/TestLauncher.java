@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
  *   POWER     what Main TeleOp does today: a fixed power (% of the battery). The speed drops as the battery drains
  *             and right after each ball.
  *   VELOCITY  the hub holds a TARGET SPEED (ticks per second) with its built-in PIDF controller, using the encoder.
- *             Same speed every shot, whatever the battery. The gains are changed LIVE on gamepad 2, no redeploy.
+ *             Same speed every shot, whatever the battery. The gains are changed LIVE (gamepad 1 or 2), no redeploy.
  *
  * PIDF in one line each (for a flywheel, F and P do almost all the work):
  *   F  feedforward: the power needed for the target speed, so the motor starts out close
@@ -29,17 +29,22 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
  *   I  integral: fixes a small error that never goes away. Usually tiny or 0 for a flywheel
  *   D  derivative: damps wobble. Usually 0 for a flywheel
  *
- * Gamepad 1:
+ * Gamepad 1 (everything can be done with gamepad 1 alone):
  *   A                   Spin on / off (toggle)
  *   B                   STOP
  *   RIGHT BUMPER        Switch POWER / VELOCITY mode
- *   Dpad UP / DOWN      POWER: test power +/- 10%.  VELOCITY: target speed +/- TARGET_STEP ticks/s
- *   Y                   POWER only: 100% power
- *   HOLD Right Trigger  POWER only: variable power (0 to 100%)
  *   X                   Intake + water wheel ON / OFF, the shooting way (intake IN, water wheel UP), to feed balls
  *   HOLD Left Bumper    Trigger servo to FIRE (let go = REST). Also measures the shot (see "Last shot")
+ *   POWER mode:
+ *     Dpad UP / DOWN or R2 / L2   test power +/- POWER_STEP (5%)
+ *     Y                           100% power
+ *   VELOCITY mode:
+ *     R2 / L2 (triggers)          target speed +/- TARGET_STEP ticks/s, one step per press
+ *     Dpad LEFT / RIGHT           pick P, I, D or F
+ *     Dpad UP / DOWN              raise / lower the picked gain by the step (applied right away)
+ *     Y                           next step size: 1 -> 10 -> 100 -> 0.001 -> 0.01 -> 0.1 -> 1
  * The flywheel direction is set in Launcher.MOTOR_REVERSED (checked: true).
- * Gamepad 2 (VELOCITY gains, applied right away):
+ * Gamepad 2 (optional, so a second person can tune the gains; same gains as gamepad 1):
  *   Dpad LEFT / RIGHT   Pick P, I, D or F
  *   Dpad UP / DOWN      Raise / lower the picked gain by the step
  *   RIGHT / LEFT BUMPER Step x10 / step /10
@@ -57,16 +62,18 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
  * Printable worksheet (steps, Expected / Actual / Fix, numbers for the code): TeamCode/docs/worksheets/launcher-test.pdf
  */
 // Hidden on the Driver Station (decision 052). To use it: delete the @Disabled line below, then build and deploy.
-@Disabled
 @TeleOp(name = "Launcher Test", group = "Tests")
 public class TestLauncher extends LinearOpMode {
 
     // ---- Test settings (not robot tunables) ----
     static final double START_TARGET_VELOCITY = 1500.0; // VELOCITY mode starts at this target (ticks/s)
-    static final double TARGET_STEP = 50.0;             // dpad up/down change of the target (ticks/s)
-    static final double START_GAIN_STEP = 1.0;          // gamepad 2 starts changing gains by this much
+    static final double POWER_STEP = 0.05;              // POWER mode: dpad / R2 / L2 change of the test power (5%)
+    static final double TARGET_STEP = 50.0;             // R2 / L2 change of the target (ticks/s)
+    static final double[] GAIN_STEPS = {0.001, 0.01, 0.1, 1.0, 10.0, 100.0};  // gain step sizes to pick from
+    static final int START_STEP_INDEX = 3;              // start changing gains by GAIN_STEPS[3] = 1.0
     static final double RECOVERED_FRACTION = 0.97;      // "back to speed" = at least 97% of the speed before the shot
     static final double SHOT_WATCH_MAX_S = 5.0;         // stop measuring a shot after this long
+    static final double TRIGGER_PRESSED = 0.5;          // R2 / L2 count as "pressed" past halfway (they are analog)
 
     private static final String[] GAIN_NAMES = {"P", "I", "D", "F"};
 
@@ -95,9 +102,11 @@ public class TestLauncher extends LinearOpMode {
         double testPower = 0.5; // Default test power level
         double targetVelocity = START_TARGET_VELOCITY;
         int pickedGain = 3;      // start on F: the first one to set
-        double gainStep = START_GAIN_STEP;
+        int stepIndex = START_STEP_INDEX;  // which GAIN_STEPS entry the gains change by
         boolean isSpinning = false;
         boolean intakeOn = false;  // intake + water wheel, the shooting way
+        boolean r2WasDown = false; // last loop's trigger state, so one press = one step (like the dpad)
+        boolean l2WasDown = false;
 
         // Shot measuring: from the moment the gate opens, the lowest speed and how long until it's back up
         boolean watchingShot = false;
@@ -131,17 +140,46 @@ public class TestLauncher extends LinearOpMode {
                 }
             }
 
+            // R2 / L2 are analog (0 to 1), so we check "down now, but not last loop" to get one step per press
+            boolean r2Down = gamepad1.right_trigger > TRIGGER_PRESSED;
+            boolean l2Down = gamepad1.left_trigger > TRIGGER_PRESSED;
+            boolean r2Pressed = r2Down && !r2WasDown;
+            boolean l2Pressed = l2Down && !l2WasDown;
+            r2WasDown = r2Down;
+            l2WasDown = l2Down;
+
+            // Read each "was pressed" only ONCE per loop: reading it clears it
+            boolean upPressed = gamepad1.dpadUpWasPressed();
+            boolean downPressed = gamepad1.dpadDownWasPressed();
+            boolean leftPressed = gamepad1.dpadLeftWasPressed();
+            boolean rightPressed = gamepad1.dpadRightWasPressed();
+            boolean yPressed = gamepad1.yWasPressed();
+
             if (velocityMode) {
-                if (gamepad1.dpadUpWasPressed()) {
+                // R2 / L2 = target speed.  Dpad + Y = PIDF gains (same as gamepad 2, so one person can tune alone)
+                if (r2Pressed) {
                     targetVelocity += TARGET_STEP;
-                } else if (gamepad1.dpadDownWasPressed()) {
+                } else if (l2Pressed) {
                     targetVelocity = Math.max(0.0, targetVelocity - TARGET_STEP);
                 }
+                if (rightPressed) {
+                    pickedGain = (pickedGain + 1) % 4;
+                } else if (leftPressed) {
+                    pickedGain = (pickedGain + 3) % 4;
+                }
+                if (upPressed) {
+                    gains[pickedGain] += GAIN_STEPS[stepIndex];
+                } else if (downPressed) {
+                    gains[pickedGain] = Math.max(0.0, gains[pickedGain] - GAIN_STEPS[stepIndex]);
+                }
+                if (yPressed) {
+                    stepIndex = (stepIndex + 1) % GAIN_STEPS.length;  // 1 -> 10 -> 100 -> 0.001 -> ... -> 1
+                }
             } else {
-                if (gamepad1.dpadUpWasPressed()) {
-                    testPower = Math.min(1.0, testPower + 0.1);
-                } else if (gamepad1.dpadDownWasPressed()) {
-                    testPower = Math.max(0.1, testPower - 0.1);
+                if (upPressed || r2Pressed) {
+                    testPower = roundPower(Math.min(1.0, testPower + POWER_STEP));
+                } else if (downPressed || l2Pressed) {
+                    testPower = roundPower(Math.max(0.1, testPower - POWER_STEP));
                 }
                 if (gamepad1.y) {
                     testPower = 1.0;
@@ -173,14 +211,14 @@ public class TestLauncher extends LinearOpMode {
                 pickedGain = (pickedGain + 3) % 4;
             }
             if (gamepad2.dpadUpWasPressed()) {
-                gains[pickedGain] += gainStep;
+                gains[pickedGain] += GAIN_STEPS[stepIndex];
             } else if (gamepad2.dpadDownWasPressed()) {
-                gains[pickedGain] = Math.max(0.0, gains[pickedGain] - gainStep);
+                gains[pickedGain] = Math.max(0.0, gains[pickedGain] - GAIN_STEPS[stepIndex]);
             }
             if (gamepad2.rightBumperWasPressed()) {
-                gainStep = Math.min(100.0, gainStep * 10);
+                stepIndex = Math.min(GAIN_STEPS.length - 1, stepIndex + 1);  // step x10
             } else if (gamepad2.leftBumperWasPressed()) {
-                gainStep = Math.max(0.001, gainStep / 10);
+                stepIndex = Math.max(0, stepIndex - 1);                      // step /10
             }
 
             // ---------- Run the flywheel ----------
@@ -190,9 +228,6 @@ public class TestLauncher extends LinearOpMode {
                 } else {
                     usePowerMode();                   // off = coast down, like POWER mode (no hard braking)
                 }
-            } else if (gamepad1.right_trigger > 0.05) {
-                launcher.spinUp(gamepad1.right_trigger);  // the trigger has priority
-                isSpinning = true;
             } else if (isSpinning) {
                 launcher.spinUp(testPower);
             } else {
@@ -234,12 +269,12 @@ public class TestLauncher extends LinearOpMode {
 
             // ---------- Telemetry ----------
             telemetry.addLine("=== LAUNCHER TEST: " + (velocityMode ? "VELOCITY (PIDF)" : "POWER") + " mode ===");
-            telemetry.addLine("GP1: A spin | B stop | RB switch mode | dpad U/D " + (velocityMode ? "target" : "power")
-                    + " | X intake | hold LB fire");
+            telemetry.addLine("GP1: A spin | B stop | RB switch mode | X intake | hold LB fire");
             if (velocityMode) {
-                telemetry.addLine("GP2: dpad L/R pick gain | dpad U/D change | RB/LB step x10 / 10");
+                telemetry.addLine("GP1: R2/L2 target | dpad L/R pick gain | dpad U/D change | Y step size");
+                telemetry.addLine("GP2 (optional): dpad = same | RB/LB step x10 / 10");
             } else {
-                telemetry.addLine("Y = 100% | hold RT = variable power");
+                telemetry.addLine("GP1: dpad U/D or R2/L2 power | Y = 100%");
             }
             telemetry.addLine();
             telemetry.addData("Spinning", isSpinning ? "ON" : "OFF");
@@ -249,7 +284,7 @@ public class TestLauncher extends LinearOpMode {
                 telemetry.addData("Target", "%.0f ticks/s", targetVelocity);
                 telemetry.addData("Speed error", "%.0f ticks/s", targetVelocity - speed);
                 telemetry.addData("PIDF", gainText());
-                telemetry.addData("Changing", "%s, step %s", GAIN_NAMES[pickedGain], trim(gainStep));
+                telemetry.addData("Changing", "%s, step %s", GAIN_NAMES[pickedGain], trim(GAIN_STEPS[stepIndex]));
             } else {
                 telemetry.addData("Test power", "%.0f%%", testPower * 100);
                 double power = launcher.getPower();
@@ -294,6 +329,11 @@ public class TestLauncher extends LinearOpMode {
         if (directMotor.getMode() != DcMotor.RunMode.RUN_WITHOUT_ENCODER) {
             directMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
+    }
+
+    /** Round to 2 decimals, so 5% steps land exactly on 0.70, 0.75... (computers add 0.05 slightly off). */
+    private static double roundPower(double power) {
+        return Math.round(power * 100.0) / 100.0;
     }
 
     private String gainText() {

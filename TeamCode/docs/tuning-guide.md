@@ -179,7 +179,7 @@ Worksheet: `launcher-test.pdf`. Test with **Launcher Test**. Issue #5, decision 
 | `TRIGGER_REST_POSITION` | `0.0` | Trigger gate position that **blocks** the balls (0 to 1) | Launcher Test, left bumper | 🔧 |
 | `TRIGGER_FIRE_POSITION` | `1.0` | Trigger gate position that **lets balls through** | Launcher Test, left bumper | 🔧 |
 
-**Trying velocity control (PIDF), in Launcher Test only for now.** Today the flywheel runs at a fixed power (decision 032), so it spins slower on a tired battery and right after each ball. Launcher Test has a **VELOCITY mode** (right bumper) where the hub holds a target speed with its PIDF controller, and gamepad 2 changes the gains live (worksheet steps 7 to 11):
+**Trying velocity control (PIDF), in Launcher Test only for now.** Today the flywheel runs at a fixed power (decision 032), so it spins slower on a tired battery and right after each ball. Launcher Test has a **VELOCITY mode** (right bumper) where the hub holds a target speed with its PIDF controller, R2 / L2 change the target, and the dpad changes the gains live (Y = step size; gamepad 2 can do it too) (worksheet steps 7 to 11):
 1. **F first:** POWER mode at 100%, read "F estimate" (= 32767 × power / speed). In VELOCITY mode set F to it, P = I = D = 0, target = the speed `DEFAULT_SPIN_POWER` gives today
 2. **Then P:** raise it until "Last shot" says the speed comes back quickly, with no wobble around the target. I and D usually stay 0 for a flywheel
 3. **Write the numbers down** (the test doesn't save them). If they work, switching the real `Launcher` to velocity control is a new decision (changes 032) and gets its own rows here
