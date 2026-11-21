@@ -146,7 +146,7 @@ public abstract class BasicAuton extends LinearOpMode {
     static final double WAYPOINT_TIMEOUT_S = 4.0;    // give up on a waypoint after this long, PLUS...
     static final double WAYPOINT_TIMEOUT_PER_INCH_S = 0.15; // ...this much per inch of the move (100 in: 4 + 15 = 19 s). Long drives need longer
     static final double WAYPOINT_PAUSE_S = 2.0;      // stop and sit still this long after each waypoint (settle, read the position). 5.0 while measuring 11/10
-    static final double STOP_BY_S = 28.0;            // stop everything by this time (AUTO is 30 s)
+    protected static final double STOP_BY_S = 28.0;           // stop everything by this time (AUTO is 30 s)
     static final int MAX_DELAY_S = 10;               // start delay the drive team can choose in INIT
     static final boolean RECALIBRATE_AT_START = true; // re-calibrate the Pinpoint gyro at START, when the robot is surely still (see Odometry.recalibrateImu)
     static final double RECALIBRATE_MIN_S = 0.5;     // the gyro calibration takes about this long; don't trust READY before then
@@ -253,6 +253,7 @@ public abstract class BasicAuton extends LinearOpMode {
             Pose2D target = path[i];
             boolean reached = driveTo(robot, odometry, target, autoTimer, "Waypoint " + (i + 1) + " of " + path.length);
             allReached &= reached;
+            atWaypoint(i, robot, odometry, autoTimer);   // Basic / Main Auton: nothing. Shoot Auton: launch here
             // Pause: let the robot settle (BRAKE) and show where the Pinpoint thinks it is, before the next move
             ElapsedTime pauseTimer = new ElapsedTime();
             while (opModeIsActive() && pauseTimer.seconds() < WAYPOINT_PAUSE_S && autoTimer.seconds() < STOP_BY_S) {
@@ -358,7 +359,17 @@ public abstract class BasicAuton extends LinearOpMode {
         return false;
     }
 
-    private void showStatus(String step, ElapsedTime autoTimer, Odometry odometry, Pose2D target) {
+    /**
+     * Something to do once the robot has stopped on waypoint number `index` (0 = the first), before the pause.
+     * Basic Auton and Main Auton do nothing here (they only drive, decision 020). An OpMode can override it, for
+     * example Shoot Auton launches at its first waypoint. The override must keep checking opModeIsActive() and
+     * finish by STOP_BY_S, and it should stop what it started (the drive loop only stops the wheels).
+     */
+    protected void atWaypoint(int index, Robot robot, Odometry odometry, ElapsedTime autoTimer) {
+        // nothing: drive-only
+    }
+
+    protected void showStatus(String step, ElapsedTime autoTimer, Odometry odometry, Pose2D target) {
         telemetry.addData("AUTON", "%s  %s", alliance(), route());
         telemetry.addData("Step", step);
         telemetry.addData("Time", "%.1f s", autoTimer.seconds());
