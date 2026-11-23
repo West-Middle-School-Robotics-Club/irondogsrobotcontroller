@@ -41,10 +41,11 @@ public class Launcher {
     public static final double TRIGGER_FIRE_POSITION = 1.0;
 
     // Flywheel power (0 to 1), decision 032. TODO(#5): tune with "Launcher Test" and a hit-rate test.
-    public static final double DEFAULT_SPIN_POWER = 1.0;
+    public static final double DEFAULT_SPIN_POWER = 0.83;
     // Note 11/8: 1.0 after testing. Was 0.45 on 11/7 (decision 041) and 0.8 on 11/6.
     // Note 11/6: tuned to 0.8, needs to be checked again once we are actually able to launch a ball
     // Note 11/14: tuned to 0.7 after noticing consistent overshooting in our competition matches
+    // Note 11/15: tuned to 0.83 after further testing and finding the sweet spot arc
     // TODO(#5): confirm on the robot. true = the flywheel spins the right way with REVERSE set.
     public static final boolean MOTOR_REVERSED = true;
 
@@ -175,6 +176,10 @@ public class Launcher {
             telemetry.addData("Launcher Status", isReady() ? "READY" : (getPower() != 0 ? "SPINNING UP (not ready)" : "STOPPED"));
             telemetry.addData("Launcher Power", "%.2f", getPower());
             telemetry.addData("Launcher Velocity", "%.0f ticks/s", getVelocity());
+            if (Math.abs(getPower()) > 0.2 && getVelocity() == 0.0) {
+                // Powered but EXACTLY 0: the hub isn't getting encoder pulses. The speed can't be measured.
+                telemetry.addLine("  ⚠️ Velocity 0 while powered: check the flywheel ENCODER cable (same port number as the motor)");
+            }
             telemetry.addData("Launcher Current", "%.2f A", getCurrentAmps());
         } else {
             telemetry.addData("Launcher", "OFFLINE (device '%s' not in DS config)", FLYWHEEL_NAME);
