@@ -30,7 +30,7 @@ Most of these have a **printable worksheet** in `TeamCode/docs/worksheets/` (see
 | `SLOW_MODE_SCALE` | `opmodes/teleop/DriverControls.java` | `0.5` | Hold a bumper: slow, for lining up (OFF for now: `SPEED_MODES_ENABLED = false`) |
 | `TURBO_SCALE` | `opmodes/teleop/DriverControls.java` | `1.0` | Hold a trigger: full speed (OFF for now: `SPEED_MODES_ENABLED = false`) |
 | `SNAP_ANGLE_DEGREES` | `opmodes/teleop/DriverControls.java` | `20.0` | Straight-line assist: how forgiving it is |
-| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `0.70` | Flywheel power (it runs the whole match) |
+| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `0.83` | Flywheel power (it runs the whole match) |
 | `X_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the X odometry pod is, sideways from the turning center |
 | `Y_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the Y odometry pod is, forward from the turning center |
 
@@ -174,15 +174,17 @@ Worksheet: `launcher-test.pdf`. Test with **Launcher Test**. Issue #5, decision 
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `DEFAULT_SPIN_POWER` | `0.70` | Flywheel power (0 to 1). Runs the whole match. 0.70 since 11/14 (shots overshot in the competition matches; was 0.75 on 11/12, 1.0 from 11/8 testing, 0.45 before, decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
+| `DEFAULT_SPIN_POWER` | `0.83` | Flywheel power (0 to 1). Runs the whole match. 0.83 since 11/15 ("the sweet spot arc" after more testing); 0.70 on 11/14 (shots overshot in the competition matches; was 0.75 on 11/12, 1.0 from 11/8 testing, 0.45 before, decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
 | `MOTOR_REVERSED` | `true` | Flywheel direction | Launcher Test: balls must go OUT | 🔧 |
-| `READY_VELOCITY_THRESHOLD` | `1000.0` | The flywheel counts as READY at this speed (ticks/second) | Launcher Test: read "Launcher Velocity" once settled; use ~90% of it | 🔧 placeholder |
+| `ENCODER_TICKS_PER_REV` | `28.0` | Encoder ticks per turn of the flywheel motor's shaft, to show the speed in RPM. Depends on the motor: 6000 RPM = 28.0, 1620 RPM = 103.8, 1150 RPM = 145.1, 435 RPM = 384.5 | Read the RPM on the motor's label. Check: at 100% power "Launcher Speed" should be a bit under the label's RPM | 🔧 placeholder (motor not known yet) |
+| `READY_RPM` | `2000.0` | The flywheel counts as READY at this speed (RPM). Was `READY_VELOCITY_THRESHOLD` (1000 ticks/s) until 11/23 | Launcher Test: read "Launcher Speed" once settled; use ~90% of it | 🔧 placeholder |
 | `TRIGGER_REST_POSITION` | `0.0` | Trigger gate position that **blocks** the balls (0 to 1) | Launcher Test, left bumper | 🔧 |
 | `TRIGGER_FIRE_POSITION` | `1.0` | Trigger gate position that **lets balls through** | Launcher Test, left bumper | 🔧 |
 
 **Trying velocity control (PIDF), in Launcher Test only for now.** Today the flywheel runs at a fixed power (decision 032), so it spins slower on a tired battery and right after each ball. Launcher Test has a **VELOCITY mode** (right bumper) where the hub holds a target speed with its PIDF controller, R2 / L2 change the target, and the dpad changes the gains live (Y = step size; gamepad 2 can do it too) (worksheet steps 7 to 11):
 1. **F first:** POWER mode at 100%, read "F estimate" (= 32767 × power / speed). In VELOCITY mode set F to it, P = I = D = 0, target = the speed `DEFAULT_SPIN_POWER` gives today
-2. **Then P:** raise it until "Last shot" says the speed comes back quickly, with no wobble around the target. I and D usually stay 0 for a flywheel
+2. **Then P:** raise it until "Last shot VELOCITY" says the speed comes back quickly, with no wobble around the target. I and D usually stay 0 for a flywheel
+   - **Compare with POWER:** POWER mode starts at `DEFAULT_SPIN_POWER`. Once the speed is steady, **dpad RIGHT** copies it to the VELOCITY target, so both modes run at the same speed. Fire a ball in each mode: the screen keeps "Last shot POWER" and "Last shot VELOCITY" side by side. VELOCITY should drop less and get back faster (worksheet table "POWER vs VELOCITY")
 3. **Write the numbers down** (the test doesn't save them). If they work, switching the real `Launcher` to velocity control is a new decision (changes 032) and gets its own rows here
 
 ## Turret and hood: `subsystems/Turret.java`

@@ -25,9 +25,9 @@ from make_controller_layout import (EDGE, GAMEPAD_LIFT, GREY, LABEL_TOPS, LEFT, 
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "launcher-test-layout.pdf")
 
-POWER_STEP = "%g%%" % (float(now("POWER_STEP")) * 100)       # "5%"
-TARGET_STEP = "%g" % float(now("TARGET_STEP"))               # "50"
-START_TARGET = "%g" % float(now("START_TARGET_VELOCITY"))    # "1500"
+POWER_STEP = "%g%%" % (float(now("POWER_STEP")) * 100)       # "2.5%"
+TARGET_STEP = "%g" % float(now("TARGET_STEP_RPM"))           # "100"
+START_TARGET = "%g" % float(now("START_TARGET_RPM"))         # "3000"
 
 # The buttons both modes share (gamepad 1)
 SHARED = {
@@ -44,17 +44,18 @@ POWER = dict(SHARED, **{
     "DU": ("POWER + " + POWER_STEP, "same as R2"),
     "DD": ("POWER - " + POWER_STEP, "same as L2"),
     "Y": ("POWER 100%", "use it to read the F estimate"),
+    "DR": ("COPY SPEED to VELOCITY target", "wait for a steady speed first"),
 })
 
 VELOCITY = dict(SHARED, **{
     "RB": ("Switch to POWER mode", "if spinning, keeps spinning at the test power"),
-    "RT": ("TARGET + " + TARGET_STEP + " ticks/s", "one step per press. Starts at " + START_TARGET),
-    "LT": ("TARGET - " + TARGET_STEP + " ticks/s", "one step per press"),
+    "RT": ("TARGET + " + TARGET_STEP + " RPM", "one step per press. Starts at " + START_TARGET + " RPM"),
+    "LT": ("TARGET - " + TARGET_STEP + " RPM", "one step per press"),
     "DL": ("PICK the gain: back", "F <- D <- I <- P. Starts on F"),
     "DR": ("PICK the gain: next", "P -> I -> D -> F"),
     "DU": ("RAISE the picked gain", "by the step size on screen"),
     "DD": ("LOWER the picked gain", "never goes below 0"),
-    "Y": ("NEXT STEP SIZE", "1 > 10 > 100 > 0.001 > 0.01 > 0.1 > 1"),
+    "Y": ("NEXT STEP SIZE", "1 > 10 > 0.1 > back to 1"),
 })
 
 GAMEPAD2 = {
@@ -62,8 +63,8 @@ GAMEPAD2 = {
     "DR": ("PICK the gain: next", "same as gamepad 1"),
     "DU": ("RAISE the picked gain", "by the step size on screen"),
     "DD": ("LOWER the picked gain", "never goes below 0"),
-    "RB": ("STEP x 10", "up to 100"),
-    "LB": ("STEP / 10", "down to 0.001"),
+    "RB": ("STEP x 10", "up to 10"),
+    "LB": ("STEP / 10", "down to 0.1"),
 }
 
 
@@ -101,12 +102,12 @@ def main():
     layout_page(c, POWER, "Launcher Test: Gamepad 1, POWER mode",
                 "The test starts here. Fixed power, like Main TeleOp today. R1 switches to VELOCITY mode (page 2).")
     box(c, 0.45, 0.55, 10.1, 1.25, "Good to know", [
-        [("Starts at 50% power. ", True), ("Each press of R2 / L2 or dpad up / down changes it by " + POWER_STEP
-                                          + ", so 70%, 72.5%, 75%... can all be tested.", False)],
+        [("Starts at Main TeleOp's power (" + now("DEFAULT_SPIN_POWER") + "). ", True), ("Each press of R2 / L2 or dpad up / down changes it by " + POWER_STEP
+                                          + " (up or down from there).", False)],
         [("F estimate: ", True), ("Y (100%), A, wait 3 s, then read \"F estimate\" on the screen. "
                                   "That is the F to start with in VELOCITY mode.", False)],
-        [("Last shot: ", True), ("after you fire, the screen shows how far the speed dropped and how long it took "
-                                 "to come back.", False)],
+        [("Compare: ", True), ("dpad RIGHT copies the speed to the VELOCITY target. Fire here, then in VELOCITY: "
+                               "\"Last shot POWER\" and \"Last shot VELOCITY\" show side by side.", False)],
         "Nobody in front of the launcher. Nothing moves during INIT.",
     ], size=9.5)
     c.showPage()
@@ -121,8 +122,8 @@ def main():
                                  "back fast with no shaking.", False)],
         [("3. Target: ", True), ("about 85-90% of the 100% speed, so the motor has power left to recover after "
                                  "each ball.", False)],
-        [("Screen: ", True), ("\"Changing: F, step 1\" = which gain moves and by how much. "
-                              "\"Speed error\" should stay small.", False)],
+        [("Better than POWER? ", True), ("\"Last shot VELOCITY\" drops less and is back faster than \"Last shot "
+                                         "POWER\". \"Changing: F, step 1\" = which gain moves.", False)],
     ], size=9.5)
     c.showPage()
 

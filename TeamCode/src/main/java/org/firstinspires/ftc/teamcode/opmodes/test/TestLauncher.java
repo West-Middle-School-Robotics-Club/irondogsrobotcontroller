@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
  * Two modes (RIGHT BUMPER on gamepad 1 switches):
  *   POWER     what Main TeleOp does today: a fixed power (% of the battery). The speed drops as the battery drains
  *             and right after each ball.
- *   VELOCITY  the hub holds a TARGET SPEED (ticks per second) with its built-in PIDF controller, using the encoder.
+ *   VELOCITY  the hub holds a TARGET SPEED (RPM) with its built-in PIDF controller, using the encoder.
  *             Same speed every shot, whatever the battery. The gains are changed LIVE (gamepad 1 or 2), no redeploy.
  *
  * PIDF in one line each (for a flywheel, F and P do almost all the work):
@@ -35,19 +35,24 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
  *   RIGHT BUMPER        Switch POWER / VELOCITY mode
  *   X                   Intake + water wheel ON / OFF, the shooting way (intake IN, water wheel UP), to feed balls
  *   HOLD Left Bumper    Trigger servo to FIRE (let go = REST). Also measures the shot (see "Last shot")
- *   POWER mode:
+ *   POWER mode (starts at Launcher.DEFAULT_SPIN_POWER, the power Main TeleOp uses):
  *     Dpad UP / DOWN or R2 / L2   test power +/- POWER_STEP (2.5%)
  *     Y                           100% power
+ *     Dpad RIGHT                  COPY the speed now to the VELOCITY target, so both modes run at the SAME speed
  *   VELOCITY mode:
- *     R2 / L2 (triggers)          target speed +/- TARGET_STEP ticks/s, one step per press
+ *     R2 / L2 (triggers)          target speed +/- TARGET_STEP_RPM, one step per press
  *     Dpad LEFT / RIGHT           pick P, I, D or F
  *     Dpad UP / DOWN              raise / lower the picked gain by the step (applied right away)
- *     Y                           next step size: 1 -> 10 -> 100 -> 0.001 -> 0.01 -> 0.1 -> 1
+ *     Y                           next step size: 1 -> 10 -> 0.1 -> 1
  * The flywheel direction is set in Launcher.MOTOR_REVERSED (checked: true).
  * Gamepad 2 (optional, so a second person can tune the gains; same gains as gamepad 1):
  *   Dpad LEFT / RIGHT   Pick P, I, D or F
  *   Dpad UP / DOWN      Raise / lower the picked gain by the step
  *   RIGHT / LEFT BUMPER Step x10 / step /10
+ *
+ * COMPARE POWER vs VELOCITY: the screen keeps the last shot from EACH mode ("Last shot POWER" / "Last shot VELOCITY"),
+ * so you can see which one drops less and gets back to speed faster after a ball. Wait for a steady speed in POWER
+ * mode, press dpad RIGHT (copy the speed to the target), fire a ball, then RB to VELOCITY and fire another.
  *
  * How to tune (also in the tuning guide, Launcher section):
  *   1. POWER mode, Y (100%), A. Wait 3 s, read "F estimate" (= 32767 x power / speed). VELOCITY mode, set F to it,
@@ -66,11 +71,11 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
 public class TestLauncher extends LinearOpMode {
 
     // ---- Test settings (not robot tunables) ----
-    static final double START_TARGET_VELOCITY = 1500.0; // VELOCITY mode starts at this target (ticks/s)
+    static final double START_TARGET_RPM = 3000.0;      // VELOCITY mode starts at this target (RPM)
     static final double POWER_STEP = 0.025;             // POWER mode: dpad / R2 / L2 change of the test power (2.5%)
-    static final double TARGET_STEP = 50.0;             // R2 / L2 change of the target (ticks/s)
-    static final double[] GAIN_STEPS = {0.001, 0.01, 0.1, 1.0, 10.0, 100.0};  // gain step sizes to pick from
-    static final int START_STEP_INDEX = 3;              // start changing gains by GAIN_STEPS[3] = 1.0
+    static final double TARGET_STEP_RPM = 100.0;        // R2 / L2 change of the target (RPM)
+    static final double[] GAIN_STEPS = {0.1, 1.0, 10.0};  // gain step sizes to pick from (add more here if needed)
+    static final int START_STEP_INDEX = 1;              // start changing gains by GAIN_STEPS[1] = 1.0
     static final double RECOVERED_FRACTION = 0.97;      // "back to speed" = at least 97% of the speed before the shot
     static final double SHOT_WATCH_MAX_S = 5.0;         // stop measuring a shot after this long
     static final double TRIGGER_PRESSED = 0.5;          // R2 / L2 count as "pressed" past halfway (they are analog)
@@ -99,8 +104,8 @@ public class TestLauncher extends LinearOpMode {
             directMotor = null;
         }
 
-        double testPower = 0.5; // Default test power level
-        double targetVelocity = START_TARGET_VELOCITY;
+        double testPower = Launcher.DEFAULT_SPIN_POWER;  // start at the power Main TeleOp uses, to compare with
+        double targetRpm = START_TARGET_RPM;
         int pickedGain = 3;      // start on F: the first one to set
         int stepIndex = START_STEP_INDEX;  // which GAIN_STEPS entry the gains change by
         boolean isSpinning = false;
@@ -114,7 +119,11 @@ public class TestLauncher extends LinearOpMode {
         double lowestSpeed = 0.0;
         ElapsedTime shotTimer = new ElapsedTime();
         double lowestAtSeconds = 0.0;
-        String lastShot = "none yet (hold left bumper with a ball)";
+        boolean shotInVelocityMode = false;  // which mode the shot being measured was fired in
+        String shotSetting = "";             // the power, or the target + gains, at the moment of the shot
+        String lastPowerShot = "none yet (hold left bumper with a ball)";
+        String lastVelocityShot = "none yet";
+        String copiedMessage = "";
 
         // INIT loop: nothing moves (G304.H)
         while (opModeInInit()) {
@@ -158,9 +167,9 @@ public class TestLauncher extends LinearOpMode {
             if (velocityMode) {
                 // R2 / L2 = target speed.  Dpad + Y = PIDF gains (same as gamepad 2, so one person can tune alone)
                 if (r2Pressed) {
-                    targetVelocity += TARGET_STEP;
+                    targetRpm += TARGET_STEP_RPM;
                 } else if (l2Pressed) {
-                    targetVelocity = Math.max(0.0, targetVelocity - TARGET_STEP);
+                    targetRpm = Math.max(0.0, targetRpm - TARGET_STEP_RPM);
                 }
                 if (rightPressed) {
                     pickedGain = (pickedGain + 1) % 4;
@@ -173,7 +182,7 @@ public class TestLauncher extends LinearOpMode {
                     gains[pickedGain] = Math.max(0.0, gains[pickedGain] - GAIN_STEPS[stepIndex]);
                 }
                 if (yPressed) {
-                    stepIndex = (stepIndex + 1) % GAIN_STEPS.length;  // 1 -> 10 -> 100 -> 0.001 -> ... -> 1
+                    stepIndex = (stepIndex + 1) % GAIN_STEPS.length;  // 1 -> 10 -> 0.1 -> 1
                 }
             } else {
                 if (upPressed || r2Pressed) {
@@ -183,6 +192,17 @@ public class TestLauncher extends LinearOpMode {
                 }
                 if (gamepad1.y) {
                     testPower = 1.0;
+                }
+                // Dpad RIGHT = copy the speed now to the VELOCITY target (rounded to 10 RPM), to compare at the same speed
+                if (rightPressed) {
+                    double rpmNow = Math.abs(launcher.getRpm());
+                    if (rpmNow > 100) {
+                        targetRpm = Math.round(rpmNow / 10.0) * 10.0;
+                        copiedMessage = String.format("VELOCITY target = %.0f RPM (the speed at %.1f%% power)",
+                                targetRpm, testPower * 100);
+                    } else {
+                        copiedMessage = "nothing copied: spin the flywheel first (A) and wait for a steady speed";
+                    }
                 }
             }
 
@@ -224,7 +244,7 @@ public class TestLauncher extends LinearOpMode {
             // ---------- Run the flywheel ----------
             if (velocityMode && directMotor != null) {
                 if (isSpinning) {
-                    useVelocityMode(targetVelocity);  // sends the gains and the target every loop: changes apply at once
+                    useVelocityMode(targetRpm);  // sends the gains and the target every loop: changes apply at once
                 } else {
                     usePowerMode();                   // off = coast down, like POWER mode (no hard braking)
                 }
@@ -235,10 +255,14 @@ public class TestLauncher extends LinearOpMode {
             }
 
             // ---------- Trigger servo + shot measuring ----------
-            double speed = Math.abs(launcher.getVelocity());  // size only, so a flipped direction still measures
+            double speed = Math.abs(launcher.getRpm());  // RPM, size only, so a flipped direction still measures
             if (gamepad1.leftBumperWasPressed()) {
                 launcher.fire();
                 watchingShot = true;
+                shotInVelocityMode = velocityMode;
+                shotSetting = velocityMode
+                        ? String.format("%.0f RPM, P %s F %s", targetRpm, trim(gains[0]), trim(gains[3]))
+                        : String.format("%.1f%%", testPower * 100);
                 speedBeforeShot = speed;
                 lowestSpeed = speed;
                 lowestAtSeconds = 0.0;
@@ -253,16 +277,24 @@ public class TestLauncher extends LinearOpMode {
                 }
                 boolean dipped = lowestSpeed < RECOVERED_FRACTION * speedBeforeShot;
                 boolean backUp = speed >= RECOVERED_FRACTION * speedBeforeShot;
+                String result = null;
                 if (dipped && backUp) {
-                    lastShot = String.format("%.0f -> lowest %.0f ticks/s (-%.0f%%), back to speed in %.2f s",
+                    result = String.format("%.0f -> %.0f RPM (-%.0f%%), back in %.2f s",
                             speedBeforeShot, lowestSpeed, dropPercent(speedBeforeShot, lowestSpeed),
                             shotTimer.seconds() - lowestAtSeconds);
-                    watchingShot = false;
                 } else if (shotTimer.seconds() > SHOT_WATCH_MAX_S) {
-                    lastShot = dipped
-                            ? String.format("lowest %.0f ticks/s (-%.0f%%), NOT back to speed in %.0f s",
+                    result = dipped
+                            ? String.format("%.0f -> %.0f RPM (-%.0f%%), NOT back in %.0f s", speedBeforeShot,
                                     lowestSpeed, dropPercent(speedBeforeShot, lowestSpeed), SHOT_WATCH_MAX_S)
                             : "no ball went through (the speed didn't drop)";
+                }
+                if (result != null) {
+                    // Kept per mode, so POWER and VELOCITY can be compared side by side
+                    if (shotInVelocityMode) {
+                        lastVelocityShot = shotSetting + ":  " + result;
+                    } else {
+                        lastPowerShot = shotSetting + ":  " + result;
+                    }
                     watchingShot = false;
                 }
             }
@@ -274,27 +306,40 @@ public class TestLauncher extends LinearOpMode {
                 telemetry.addLine("GP1: R2/L2 target | dpad L/R pick gain | dpad U/D change | Y step size");
                 telemetry.addLine("GP2 (optional): dpad = same | RB/LB step x10 / 10");
             } else {
-                telemetry.addLine("GP1: dpad U/D or R2/L2 power | Y = 100%");
+                telemetry.addLine("GP1: dpad U/D or R2/L2 power | Y = 100% | dpad R = copy speed to VELOCITY target");
             }
             telemetry.addLine();
             telemetry.addData("Spinning", isSpinning ? "ON" : "OFF");
             telemetry.addData("Intake + water wheel", intakeOn ? "ON (feeding)" : "off   (X to start)");
-            telemetry.addData("Speed", "%.0f ticks/s", speed);
+            telemetry.addData("Speed", "%.0f RPM", speed);
+            if (directMotor != null) {
+                // Not changing when you turn the flywheel BY HAND (motor off)? The hub gets nothing from the encoder:
+                // check the cable, the port (same number as the motor port), or try another cable
+                telemetry.addData("Encoder position", "%d ticks  (turn the wheel by hand: must change)",
+                        directMotor.getCurrentPosition());
+            }
             if (velocityMode) {
-                telemetry.addData("Target", "%.0f ticks/s", targetVelocity);
-                telemetry.addData("Speed error", "%.0f ticks/s", targetVelocity - speed);
+                telemetry.addData("Target", "%.0f RPM", targetRpm);
+                telemetry.addData("Speed error", "%.0f RPM", targetRpm - speed);
                 telemetry.addData("PIDF", gainText());
                 telemetry.addData("Changing", "%s, step %s", GAIN_NAMES[pickedGain], trim(GAIN_STEPS[stepIndex]));
             } else {
                 telemetry.addData("Test power", "%.1f%%", testPower * 100);
                 double power = launcher.getPower();
-                if (Math.abs(power) > 0.3 && Math.abs(speed) > 100) {
-                    // REV's rule for the hub's F: F = 32767 / top speed. At less than full power, scale by the power.
-                    telemetry.addData("F estimate", "%.1f  (= 32767 x %.2f / %.0f, read it once the speed is steady)",
-                            32767 * Math.abs(power) / Math.abs(speed), Math.abs(power), Math.abs(speed));
+                if (Math.abs(power) > 0.3 && speed > 100) {
+                    // REV's rule for the hub's F: F = 32767 / top speed, with the speed in TICKS PER SECOND (what the
+                    // hub uses inside, not RPM). At less than full power, scale by the power.
+                    telemetry.addData("F estimate", "%.1f  (read it once the speed is steady)",
+                            32767 * Math.abs(power) / rpmToTicksPerSecond(speed));
                 }
             }
-            telemetry.addData("Last shot", lastShot);
+            if (!velocityMode && !copiedMessage.isEmpty()) {
+                telemetry.addData("Copied", copiedMessage);
+            }
+            telemetry.addLine();
+            telemetry.addLine("--- COMPARE: last shot in each mode (smaller drop + faster back = better) ---");
+            telemetry.addData("Last shot POWER", lastPowerShot);
+            telemetry.addData("Last shot VELOCITY", lastVelocityShot);
             telemetry.addLine();
 
             telemetry.addLine("--- Subsystem Telemetry ---");
@@ -311,13 +356,18 @@ public class TestLauncher extends LinearOpMode {
         intake.stop();
     }
 
-    /** VELOCITY mode: the hub holds this speed with our gains. */
-    private void useVelocityMode(double ticksPerSecond) {
+    /** VELOCITY mode: the hub holds this speed (RPM) with our gains. */
+    private void useVelocityMode(double rpm) {
         if (directMotor.getMode() != DcMotor.RunMode.RUN_USING_ENCODER) {
             directMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
         directMotor.setVelocityPIDFCoefficients(gains[0], gains[1], gains[2], gains[3]);
-        directMotor.setVelocity(ticksPerSecond);
+        directMotor.setVelocity(rpmToTicksPerSecond(rpm));  // the hub works in ticks per second
+    }
+
+    /** RPM to encoder ticks per second (the hub's own unit): ticks per turn x turns per second. */
+    private static double rpmToTicksPerSecond(double rpm) {
+        return rpm * Launcher.ENCODER_TICKS_PER_REV / 60.0;
     }
 
     /** Back to plain power, the way the Launcher subsystem runs it (decision 032), and stop. */

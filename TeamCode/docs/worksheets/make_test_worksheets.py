@@ -220,10 +220,10 @@ story += controls([
     ["A", "start / stop the flywheel at the test power"],
     ["B", "STOP the flywheel"],
     ["RIGHT BUMPER", "switch POWER mode / VELOCITY (PIDF) mode"],
-    ["R2 / L2 (triggers)", "POWER: test power +2.5% / -2.5%.  VELOCITY: target +/- 50 ticks/s (one step per press)"],
+    ["R2 / L2 (triggers)", "POWER: test power +2.5% / -2.5%.  VELOCITY: target +/- " + now("TARGET_STEP_RPM") + " RPM (one step per press)"],
     ["Dpad UP / DOWN", "POWER: test power +2.5% / -2.5%.  VELOCITY: raise / lower the picked gain"],
     ["Dpad LEFT / RIGHT", "VELOCITY: pick P, I, D or F"],
-    ["Y", "POWER: test power 100%.  VELOCITY: next gain step (1, 10, 100, 0.001, 0.01, 0.1)"],
+    ["Y", "POWER: test power 100%.  VELOCITY: next gain step (1, 10, 0.1)"],
     ["X", "intake + water wheel ON / OFF (intake IN, water wheel UP: feeds balls)"],
     ["HOLD left bumper", "trigger gate to FIRE (open). Let go = REST (closed). Also measures the shot"],
     ["Gamepad 2 (optional)", "dpad L/R, U/D = same gains as gamepad 1.  RB / LB = gain step x10 / divided by 10"],
@@ -235,8 +235,8 @@ story += steps([
      "change " + c("TRIGGER_REST_POSITION")],
     ["3", "Hold the left bumper", "gate at FIRE lets the ball pass freely", "", "change " +
      c("TRIGGER_FIRE_POSITION")],
-    ["4", "Y, then A. Wait 3 s. Read \"Launcher Velocity\"", "a steady number: ______ ticks/s", "",
-     c("READY_VELOCITY_THRESHOLD") + " = about 90% of it: ______"],
+    ["4", "Y, then A. Wait 3 s. Read \"Launcher Speed\"", "a steady number: ______ RPM", "",
+     c("READY_RPM") + " = about 90% of it: ______"],
     ["5", "B, then A again. Count seconds until \"READY\"", "under 2 s", "", "note it; the operator must wait this long"],
     ["6", "Launch one ball (A, wait READY, X to feed, hold left bumper)", "ball comes out", "",
      "jam: check the gate positions and the water wheel"],
@@ -244,18 +244,23 @@ story += steps([
 story += steps([
     ["7", "POWER mode, Y (100%), A. Wait 3 s. Read \"F estimate\"", "a steady number: F = ______", "",
      "if it jumps around, wait longer"],
-    ["8", "POWER mode at " + now("DEFAULT_SPIN_POWER") + ". Read the steady \"Speed\"", "______ ticks/s = target", "",
-     "this is the speed we launch at today"],
-    ["9", "RB = VELOCITY. Dpad L/R + U/D: F from step 7, P = I = D = 0. R2/L2 to the target. A", "\"Speed error\" small", "",
+    ["8", "Restart the test: POWER mode starts at " + now("DEFAULT_SPIN_POWER") + " (Main TeleOp's power). A, wait for a "
+     "steady \"Speed\", then dpad RIGHT", "\"Copied: VELOCITY target = ______ RPM\"", "",
+     "nothing copied? the wheel isn't spinning, or the speed reads 0 (encoder)"],
+    ["9", "X to feed, launch a ball (hold LB)", "\"Last shot POWER\" fills in", "", "write it in the table below"],
+    ["10", "RB = VELOCITY. Dpad L/R + U/D: F from step 7, P = I = D = 0. A", "\"Speed error\" small", "",
      "error stays big? adjust F a little"],
-    ["10", "X to feed, launch a ball (hold LB). Read \"Last shot\"", "back to speed fast", "",
-     "raise P (x10 steps, then smaller) until fast with NO wobble"],
-    ["11", "Speed shakes around the target?", "steady", "", "too much P: lower it"],
-], title="PIDF velocity control (VELOCITY mode, steps 7 to 11)")
-story += section("PIDF results (write them down: the test forgets them when it stops)",
-          table([["Target (ticks/s)", "P", "I", "D", "F", "Drop per shot (%)", "Back to speed (s)"],
-                 ["", "", "", "", "", "", ""], ["", "", "", "", "", "", ""], ["", "", "", "", "", "", ""]],
-                [1.1, 0.75, 0.75, 0.75, 0.75, 1.45, 1.45], row_height=0.36 * inch))
+    ["11", "Launch a ball. Compare \"Last shot VELOCITY\" with \"Last shot POWER\"", "smaller drop, back faster", "",
+     "raise P (step 10, then 1) and launch again until fast with NO wobble"],
+    ["12", "Speed shakes around the target?", "steady", "", "too much P: lower it"],
+], title="PIDF velocity control, compared with POWER (steps 7 to 12)")
+story += section("POWER vs VELOCITY (write them down: the test forgets them when it stops)",
+          p("One row per try, same robot spot. VELOCITY wins if it drops less, is back faster, and makes more.", SMALL),
+          table([["Mode", "Power % / target RPM", "P", "F", "Drop (%)", "Back in (s)", "Made / 5", "Battery (V)"],
+                 ["POWER", "", "-", "-", "", "", "", ""], ["VELOCITY", "", "", "", "", "", "", ""],
+                 ["VELOCITY", "", "", "", "", "", "", ""], ["VELOCITY", "", "", "", "", "", "", ""],
+                 ["POWER", "", "-", "-", "", "", "", ""], ["VELOCITY", "", "", "", "", "", "", ""]],
+                [0.95, 1.25, 0.55, 0.55, 0.8, 0.85, 0.8, 0.85], row_height=0.34 * inch))
 story += section("Power vs distance",
           p("Put the robot a set distance from the goal. For each power, launch 5 balls. The hit-rate test at the end "
             "uses the best power.", BODY),
@@ -269,7 +274,8 @@ story += constants([
     [c("MOTOR_REVERSED"), now("MOTOR_REVERSED"), "", ""],
     [c("TRIGGER_REST_POSITION"), now("TRIGGER_REST_POSITION"), "", ""],
     [c("TRIGGER_FIRE_POSITION"), now("TRIGGER_FIRE_POSITION"), "", ""],
-    [c("READY_VELOCITY_THRESHOLD"), now("READY_VELOCITY_THRESHOLD"), "", ""],
+    [c("ENCODER_TICKS_PER_REV"), now("ENCODER_TICKS_PER_REV"), "", ""],
+    [c("READY_RPM"), now("READY_RPM"), "", ""],
     [c("DEFAULT_SPIN_POWER"), now("DEFAULT_SPIN_POWER"), "", ""],
 ], "subsystems/Launcher.java")
 story += [p("Also write in " + c("hardware-config.md") + ": motor gear ratio ______, Expansion Hub motor port ____, "

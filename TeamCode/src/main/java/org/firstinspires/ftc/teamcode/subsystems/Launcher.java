@@ -26,7 +26,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
  *
  * Speed control (decision 032): the flywheel runs in RUN_WITHOUT_ENCODER at a fixed POWER (DEFAULT_SPIN_POWER),
  * not at a set velocity. Simpler, and it runs the whole match so it has time to settle. The encoder is still
- * read so isReady() and telemetry can show the real speed.
+ * read so isReady() and telemetry can show the real speed, in RPM (turns per minute) of the motor shaft.
  */
 public class Launcher {
 
@@ -49,10 +49,16 @@ public class Launcher {
     // TODO(#5): confirm on the robot. true = the flywheel spins the right way with REVERSE set.
     public static final boolean MOTOR_REVERSED = true;
 
-    // The flywheel counts as READY once the encoder reads at least this many ticks per second.
-    // TODO(#5): run "Launcher Test" at DEFAULT_SPIN_POWER, read "Launcher Velocity" once it settles,
-    // and set this to about 90% of that number. 1000 is a placeholder.
-    public static final double READY_VELOCITY_THRESHOLD = 1000.0;
+    // Encoder ticks per turn of the motor's output shaft, to turn the encoder reading into RPM.
+    // It depends on the motor's gearbox (goBILDA 5203 Yellow Jacket, the RPM is on its label):
+    //   6000 RPM (1:1) = 28.0    1620 RPM (3.7:1) = 103.8    1150 RPM (5.2:1) = 145.1    435 RPM (13.7:1) = 384.5
+    // TODO(#5): 28.0 (6000 RPM) is a PLACEHOLDER, the motor isn't known yet. Read the label and fix it.
+    public static final double ENCODER_TICKS_PER_REV = 28.0;
+
+    // The flywheel counts as READY once it spins at least this fast (RPM).
+    // TODO(#5): run "Launcher Test" at DEFAULT_SPIN_POWER, read "Launcher Speed" once it settles,
+    // and set this to about 90% of that number. 2000 is a placeholder (was 1000 ticks/s, about 2140 RPM).
+    public static final double READY_RPM = 2000.0;
 
     private final DcMotorEx launcherMotor;
     private final Servo launcherTriggerServo;  // null if not in the Driver Station config
@@ -99,11 +105,12 @@ public class Launcher {
         return launcherMotor != null ? launcherMotor.getPower() : targetPower;
     }
 
-    /** Current flywheel velocity in encoder ticks per second (0.0 if not equipped or offline). */
-    public double getVelocity() {
+    /** Current flywheel speed in RPM (turns per minute), 0.0 if offline. Negative = spinning backwards. */
+    public double getRpm() {
         if (launcherMotor != null) {
             try {
-                return launcherMotor.getVelocity();
+                // The hub measures ticks per second; 60 seconds per minute, ENCODER_TICKS_PER_REV ticks per turn
+                return launcherMotor.getVelocity() * 60.0 / ENCODER_TICKS_PER_REV;
             } catch (Exception e) {
                 return 0.0;
             }
@@ -154,7 +161,7 @@ public class Launcher {
     }
 
     /**
-     * True when the flywheel is really up to speed: the encoder reads at least READY_VELOCITY_THRESHOLD.
+     * True when the flywheel is really up to speed: at least READY_RPM.
      * Power alone doesn't count, because a motor at full power is still slow for the first moment,
      * and slows down again right after each ball.
      */
@@ -162,7 +169,7 @@ public class Launcher {
         if (launcherMotor == null) {
             return false;
         }
-        return Math.abs(getVelocity()) >= READY_VELOCITY_THRESHOLD;
+        return Math.abs(getRpm()) >= READY_RPM;
     }
 
     /** True if the launcher motor was found in the Driver Station configuration. */
@@ -175,10 +182,10 @@ public class Launcher {
         if (launcherMotor != null) {
             telemetry.addData("Launcher Status", isReady() ? "READY" : (getPower() != 0 ? "SPINNING UP (not ready)" : "STOPPED"));
             telemetry.addData("Launcher Power", "%.2f", getPower());
-            telemetry.addData("Launcher Velocity", "%.0f ticks/s", getVelocity());
-            if (Math.abs(getPower()) > 0.2 && getVelocity() == 0.0) {
+            telemetry.addData("Launcher Speed", "%.0f RPM", getRpm());
+            if (Math.abs(getPower()) > 0.2 && getRpm() == 0.0) {
                 // Powered but EXACTLY 0: the hub isn't getting encoder pulses. The speed can't be measured.
-                telemetry.addLine("  ⚠️ Velocity 0 while powered: check the flywheel ENCODER cable (same port number as the motor)");
+                telemetry.addLine("  ⚠️ Speed 0 while powered: check the flywheel ENCODER cable (same port number as the motor)");
             }
             telemetry.addData("Launcher Current", "%.2f A", getCurrentAmps());
         } else {
