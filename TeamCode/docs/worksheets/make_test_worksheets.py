@@ -278,7 +278,7 @@ story += constants([
     [c("READY_RPM"), now("READY_RPM"), "", ""],
     [c("DEFAULT_SPIN_POWER"), now("DEFAULT_SPIN_POWER"), "", ""],
 ], "subsystems/Launcher.java")
-story += [p("Also write in " + c("hardware-config.md") + ": motor gear ratio ______, Expansion Hub motor port ____, "
+story += [p("Also write in " + c("hardware-config.md") + ": Expansion Hub motor port ____, "
             "trigger servo hub ____ port ____.", SMALL)]
 story += after("#5")
 build("launcher-test.pdf", "Launcher Test", "#5", story)

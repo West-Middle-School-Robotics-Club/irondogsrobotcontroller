@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.Alliance;
  * After AUTO, "Main TeleOp RED" is queued up automatically.
  */
 // Hidden on the Driver Station (decision 052). To use it: delete the @Disabled line below, then build and deploy.
-@Disabled
 @Autonomous(name = "Shoot Auton Red Far", group = "Tests", preselectTeleOp = "Main TeleOp RED")
 public class ShootAutonRedFar extends ShootAuton {
 

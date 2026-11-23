@@ -176,7 +176,7 @@ Worksheet: `launcher-test.pdf`. Test with **Launcher Test**. Issue #5, decision 
 |---|---|---|---|---|
 | `DEFAULT_SPIN_POWER` | `0.83` | Flywheel power (0 to 1). Runs the whole match. 0.83 since 11/15 ("the sweet spot arc" after more testing); 0.70 on 11/14 (shots overshot in the competition matches; was 0.75 on 11/12, 1.0 from 11/8 testing, 0.45 before, decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
 | `MOTOR_REVERSED` | `true` | Flywheel direction | Launcher Test: balls must go OUT | 🔧 |
-| `ENCODER_TICKS_PER_REV` | `28.0` | Encoder ticks per turn of the flywheel motor's shaft, to show the speed in RPM. Depends on the motor: 6000 RPM = 28.0, 1620 RPM = 103.8, 1150 RPM = 145.1, 435 RPM = 384.5 | Read the RPM on the motor's label. Check: at 100% power "Launcher Speed" should be a bit under the label's RPM | 🔧 placeholder (motor not known yet) |
+| `ENCODER_TICKS_PER_REV` | `28.0` | Encoder ticks per turn of the flywheel motor's shaft, to show the speed in RPM. Depends on the motor: 6000 RPM = 28.0, 1620 RPM = 103.8, 1150 RPM = 145.1, 435 RPM = 384.5 | Read the RPM on the motor's label. Check: at 100% power "Launcher Speed" should be a bit under the label's RPM | ✅ 5203-2402-0001 = 6000 RPM, 1:1 (11/23) |
 | `READY_RPM` | `2000.0` | The flywheel counts as READY at this speed (RPM). Was `READY_VELOCITY_THRESHOLD` (1000 ticks/s) until 11/23 | Launcher Test: read "Launcher Speed" once settled; use ~90% of it | 🔧 placeholder |
 | `TRIGGER_REST_POSITION` | `0.0` | Trigger gate position that **blocks** the balls (0 to 1) | Launcher Test, left bumper | 🔧 |
 | `TRIGGER_FIRE_POSITION` | `1.0` | Trigger gate position that **lets balls through** | Launcher Test, left bumper | 🔧 |

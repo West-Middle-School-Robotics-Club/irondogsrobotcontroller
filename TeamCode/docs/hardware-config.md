@@ -97,7 +97,7 @@ Each motor port has a matching **encoder port** with the same number. Ports on t
 
 | Config name | Device type | Hub / Port | Notes |
 |---|---|---|---|
-| `launcherMotor` | Motor (DcMotorEx) | Control Hub / motor port 2 | The flywheel. **goBILDA 5203 Series Yellow Jacket Motor**, gear ratio ___ (write the exact model here). Configure the exact goBILDA type in the Driver Station. Runs at a fixed power in `RUN_WITHOUT_ENCODER` (decision 032); the encoder is read for "READY" and telemetry |
+| `launcherMotor` | Motor (DcMotorEx) | Control Hub / motor port 2 | The flywheel. **goBILDA 5203 Series Yellow Jacket Motor, 5203-2402-0001: 6000 RPM, 1:1 (no gearbox), 28 encoder ticks per turn** (checked 11/23). Configure the exact goBILDA type in the Driver Station. Runs at a fixed power in `RUN_WITHOUT_ENCODER` (decision 032); the encoder is read for "READY" and telemetry |
 | `launcherTriggerServo` | Servo | Expansion Hub / servo port 4 | Positional **gate** in front of the flywheel (decision 029): REST = in the way (blocks balls), FIRE = moved clear so the water wheel feeds balls through. Operator holds **Y**. Positions in `Launcher.java` |
 
 ## Camera (`subsystems/Camera.java`, issue #7, decisions 015, 016)

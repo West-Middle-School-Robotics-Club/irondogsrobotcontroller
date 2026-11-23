@@ -52,7 +52,7 @@ public class Launcher {
     // Encoder ticks per turn of the motor's output shaft, to turn the encoder reading into RPM.
     // It depends on the motor's gearbox (goBILDA 5203 Yellow Jacket, the RPM is on its label):
     //   6000 RPM (1:1) = 28.0    1620 RPM (3.7:1) = 103.8    1150 RPM (5.2:1) = 145.1    435 RPM (13.7:1) = 384.5
-    // TODO(#5): 28.0 (6000 RPM) is a PLACEHOLDER, the motor isn't known yet. Read the label and fix it.
+    // Checked 11/23: the flywheel motor is a 5203-2402-0001 = 6000 RPM, no gearbox (1:1), so 28.0.
     public static final double ENCODER_TICKS_PER_REV = 28.0;
 
     // The flywheel counts as READY once it spins at least this fast (RPM).
