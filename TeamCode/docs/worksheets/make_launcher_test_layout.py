@@ -34,7 +34,7 @@ SHARED = {
     "A": ("FLYWHEEL on / off", "spins at the power or target on screen"),
     "B": ("STOP the flywheel", ""),
     "X": ("INTAKE + WATER WHEEL on / off", "feeds balls to the launcher"),
-    "LB": ("FIRE (hold)", "gate open; let go = closed. Times the shot"),
+    "LB": ("SHOOT (hold)", "gate open + intake + water wheel ON. Times the shot"),
 }
 
 POWER = dict(SHARED, **{

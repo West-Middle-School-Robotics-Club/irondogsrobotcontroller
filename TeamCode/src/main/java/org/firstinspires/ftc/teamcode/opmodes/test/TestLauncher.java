@@ -34,7 +34,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
  *   B                   STOP
  *   RIGHT BUMPER        Switch POWER / VELOCITY mode
  *   X                   Intake + water wheel ON / OFF, the shooting way (intake IN, water wheel UP), to feed balls
- *   HOLD Left Bumper    Trigger servo to FIRE (let go = REST). Also measures the shot (see "Last shot")
+ *   HOLD Left Bumper    SHOOT: trigger servo to FIRE AND intake + water wheel ON, so the balls are fed in.
+ *                       Let go = trigger back to REST, intake back to what X set. Also measures the shot ("Last shot")
  *   POWER mode (starts at Launcher.DEFAULT_SPIN_POWER, the power Main TeleOp uses):
  *     Dpad UP / DOWN or R2 / L2   test power +/- POWER_STEP (2.5%)
  *     Y                           100% power
@@ -206,11 +207,12 @@ public class TestLauncher extends LinearOpMode {
                 }
             }
 
-            // X = intake + water wheel on / off, the same way Main TeleOp shoots: intake IN, water wheel UP
+            // X = intake + water wheel on / off, the same way Main TeleOp shoots: intake IN, water wheel UP.
+            // Holding LB (SHOOT) also runs them, so one button does the whole shot: gate open + balls fed in.
             if (gamepad1.xWasPressed()) {
                 intakeOn = !intakeOn;
             }
-            if (intakeOn) {
+            if (intakeOn || gamepad1.left_bumper) {
                 intake.in();
                 intake.waterWheelUp();
             } else {
@@ -301,7 +303,7 @@ public class TestLauncher extends LinearOpMode {
 
             // ---------- Telemetry ----------
             telemetry.addLine("=== LAUNCHER TEST: " + (velocityMode ? "VELOCITY (PIDF)" : "POWER") + " mode ===");
-            telemetry.addLine("GP1: A spin | B stop | RB switch mode | X intake | hold LB fire");
+            telemetry.addLine("GP1: A spin | B stop | RB switch mode | X intake | hold LB SHOOT (gate + intake)");
             if (velocityMode) {
                 telemetry.addLine("GP1: R2/L2 target | dpad L/R pick gain | dpad U/D change | Y step size");
                 telemetry.addLine("GP2 (optional): dpad = same | RB/LB step x10 / 10");
@@ -310,7 +312,8 @@ public class TestLauncher extends LinearOpMode {
             }
             telemetry.addLine();
             telemetry.addData("Spinning", isSpinning ? "ON" : "OFF");
-            telemetry.addData("Intake + water wheel", intakeOn ? "ON (feeding)" : "off   (X to start)");
+            telemetry.addData("Intake + water wheel", intakeOn ? "ON (feeding)"
+                    : gamepad1.left_bumper ? "ON while shooting (LB)" : "off   (X to start, or hold LB to shoot)");
             telemetry.addData("Speed", "%.0f RPM", speed);
             if (directMotor != null) {
                 // Not changing when you turn the flywheel BY HAND (motor off)? The hub gets nothing from the encoder:

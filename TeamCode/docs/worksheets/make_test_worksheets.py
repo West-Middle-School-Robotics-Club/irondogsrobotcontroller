@@ -225,7 +225,7 @@ story += controls([
     ["Dpad LEFT / RIGHT", "VELOCITY: pick P, I, D or F"],
     ["Y", "POWER: test power 100%.  VELOCITY: next gain step (1, 10, 0.1)"],
     ["X", "intake + water wheel ON / OFF (intake IN, water wheel UP: feeds balls)"],
-    ["HOLD left bumper", "trigger gate to FIRE (open). Let go = REST (closed). Also measures the shot"],
+    ["HOLD left bumper", "SHOOT: trigger gate open AND intake + water wheel ON. Let go = gate closed, intake back to what X set. Also measures the shot"],
     ["Gamepad 2 (optional)", "dpad L/R, U/D = same gains as gamepad 1.  RB / LB = gain step x10 / divided by 10"],
 ])
 story += steps([
