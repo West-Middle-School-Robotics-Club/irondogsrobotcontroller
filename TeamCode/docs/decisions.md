@@ -667,3 +667,10 @@ Issue: #4
 Context: Since 062, A (gamepad 2) started and stopped the intake AND the water wheel together, and both started OFF. The team wants the intake to keep turning all the time, so balls keep coming in; only the water wheel (which carries them up to the launcher) should stop.
 Decision: New `OperatorControls.INTAKE_ALWAYS_ON = true`: in Main TeleOp the intake runs IN from START to the end of the match (not in INIT, G304.H). **A** toggles only the **water wheel** (UP). It starts OFF (`WATER_WHEEL_ON_AT_START = false`, was `INTAKE_ON_AT_START`). **Left trigger** (EJECT) still runs the intake OUT and the water wheel DOWN while held; let go = water wheel OFF and the intake back to IN. `INTAKE_ALWAYS_ON = false` brings back 062's way. Only Main TeleOp changes: Intake Test and Intake + Launcher Test keep their own A buttons (test tools that pick which part runs), and the autons already run their own intake steps. Controller layout updated. This changes 062.
 Who: Mentor (11/23)
+
+## 068 – Main Auton NEAR: Edge and Corner spots, shown for testing  (2026-11-23)
+Status: Accepted
+Issue: #22
+Context: FAR got an EDGE and a CORNER starting spot (066). The team wants the same for NEAR in Main Auton (Pinpoint), to compare with Timed Auton NEAR, which is what we run at matches (060).
+Decision: Main Auton NEAR gets two spots, for RED and BLUE: **EDGE** = `MAIN_NEAR_EDGE_PATH`, (24, 0) → (24, -15) → (2, -15) (was `MAIN_NEAR_PATH`); **CORNER** = `MAIN_NEAR_CORNER_PATH`, (24, 0) → (24, -5) → (2, -5). Both end 2 in from the start, so the robot is off the wall (LEAVE). `MainAutonRedNear` / `BlueNear` are renamed `MainAutonRedNearEdge` / `BlueNearEdge`; new `MainAutonRedNearCorner` / `BlueNearCorner`. They are **shown** on the Driver Station for testing, as **Main Auton Red / Blue Near Edge / Corner** in the "Main Auton" group (they were hidden by 064). At matches NEAR is still **Auton Red / Blue Near** (Timed Auton); hide these with `@Disabled` before a competition unless the team decides to switch. The INIT SET UP line says EDGE or CORNER.
+Who: Mentor (11/23)

@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.TimedAuton;
  *   CORNER: (4, 0) -> (4, -10) -> (2, -10)    = 4 in FORWARD (off the wall), 10 in RIGHT, 2 in BACK: ends near the
  *                                               corner, about 2 in OFF the wall (like EDGE), so it still scores LEAVE.
  *                                               The back must NOT reach the wall, or there's no LEAVE
- *   EDGE:   (24, 0) -> (23, -15) -> (2, -15)  = MainAuton.MAIN_NEAR_PATH: 24 in FORWARD, 15 in RIGHT, 21 in BACK
+ *   EDGE:   (24, 0) -> (24, -15) -> (2, -15)  = MainAuton.MAIN_NEAR_EDGE_PATH: 24 in FORWARD, 15 in RIGHT, BACK to 2 in from the start
  *
  * TUNE: measure each move with a charged battery; new time = old time x goal / measured (tuning guide).
  */

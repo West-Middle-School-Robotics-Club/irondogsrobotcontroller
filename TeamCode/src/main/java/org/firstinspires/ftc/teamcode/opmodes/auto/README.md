@@ -12,7 +12,7 @@ The Driver Station shows these 6 AUTOs, in the **Auton** group (decisions 064, 0
 ## Main Auton (issue #22, decision 060): LEAVE + PARK with the Pinpoint, robot moves
 `MainAuton.java` (was `opmodes/test/testAuton.java`, "Test Auton") + six small files that pick the alliance, route and FAR spot: **Main Auton RED / BLUE NEAR** (hidden), **Auton Red / Blue Far Edge**, **Auton Red / Blue Far Corner**.
 - Same driving code as Basic Auton (Pinpoint, gains, tolerances, start delay, lights), but the robot always starts at **(0, 0, 0)**, and the moves are written as robot moves: +X = forward, +Y = left.
-- NEAR (`MAIN_NEAR_PATH`): forward 24, right 15, back to 2 in from the start. FAR EDGE (`MAIN_FAR_EDGE_PATH`): forward 83, left 22. FAR CORNER (`MAIN_FAR_CORNER_PATH`): forward 87, left 22.
+- NEAR EDGE (`MAIN_NEAR_EDGE_PATH`): forward 24, right 15, back to 2 in from the start. NEAR CORNER (`MAIN_NEAR_CORNER_PATH`): forward 24, right 5, back to 2 in (decision 068). Shown for testing as **Main Auton Red / Blue Near Edge / Corner** (Main Auton group); at matches NEAR is still Timed Auton. FAR EDGE (`MAIN_FAR_EDGE_PATH`): forward 83, left 22. FAR CORNER (`MAIN_FAR_CORNER_PATH`): forward 87, left 22.
 - RED and BLUE drive the **same moves** (the field is rotated 180°, like Timed Auton). The alliance picks the INIT light color, the SET UP line, and the Main TeleOp that comes next.
 - The moves were tuned on the floor, so they no longer match Basic Auton's field positions. Change them in `MainAuton.java` only.
 

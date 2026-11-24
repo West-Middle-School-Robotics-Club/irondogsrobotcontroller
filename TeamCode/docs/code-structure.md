@@ -31,7 +31,7 @@ teamcode/
     │   ├── MainAuton.java      ← THE FAR AUTO (060): BasicAuton driving, robot moves from a (0, 0, 0) start (was testAuton)
     │   ├── MainAutonRedFarEdge.java / BlueFarEdge ← "Auton Red Far Edge" / "Auton Blue Far Edge" on the Driver Station (066)
     │   ├── MainAutonRedFarCorner.java / BlueFarCorner ← "Auton Red Far Corner" / "Auton Blue Far Corner" (066)
-    │   ├── MainAutonRedNear.java / BlueNear ← hidden (@Disabled, 064)
+    │   ├── MainAutonRedNearEdge.java / BlueNearEdge, MainAutonRedNearCorner.java / BlueNearCorner ← "Main Auton Red / Blue Near Edge / Corner", shown for testing (068)
     │   ├── TimedAuton.java     ← THE NEAR AUTO (060), and a FAR backup: time-based moves, no sensors (decisions 054, 057)
     │   ├── TimedAutonRedNear.java / BlueNear ← "Auton Red Near" / "Auton Blue Near" on the Driver Station (064)
     │   ├── TimedAutonRedFar.java / BlueFar ← hidden (@Disabled, 064)

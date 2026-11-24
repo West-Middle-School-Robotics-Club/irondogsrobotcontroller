@@ -103,7 +103,7 @@ The Pinpoint Test OpMode drives in BRAKE with straight-line assist ON and a dpad
 
 ## Basic Auton: `opmodes/auto/BasicAuton.java`
 Guide: `basic-auton-guide.pdf`, routes: `docs/game/diagrams/auton-near.pdf` / `auton-far.pdf`. Issue #22, decisions 026, 053.
-Positions are **field coordinates** (011). To tune a route on any clear floor, use **Main Auton** (`opmodes/auto/MainAuton.java`, was Test Auton): it starts at (0, 0, 0) and holds the moves as forward / left distances (`MAIN_NEAR_PATH`, `MAIN_FAR_EDGE_PATH` = forward 83 / left 22, `MAIN_FAR_CORNER_PATH` = forward 87 / left 22, decision 066). Since decision 060 Main Auton is what we run for FAR, and its moves were tuned on the floor, so they no longer match Basic Auton exactly.
+Positions are **field coordinates** (011). To tune a route on any clear floor, use **Main Auton** (`opmodes/auto/MainAuton.java`, was Test Auton): it starts at (0, 0, 0) and holds the moves as forward / left distances (`MAIN_NEAR_EDGE_PATH` = forward 24 / right 15 / back to 2, `MAIN_NEAR_CORNER_PATH` = forward 24 / right 5 / back to 2, decision 068; `MAIN_FAR_EDGE_PATH` = forward 83 / left 22, `MAIN_FAR_CORNER_PATH` = forward 87 / left 22, decision 066). Since decision 060 Main Auton is what we run for FAR, and its moves were tuned on the floor, so they no longer match Basic Auton exactly.
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
@@ -161,7 +161,7 @@ Two NEAR starting spots with Timed Auton's no-sensor driving (same `DRIVE_POWER`
 | `NEAR_CORNER_RIGHT_S` | `0.65` | CORNER move 2: seconds strafing right (goal: 10 in) | Measure; new time = old time × 10 / measured | 🔧 not tested yet |
 | `NEAR_CORNER_BACK_S` | `0.15` | CORNER move 3: seconds back (goal: 2 in, ending about 2 in OFF the wall). Must stay shorter than the forward move | Back touches the wall (no LEAVE)? lower it. Not in the LOADING ZONE? check the right move first | 🔧 not tested yet |
 | `NEAR_EDGE_FORWARD_S` | `1.05` | EDGE move 1: seconds forward, off the wall (goal: 24 in, LEAVE) | New time = old time × 24 / measured | 🔧 not tested yet |
-| `NEAR_EDGE_RIGHT_S` | `1.0` | EDGE move 2: seconds strafing right (goal: 15 in, like `MAIN_NEAR_PATH`) | New time = old time × 15 / measured | 🔧 not tested yet |
+| `NEAR_EDGE_RIGHT_S` | `1.0` | EDGE move 2: seconds strafing right (goal: 15 in, like `MAIN_NEAR_EDGE_PATH`) | New time = old time × 15 / measured | 🔧 not tested yet |
 | `NEAR_EDGE_BACK_S` | `0.95` | EDGE move 3: seconds back into the LOADING ZONE (goal: 21 in, ending 2 in from the start line). Must stop before the wall | New time = old time × 21 / measured | 🔧 not tested yet |
 
 ### Timed Far Auton (test): `opmodes/test/TimedFarAuton.java`
