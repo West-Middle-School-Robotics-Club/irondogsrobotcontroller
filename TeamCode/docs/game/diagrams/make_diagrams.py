@@ -495,8 +495,10 @@ def route_sheet(route, consts, routes):
            # The OpModes to pick, as a heading, so the drive team finds them fast
            # Driver Station names (decision 064): just "Auton Red Near" etc.; the Java code behind it is {auton}
            # FAR has two spots (decision 066): Edge (the one we've used) and Corner (closer to the field corner)
-           Field.text(50, 78, "OpMode:  Auton Red / Blue Far Edge  or  Far Corner" if route == "FAR"
-                      else f"OpMode:  Auton Red {route.title()}  or  Auton Blue {route.title()}", 16, INK, bold=True),
+           # Decision 069: the drawing shows the Competition backup ("Auton Red Far" ...); Main Auton / Timed Auton
+           # Edge / Corner are in their own Driver Station groups
+           Field.text(50, 78, f"OpMode:  Auton Red {route.title()}  or  Auton Blue {route.title()}  (Competition group)",
+                      16, INK, bold=True),
            Field.text(50, 100, f"Robot's BACK against {where}.", 12, GREY)]
     if route == "FAR":
         out.append(Field.text(50, 118, "PARK on the line between rows 4 and 5: partly in the LOADING ZONE, "

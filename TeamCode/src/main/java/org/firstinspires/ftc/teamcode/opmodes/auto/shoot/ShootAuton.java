@@ -1,14 +1,14 @@
-package org.firstinspires.ftc.teamcode.opmodes.test;
+package org.firstinspires.ftc.teamcode.opmodes.auto.shoot;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.opmodes.auto.MainAuton;
+import org.firstinspires.ftc.teamcode.opmodes.auto.main.MainAuton;
 import org.firstinspires.ftc.teamcode.subsystems.Odometry;
 
 /**
- * TEST: SHOOT AUTON, FAR start. Main Auton FAR, but it shoots its pre-loaded balls first.
+ * SHOOT AUTON, FAR start (decision 069: its own "Shoot Auton" group on the Driver Station). Main Auton FAR, but it shoots its pre-loaded balls first.
  *
  * Same setup as Main Auton FAR: RED in tile B1, BLUE in tile E6, BACK touching the wall (decision 046).
  * Like Main Auton, the robot starts at (0, 0, 0) and the moves are robot moves: +X = forward, +Y = LEFT (-Y = right).
@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Odometry;
  *   2. Shoot: flywheel + intake + water wheel ON, wait FLYWHEEL_SPIN_UP_S, then HOLD the gate open (trigger at FIRE)
  *      for SHOOT_TIME_S so the water wheel feeds the balls through. Then everything OFF and the gate closed
  *   3. Back to the start (0, 0), 22.5 in left
- *   4. Main Auton FAR EDGE's route (MAIN_FAR_EDGE_PATH): forward 83, left 22 = PARK
+ *   4. Main Auton FAR EDGE's route (MAIN_FAR_EDGE_PATH in MainAuton.java): forward, then left = PARK
  *
  * The driving is Main Auton's / Basic Auton's (same gains, start delay, lights, STOP_BY_S). The new parts are the path,
  * the shooting (in atWaypoint() at the first waypoint) and a shorter pause after each waypoint (SHOOT_WAYPOINT_PAUSE_S,

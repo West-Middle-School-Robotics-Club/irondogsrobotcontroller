@@ -26,16 +26,21 @@ teamcode/
     │   ├── MainTeleOp.java     ← the match TeleOp (shared code, no @TeleOp of its own)
     │   ├── MainTeleOpRed.java  ← "Main TeleOp RED": picks Alliance.RED (decision 022)
     │   └── MainTeleOpBlue.java ← "Main TeleOp BLUE": picks Alliance.BLUE
-    ├── auto/
-    │   ├── BasicAuton.java     ← Basic Auton shared code: LEAVE + PARK with the Pinpoint (#22, decision 026). Its 4 OpModes are in archive/ (060)
-    │   ├── MainAuton.java      ← THE FAR AUTO (060): BasicAuton driving, robot moves from a (0, 0, 0) start (was testAuton)
-    │   ├── MainAutonRedFarEdge.java / BlueFarEdge ← "Auton Red Far Edge" / "Auton Blue Far Edge" on the Driver Station (066)
-    │   ├── MainAutonRedFarCorner.java / BlueFarCorner ← "Auton Red Far Corner" / "Auton Blue Far Corner" (066)
-    │   ├── MainAutonRedNearEdge.java / BlueNearEdge, MainAutonRedNearCorner.java / BlueNearCorner ← "Main Auton Red / Blue Near Edge / Corner", shown for testing (068)
-    │   ├── TimedAuton.java     ← THE NEAR AUTO (060), and a FAR backup: time-based moves, no sensors (decisions 054, 057)
-    │   ├── TimedAutonRedNear.java / BlueNear ← "Auton Red Near" / "Auton Blue Near" on the Driver Station (064)
-    │   ├── TimedAutonRedFar.java / BlueFar ← hidden (@Disabled, 064)
-    │   └── README.md           ← which AUTO to pick, and what to tune
+    ├── auto/                   ← every AUTO, one folder per Driver Station group (decision 069)
+    │   ├── BasicAuton.java     ← shared Pinpoint driving code (#22, decision 026). Its own 4 OpModes are in archive/ (060)
+    │   ├── README.md           ← which AUTO to pick, and what to tune
+    │   ├── competition/        ← "Competition" group: the BACKUPS, frozen as we ran them at the competition (069)
+    │   │   ├── CompetitionAutonRedNear.java / BlueNear ← "Auton Red / Blue Near" (Timed Auton, Spot.COMPETITION)
+    │   │   └── CompetitionAutonRedFar.java / BlueFar   ← "Auton Red / Blue Far" (Main Auton, FarSpot.COMPETITION)
+    │   ├── main/               ← "Main Auton" group: Pinpoint, robot moves from a (0, 0, 0) start (060, 066, 068)
+    │   │   ├── MainAuton.java  ← the shared code and ALL the paths (NEAR / FAR x EDGE / CORNER / COMPETITION)
+    │   │   └── MainAuton{Red,Blue}{Near,Far}{Edge,Corner}.java ← 8 small files: "Main Auton Red Near Edge", ...
+    │   ├── timed/              ← "Timed Auton" group: no sensors, set power for a set time (054, 057, 069)
+    │   │   ├── TimedAuton.java ← the shared code and ALL the times (NEAR / FAR x EDGE / CORNER / COMPETITION)
+    │   │   └── TimedAuton{Red,Blue}{Near,Far}{Edge,Corner}.java ← 8 small files: "Timed Auton Red Near Edge", ...
+    │   └── shoot/              ← "Shoot Auton" group: Main Auton FAR EDGE that shoots first
+    │       ├── ShootAuton.java
+    │       └── ShootAutonRedFar.java / BlueFar ← "Shoot Auton Red / Blue Far"
     ├── test/               ← test and tuning OpModes ("Tests" group). ALL HIDDEN with @Disabled (decision 052), Intake Test too since 11/13
         ├── AllianceCameraTest.java ← shared code for the red/blue camera tests (#7)
         ├── BlueCameraTest.java ← camera as BLUE: only tags 38-45 are targets
