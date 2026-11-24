@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="8.5in" height="11in" viewBox="0 0 850 1100">
 <rect width="850" height="1100" fill="white"/>
 <text x="50.0" y="48.0" font-family="Helvetica, Arial, sans-serif" font-size="21.0" fill="#111827" text-anchor="start" font-weight="bold">Auton FAR: LEAVE + PARK  (WMS Irondogs)</text>
-<text x="50.0" y="78.0" font-family="Helvetica, Arial, sans-serif" font-size="16.0" fill="#111827" text-anchor="start" font-weight="bold">OpMode:  Auton Red / Blue Far Edge  or  Far Corner</text>
+<text x="50.0" y="78.0" font-family="Helvetica, Arial, sans-serif" font-size="16.0" fill="#111827" text-anchor="start" font-weight="bold">OpMode:  Auton Red Far  or  Auton Blue Far  (Competition group)</text>
 <text x="50.0" y="100.0" font-family="Helvetica, Arial, sans-serif" font-size="12.0" fill="#6b7280" text-anchor="start">Robot's BACK against the audience wall (Red) / far wall (Blue).</text>
 <text x="50.0" y="118.0" font-family="Helvetica, Arial, sans-serif" font-size="12.0" fill="#111827" text-anchor="start" font-weight="bold">PARK on the line between rows 4 and 5: partly in the LOADING ZONE, leaving the rest of row 5 for our partner.</text>
 <rect x="620" y="141" width="200" height="490" fill="#fef9c3" stroke="#a16207" stroke-width="2" rx="8"/>

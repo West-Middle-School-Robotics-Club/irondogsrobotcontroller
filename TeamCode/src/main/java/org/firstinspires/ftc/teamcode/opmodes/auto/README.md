@@ -1,18 +1,19 @@
 # Autonomous OpModes
 
-## Game plan (decisions 060, 064, 066)
-| Start | Driver Station name | The code behind it |
+## Game plan (decision 069): 4 groups on the Driver Station
+| Group | Driver Station names | The code behind it |
 |---|---|---|
-| **NEAR** | **Auton Red Near** / **Auton Blue Near** | Timed Auton (`TimedAutonRedNear` / `BlueNear`) |
-| **FAR, EDGE spot** (the one we've used) | **Auton Red Far Edge** / **Auton Blue Far Edge** | Main Auton (`MainAutonRedFarEdge` / `BlueFarEdge`) |
-| **FAR, CORNER spot** (closer to the field corner) | **Auton Red Far Corner** / **Auton Blue Far Corner** | Main Auton (`MainAutonRedFarCorner` / `BlueFarCorner`) |
+| **Competition** (the backups) | **Auton Red / Blue Near**, **Auton Red / Blue Far** | `competition/`: NEAR = Timed Auton, FAR = Main Auton, both **frozen** as we ran them at the competition. Don't tune these |
+| **Main Auton** (Pinpoint) | Main Auton Red / Blue  Near / Far  Edge / Corner (8) | `main/MainAuton.java` (all the paths) + 8 small files |
+| **Timed Auton** (no sensors) | Timed Auton Red / Blue  Near / Far  Edge / Corner (8) | `timed/TimedAuton.java` (all the times) + 8 small files |
+| **Shoot Auton** | Shoot Auton Red / Blue Far | `shoot/ShootAuton.java`: Main Auton FAR EDGE that shoots first |
 
-The Driver Station shows these 6 AUTOs, in the **Auton** group (decisions 064, 066). The other four (Timed Auton RED / BLUE FAR, Main Auton RED / BLUE NEAR) are hidden with `@Disabled`; delete that line to bring one back. Pick the one for our alliance and start. Every start is BACK touching a wall (decision 046); the INIT screen says where.
+**EDGE** = the spot we've been using, **CORNER** = closer to the corner of the field. Every start is BACK touching a wall (decision 046); the INIT screen says where. Tune the Main Auton and Timed Auton ones; if they don't work at a match, the **Competition** ones are the known-good backup. (A timed shooting auton waits until the Timed Auton times are tuned.)
 
 ## Main Auton (issue #22, decision 060): LEAVE + PARK with the Pinpoint, robot moves
-`MainAuton.java` (was `opmodes/test/testAuton.java`, "Test Auton") + six small files that pick the alliance, route and FAR spot: **Main Auton RED / BLUE NEAR** (hidden), **Auton Red / Blue Far Edge**, **Auton Red / Blue Far Corner**.
+`main/MainAuton.java` (was `opmodes/test/testAuton.java`, "Test Auton") + 8 small files that pick the alliance, route and spot (decision 069).
 - Same driving code as Basic Auton (Pinpoint, gains, tolerances, start delay, lights), but the robot always starts at **(0, 0, 0)**, and the moves are written as robot moves: +X = forward, +Y = left.
-- NEAR EDGE (`MAIN_NEAR_EDGE_PATH`): forward 24, right 15, back to 2 in from the start. NEAR CORNER (`MAIN_NEAR_CORNER_PATH`): forward 24, right 5, back to 2 in (decision 068). Shown for testing as **Main Auton Red / Blue Near Edge / Corner** (Main Auton group); at matches NEAR is still Timed Auton. FAR EDGE (`MAIN_FAR_EDGE_PATH`): forward 83, left 22. FAR CORNER (`MAIN_FAR_CORNER_PATH`): forward 87, left 22.
+- Paths: `MAIN_NEAR_EDGE_PATH`, `MAIN_NEAR_CORNER_PATH`, `MAIN_FAR_EDGE_PATH`, `MAIN_FAR_CORNER_PATH`, and the frozen `MAIN_FAR_COMPETITION_PATH`, all in `main/MainAuton.java`. They're tuned on the robot, so read the numbers there.
 - RED and BLUE drive the **same moves** (the field is rotated 180°, like Timed Auton). The alliance picks the INIT light color, the SET UP line, and the Main TeleOp that comes next.
 - The moves were tuned on the floor, so they no longer match Basic Auton's field positions. Change them in `MainAuton.java` only.
 

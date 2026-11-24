@@ -674,3 +674,15 @@ Issue: #22
 Context: FAR got an EDGE and a CORNER starting spot (066). The team wants the same for NEAR in Main Auton (Pinpoint), to compare with Timed Auton NEAR, which is what we run at matches (060).
 Decision: Main Auton NEAR gets two spots, for RED and BLUE: **EDGE** = `MAIN_NEAR_EDGE_PATH`, (24, 0) → (24, -15) → (2, -15) (was `MAIN_NEAR_PATH`); **CORNER** = `MAIN_NEAR_CORNER_PATH`, (24, 0) → (24, -5) → (2, -5). Both end 2 in from the start, so the robot is off the wall (LEAVE). `MainAutonRedNear` / `BlueNear` are renamed `MainAutonRedNearEdge` / `BlueNearEdge`; new `MainAutonRedNearCorner` / `BlueNearCorner`. They are **shown** on the Driver Station for testing, as **Main Auton Red / Blue Near Edge / Corner** in the "Main Auton" group (they were hidden by 064). At matches NEAR is still **Auton Red / Blue Near** (Timed Auton); hide these with `@Disabled` before a competition unless the team decides to switch. The INIT SET UP line says EDGE or CORNER.
 Who: Mentor (11/23)
+
+## 069 – AUTOs in 4 Driver Station groups; the competition AUTOs kept as frozen backups  (2026-11-24)
+Status: Accepted
+Issue: #22
+Context: After 066 and 068 there were 24 AUTOs on the Driver Station: Main Auton and Timed Auton NEAR / FAR, Edge / Corner, test copies in the "Tests" group (Timed Near / Far Auton), plain "Auton ..." names, Shoot Auton and Timed Shoot Auton. Hard for the drive team to find the right one, and every tuning change risked the AUTOs that worked at the competition.
+Decision: Four groups, one folder each in `opmodes/auto/`:
+- **Competition** (`competition/`): **Auton Red / Blue Near** = Timed Auton with the competition times **frozen** (`COMP_NEAR_*`: 1.0 / 0.8 / 0.8 s at 0.3 power), **Auton Red / Blue Far** = Main Auton with the competition path **frozen** (`MAIN_FAR_COMPETITION_PATH` (85, 0) → (85, 22), `COMPETITION_WAYPOINT_PAUSE_S` 2.0). The known-good backups: don't tune them.
+- **Main Auton** (`main/`): Main Auton Red / Blue Near / Far Edge / Corner (8). All the paths are in `MainAuton.java`.
+- **Timed Auton** (`timed/`): Timed Auton Red / Blue Near / Far Edge / Corner (8). ONE `TimedAuton.java` holds all the times (it replaces the test `TimedNearAuton` / `TimedFarAuton`).
+- **Shoot Auton** (`shoot/`): Shoot Auton Red / Blue Far (moved from `test/`).
+Timed Shoot Auton is removed for now: the Timed Auton times get tuned first (it's in git history, commit e9c2b55). The leftover `MainAutonBlueFar` and the old Timed Auton FAR OpModes are gone (the Edge ones replace them). 22 AUTOs, all shown. This changes the Driver Station lists of 064, 066 and 068.
+Who: Mentor (11/24)

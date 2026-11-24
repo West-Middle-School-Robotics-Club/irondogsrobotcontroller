@@ -1,15 +1,16 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto;
+package org.firstinspires.ftc.teamcode.opmodes.auto.main;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Alliance;
+import org.firstinspires.ftc.teamcode.opmodes.auto.BasicAuton;
 
 /**
- * MAIN AUTON (issue #22, decision 060): the AUTO we run for the FAR start (Timed Auton is the plan for NEAR; Main Auton
- * NEAR is on the Driver Station for testing, decision 068). Was "Test Auton" (opmodes/test/testAuton.java, decision 053).
+ * MAIN AUTON (issue #22, decisions 060, 069): LEAVE + PARK with the Pinpoint, for NEAR and FAR, from an EDGE or a CORNER
+ * spot. Was "Test Auton" (opmodes/test/testAuton.java, decision 053).
  *
  * It drives with the Pinpoint like Basic Auton, but the start is ALWAYS (0, 0, 0): the Pinpoint is told "you are
  * at 0, 0, facing 0" wherever the robot sits, and the moves are written relative to that start. So the numbers
- * read as plain robot moves ("forward 83, then left 22"), and the same moves work for RED and BLUE (the field is
+ * read as plain robot moves ("forward 85, then left 25"), and the same moves work for RED and BLUE (the field is
  * rotated 180 degrees, so the robot drives the same moves on either side, like Timed Auton).
  *
  * It shares ALL the driving code and gains with BasicAuton (DRIVE_GAIN, tolerances, timeouts, lights, start delay,
@@ -34,12 +35,14 @@ import org.firstinspires.ftc.teamcode.Alliance;
  *
  * NEAR and FAR each have TWO starting spots, each with its own OpModes: EDGE (the spot we've been using) and CORNER
  * (closer to the corner of the field).
- *   NEAR (decision 068): both go forward 24, right, then back to 2 in from the start; CORNER goes less far right (5 vs 15)
- *   FAR  (decision 066): both go forward, then 22 in left; only the forward distance differs (CORNER 87, EDGE 83)
+ *   NEAR (decision 068): forward, right, then back to just off the wall (MAIN_NEAR_EDGE_PATH, MAIN_NEAR_CORNER_PATH)
+ *   FAR  (decision 066): forward, then left into the LOADING ZONE (MAIN_FAR_EDGE_PATH, MAIN_FAR_CORNER_PATH)
+ * The numbers are tuned on the robot: read them in the paths below, not in comments.
  *
- * The OpModes that use this class only pick the alliance (for the INIT lights, the SET UP line and the TeleOp that
- * comes next), the route and the spot: Main Auton Red / Blue Near Edge / Corner, Auton Red / Blue Far Edge / Corner,
- * and the older "Auton Blue Far" (MainAutonBlueFar, drives FAR EDGE).
+ * Eight small OpMode files in this folder use this class (decision 069), all in the "Main Auton" group on the Driver
+ * Station: Main Auton Red / Blue  Near / Far  Edge / Corner. They only pick the alliance (for the INIT lights, the SET UP
+ * line and the TeleOp that comes next), the route and the spot. Shoot Auton (auto/shoot) builds on this class too, and
+ * so does the FAR competition BACKUP in auto/competition ("Auton Red Far" / "Auton Blue Far", FarSpot.COMPETITION).
  * Lights: GREEN = reached every waypoint, YELLOW = stopped early.
  */
 public abstract class MainAuton extends BasicAuton {
@@ -50,18 +53,18 @@ public abstract class MainAuton extends BasicAuton {
     /** Which NEAR starting spot (decision 068). */
     public enum NearSpot { EDGE, CORNER }
 
-    /** NEAR from the EDGE spot (the one we've been using), relative to the start. Was MAIN_NEAR_PATH. */
-    static final Pose2D[] MAIN_NEAR_EDGE_PATH = {
-            pose(24, 0, 0),    // LEAVE: 24 in forward
-            pose(24, -15, 0),  // 15 in right
-            pose(2, -15, 0),   // PARK: back, to 2 in from the start (still off the wall)
-    };
-
     /** NEAR from the CORNER spot (closer to the corner of the field), relative to the start. */
     static final Pose2D[] MAIN_NEAR_CORNER_PATH = {
-            pose(24, 0, 0),    // LEAVE: 24 in forward
-            pose(24, -5, 0),   // 5 in right
-            pose(2, -5, 0),    // PARK: back, to 2 in from the start (still off the wall)
+            pose(20, 0, 0),    // LEAVE: 20 in forward
+            pose(20, -17, 0),  // 17 in right
+            pose(1, -17, 0),   // PARK: back, to 1 in from the start (still off the wall)
+    };
+
+    /** NEAR from the EDGE spot (the one we've been using), relative to the start. Was MAIN_NEAR_PATH. */
+    static final Pose2D[] MAIN_NEAR_EDGE_PATH = {
+            pose(20, 0, 0),    // LEAVE: 20 in forward
+            pose(20, -8, 0),   // 8 in right
+            pose(1, -8, 0),    // PARK: back, to 1 in from the start (still off the wall)
     };
 
     /** The NEAR spot this OpMode starts from. EDGE unless an OpMode file says CORNER. Not used for FAR. */
@@ -69,19 +72,31 @@ public abstract class MainAuton extends BasicAuton {
         return NearSpot.EDGE;
     }
 
-    /** Which FAR starting spot (decision 066). */
-    public enum FarSpot { EDGE, CORNER }
+    /**
+     * Which FAR starting spot (decision 066). COMPETITION = FAR exactly as we ran it at the competition (the backup,
+     * decision 069): MAIN_FAR_COMPETITION_PATH and a COMPETITION_WAYPOINT_PAUSE_S pause.
+     */
+    public enum FarSpot { EDGE, CORNER, COMPETITION }
+
+    /** FAR COMPETITION: the BACKUP, exactly as we ran it at the competition. DON'T CHANGE: tune EDGE / CORNER instead. */
+    protected static final Pose2D[] MAIN_FAR_COMPETITION_PATH = {
+            pose(85, 0, 0),   // LEAVE + the long drive: 85 in forward
+            pose(85, 22, 0),  // PARK: 22 in left
+    };
+
+    /** The pause after each waypoint at the competition (WAYPOINT_PAUSE_S was 2.0 then). DON'T CHANGE. */
+    static final double COMPETITION_WAYPOINT_PAUSE_S = 2.0;
 
     /** FAR from the EDGE spot (the one we've been using), relative to the start. Shoot Auton drives these too. */
     protected static final Pose2D[] MAIN_FAR_EDGE_PATH = {
-            pose(83, 0, 0),   // LEAVE + the long drive: 83 in forward (was 85 until 11/23)
-            pose(83, 22, 0),  // PARK: 22 in left
+            pose(85, 0, 0),   // LEAVE + the long drive: 85 in forward
+            pose(85, 25, 0),  // PARK: 25 in left
     };
 
     /** FAR from the CORNER spot (closer to the corner of the field), relative to the start. */
     protected static final Pose2D[] MAIN_FAR_CORNER_PATH = {
-            pose(87, 0, 0),   // LEAVE + the long drive: 87 in forward
-            pose(87, 22, 0),  // PARK: 22 in left
+            pose(95, 0, 0),   // LEAVE + the long drive: 95in forward
+            pose(95, 25, 0),  // PARK: 25 in left
     };
 
     /** The FAR spot this OpMode starts from. EDGE unless an OpMode file says CORNER. Not used for NEAR. */
@@ -100,7 +115,19 @@ public abstract class MainAuton extends BasicAuton {
         if (route() == Route.NEAR) {
             return nearSpot() == NearSpot.CORNER ? MAIN_NEAR_CORNER_PATH : MAIN_NEAR_EDGE_PATH;
         }
+        if (farSpot() == FarSpot.COMPETITION) {
+            return MAIN_FAR_COMPETITION_PATH;
+        }
         return farSpot() == FarSpot.CORNER ? MAIN_FAR_CORNER_PATH : MAIN_FAR_EDGE_PATH;
+    }
+
+    /** The competition backup keeps the competition's pause; everything else uses BasicAuton's WAYPOINT_PAUSE_S. */
+    @Override
+    protected double waypointPauseSeconds() {
+        if (route() == Route.FAR && farSpot() == FarSpot.COMPETITION) {
+            return COMPETITION_WAYPOINT_PAUSE_S;
+        }
+        return super.waypointPauseSeconds();
     }
 
     /** The SET UP line on the INIT screen: for FAR it also says which spot, so the drive team puts the robot there. */
@@ -117,6 +144,9 @@ public abstract class MainAuton extends BasicAuton {
         if (farSpot() == FarSpot.CORNER) {
             return red ? "FAR CORNER spot (closer to the field corner), BACK touching the AUDIENCE wall, FRONT facing the FAR wall"
                        : "FAR CORNER spot (closer to the field corner), BACK touching the FAR wall, FRONT facing the AUDIENCE";
+        }
+        if (farSpot() == FarSpot.COMPETITION) {
+            return "COMPETITION backup (FAR as we ran it): " + super.setupInstructions();
         }
         return "FAR EDGE spot: " + super.setupInstructions();
     }
