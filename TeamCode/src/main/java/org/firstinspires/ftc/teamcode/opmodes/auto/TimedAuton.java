@@ -36,7 +36,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 public abstract class TimedAuton extends LinearOpMode {
 
     // How hard the wheels push (0 to 1) on every move. Plain power = % of the battery.
-    static final double DRIVE_POWER = 0.3;
+    protected static final double DRIVE_POWER = 0.3;
 
     // How long each move runs, in seconds. Longer = farther. STARTING GUESSES: measure and change on the robot.
     static final double FORWARD_S = 1.0;   // 1. forward off the wall (goal: 23 in)
@@ -48,12 +48,12 @@ public abstract class TimedAuton extends LinearOpMode {
     static final double FAR_LEFT_S = 1.5;    // 2. strafe left into the LOADING ZONE (goal: 23 in; stop before the wall)
 
     // Stop and sit still this long between moves, so one move's slide doesn't carry into the next.
-    static final double PAUSE_S = 0.5;
+    protected static final double PAUSE_S = 0.5;
 
     // Wait this long after START before moving (for when our partner's route crosses ours). Set before the match.
     static final double START_DELAY_S = 0.0;
 
-    private Robot robot;
+    protected Robot robot;
 
     /** Which starting spot. Each OpMode file (TimedAutonRedNear, ...) picks one. */
     protected abstract BasicAuton.Route route();
@@ -76,6 +76,7 @@ public abstract class TimedAuton extends LinearOpMode {
             hold(PAUSE_S);
             move(-DRIVE_POWER, 0, BACK_S);      // 3. back
         } else {
+            beforeFarRoute();                    // Timed Auton: nothing. Timed Shoot Auton: shoots here first
             move(DRIVE_POWER, 0, FAR_FORWARD_S); // 1. forward, the long drive
             hold(PAUSE_S);
             move(0, DRIVE_POWER, FAR_LEFT_S);    // 2. left (plus = LEFT, decision 007)
@@ -84,8 +85,17 @@ public abstract class TimedAuton extends LinearOpMode {
         robot.stop();
     }
 
+    /**
+     * Something to do at the start of the FAR route, before the long drive. Timed Auton does nothing here (drive-only).
+     * Timed Shoot Auton (opmodes/test) overrides it to shoot first. It must end back at the start spot, keep checking
+     * opModeIsActive(), and stop what it started.
+     */
+    protected void beforeFarRoute() {
+        // nothing: drive-only
+    }
+
     /** Drive with this forward / left power for this many seconds, then stop. */
-    private void move(double forward, double left, double seconds) {
+    protected void move(double forward, double left, double seconds) {
         ElapsedTime timer = new ElapsedTime();
         robot.drivetrain.drive(forward, left, 0);
         while (opModeIsActive() && timer.seconds() < seconds) {
@@ -95,7 +105,7 @@ public abstract class TimedAuton extends LinearOpMode {
     }
 
     /** Sit still for this many seconds. */
-    private void hold(double seconds) {
+    protected void hold(double seconds) {
         ElapsedTime timer = new ElapsedTime();
         while (opModeIsActive() && timer.seconds() < seconds) {
             idle();

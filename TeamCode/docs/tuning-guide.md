@@ -30,7 +30,7 @@ Most of these have a **printable worksheet** in `TeamCode/docs/worksheets/` (see
 | `SLOW_MODE_SCALE` | `opmodes/teleop/DriverControls.java` | `0.5` | Hold a bumper: slow, for lining up (OFF for now: `SPEED_MODES_ENABLED = false`) |
 | `TURBO_SCALE` | `opmodes/teleop/DriverControls.java` | `1.0` | Hold a trigger: full speed (OFF for now: `SPEED_MODES_ENABLED = false`) |
 | `SNAP_ANGLE_DEGREES` | `opmodes/teleop/DriverControls.java` | `20.0` | Straight-line assist: how forgiving it is |
-| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `0.83` | Flywheel power (it runs the whole match) |
+| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `0.75` | Flywheel power (it runs the whole match) |
 | `X_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the X odometry pod is, sideways from the turning center |
 | `Y_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the Y odometry pod is, forward from the turning center |
 
@@ -144,6 +144,13 @@ Main Auton FAR, but it shoots first: 22.5 in right (RED B1 → C1, BLUE E6 → D
 | `SHOOT_TIME_S` | `6.0` | Gate HELD open this long, so the water wheel feeds all 4 balls through | Ball left in the robot? raise it. All 4 gone well before it ends? lower it | 🔧 |
 | `SHOOT_WAYPOINT_PAUSE_S` | `1.0` | Shoot Auton only: sit still this long after each waypoint (Main Auton uses `WAYPOINT_PAUSE_S`, 2.0) | Robot still rocking when it starts the next move? raise it. Running out of time? lower it | 🔧 |
 
+### Timed Shoot Auton (test): `opmodes/test/TimedShootAuton.java`
+Timed Auton FAR, but it shoots first, with NO sensors: strafe right for a set time (flywheel spinning up on the way), shoot, strafe back left for the same time, then Timed Auton FAR's moves (`FAR_FORWARD_S`, `FAR_LEFT_S`). The shooting uses Shoot Auton's `FLYWHEEL_SPIN_UP_S` and `SHOOT_TIME_S` (above), so they're tuned once for both. Shown on the Driver Station for testing (**Timed Shoot Auton Red / Blue Far**, Tests group); hide it with `@Disabled` before a competition (052).
+
+| Setting | Now | What it does | How to find it | Status |
+|---|---|---|---|---|
+| `SHOOT_RIGHT_S` | `1.5` | Seconds strafing RIGHT to the shooting spot (goal: 22.5 in, RED B1 → C1, BLUE E6 → D6), and the same time back LEFT. Starting guess: about 15 in/s sideways at `DRIVE_POWER` | Measure the strafe; new time = old time × 22.5 / measured. Doesn't end back at the start? The FAR route after it will be off by the same amount | 🔧 not tested yet |
+
 ## Timed Auton: `opmodes/auto/TimedAuton.java`
 The no-sensor backup for Basic Auton NEAR and FAR (decisions 054, 057): plain power for a set time, no Pinpoint, no encoders. Tune with a **charged battery**; a weak battery drives shorter.
 
@@ -175,7 +182,7 @@ Worksheet: `launcher-test.pdf`. Test with **Launcher Test**. Issue #5, decision 
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `DEFAULT_SPIN_POWER` | `0.83` | Flywheel power (0 to 1). Runs the whole match. 0.83 since 11/15 ("the sweet spot arc" after more testing); 0.70 on 11/14 (shots overshot in the competition matches; was 0.75 on 11/12, 1.0 from 11/8 testing, 0.45 before, decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
+| `DEFAULT_SPIN_POWER` | `0.75` | Flywheel power (0 to 1). Runs the whole match. 0.75 since 11/23 (set on the robot); 0.83 on 11/15 ("the sweet spot arc" after more testing); 0.70 on 11/14 (shots overshot in the competition matches; was 0.75 on 11/12, 1.0 from 11/8 testing, 0.45 before, decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
 | `MOTOR_REVERSED` | `true` | Flywheel direction | Launcher Test: balls must go OUT | 🔧 |
 | `ENCODER_TICKS_PER_REV` | `28.0` | Encoder ticks per turn of the flywheel motor's shaft, to show the speed in RPM. Depends on the motor: 6000 RPM = 28.0, 1620 RPM = 103.8, 1150 RPM = 145.1, 435 RPM = 384.5 | Read the RPM on the motor's label. Check: at 100% power "Launcher Speed" should be a bit under the label's RPM | ✅ 5203-2402-0001 = 6000 RPM, 1:1 (11/23) |
 | `READY_RPM` | `2000.0` | The flywheel counts as READY at this speed (RPM). Was `READY_VELOCITY_THRESHOLD` (1000 ticks/s) until 11/23 | Launcher Test: read "Launcher Speed" once settled; use ~90% of it | 🔧 placeholder |
