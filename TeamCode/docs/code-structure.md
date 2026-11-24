@@ -29,7 +29,8 @@ teamcode/
     ├── auto/
     │   ├── BasicAuton.java     ← Basic Auton shared code: LEAVE + PARK with the Pinpoint (#22, decision 026). Its 4 OpModes are in archive/ (060)
     │   ├── MainAuton.java      ← THE FAR AUTO (060): BasicAuton driving, robot moves from a (0, 0, 0) start (was testAuton)
-    │   ├── MainAutonRedFar.java / BlueFar ← "Auton Red Far" / "Auton Blue Far" on the Driver Station (064)
+    │   ├── MainAutonRedFarEdge.java / BlueFarEdge ← "Auton Red Far Edge" / "Auton Blue Far Edge" on the Driver Station (066)
+    │   ├── MainAutonRedFarCorner.java / BlueFarCorner ← "Auton Red Far Corner" / "Auton Blue Far Corner" (066)
     │   ├── MainAutonRedNear.java / BlueNear ← hidden (@Disabled, 064)
     │   ├── TimedAuton.java     ← THE NEAR AUTO (060), and a FAR backup: time-based moves, no sensors (decisions 054, 057)
     │   ├── TimedAutonRedNear.java / BlueNear ← "Auton Red Near" / "Auton Blue Near" on the Driver Station (064)

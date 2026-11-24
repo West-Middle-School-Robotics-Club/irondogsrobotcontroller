@@ -30,7 +30,7 @@ Most of these have a **printable worksheet** in `TeamCode/docs/worksheets/` (see
 | `SLOW_MODE_SCALE` | `opmodes/teleop/DriverControls.java` | `0.5` | Hold a bumper: slow, for lining up (OFF for now: `SPEED_MODES_ENABLED = false`) |
 | `TURBO_SCALE` | `opmodes/teleop/DriverControls.java` | `1.0` | Hold a trigger: full speed (OFF for now: `SPEED_MODES_ENABLED = false`) |
 | `SNAP_ANGLE_DEGREES` | `opmodes/teleop/DriverControls.java` | `20.0` | Straight-line assist: how forgiving it is |
-| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `0.75` | Flywheel power (it runs the whole match) |
+| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `0.73` | Flywheel power (it runs the whole match) |
 | `X_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the X odometry pod is, sideways from the turning center |
 | `Y_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the Y odometry pod is, forward from the turning center |
 
@@ -60,7 +60,8 @@ Test with **Main TeleOp**. Decisions 029, 030.
 |---|---|---|---|---|
 | `TURRET_MAX_STICK_SPEED` | `1.0` | Fastest the left stick turns the turret (0 to 1) | Lower it if aiming by hand is too twitchy | 🔧 |
 | `TURRET_STICK_DEADZONE` | `0.05` | Ignore tiny stick movement | Raise it if the turret creeps with the stick released | ✅ |
-| `INTAKE_ON_AT_START` | `false` | Do the intake + water wheel start ON when the match starts? `false` = they start OFF, the operator presses A to start them (decision 062) | Operator's preference | 🔧 |
+| `INTAKE_ALWAYS_ON` | `true` | Does the intake run IN the whole match, from START? `true` = yes, and A only starts / stops the water wheel (decision 067). `false` = the old way: A starts and stops the intake AND the water wheel (062) | Operator's preference | 🔧 |
+| `WATER_WHEEL_ON_AT_START` | `false` | Does the water wheel start ON when the match starts? `false` = it starts OFF, the operator presses A to start it (decisions 062, 067). Was `INTAKE_ON_AT_START` | Operator's preference | 🔧 |
 | `DIRECTION_TOGGLE_ENABLED` | `false` | Can B flip the intake + water wheel to OUT? `false` = B does nothing, the direction is always IN (decision 061). The left trigger (EJECT) still pushes balls out | Set `true` to turn the B toggle back on | 🔧 |
 | `TURRET_ENABLED` | `false` | `OperatorControls.java`: can the turret move in Main TeleOp? `false` = left stick and X do nothing, and no move at START (decision 050) | Set `true` to turn the turret controls back on | 🔧 |
 | `TRIGGER_HELD` | `0.5` | How far the left trigger must be pressed to EJECT | Rarely changed | ✅ |
@@ -102,7 +103,7 @@ The Pinpoint Test OpMode drives in BRAKE with straight-line assist ON and a dpad
 
 ## Basic Auton: `opmodes/auto/BasicAuton.java`
 Guide: `basic-auton-guide.pdf`, routes: `docs/game/diagrams/auton-near.pdf` / `auton-far.pdf`. Issue #22, decisions 026, 053.
-Positions are **field coordinates** (011). To tune a route on any clear floor, use **Main Auton** (`opmodes/auto/MainAuton.java`, was Test Auton): it starts at (0, 0, 0) and holds the moves as forward / left distances (`MAIN_NEAR_PATH`, `MAIN_FAR_PATH`). Since decision 060 Main Auton is what we run for FAR, and its moves were tuned on the floor, so they no longer match Basic Auton exactly.
+Positions are **field coordinates** (011). To tune a route on any clear floor, use **Main Auton** (`opmodes/auto/MainAuton.java`, was Test Auton): it starts at (0, 0, 0) and holds the moves as forward / left distances (`MAIN_NEAR_PATH`, `MAIN_FAR_EDGE_PATH` = forward 83 / left 22, `MAIN_FAR_CORNER_PATH` = forward 87 / left 22, decision 066). Since decision 060 Main Auton is what we run for FAR, and its moves were tuned on the floor, so they no longer match Basic Auton exactly.
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
@@ -125,7 +126,7 @@ Positions are **field coordinates** (011). To tune a route on any clear floor, u
 | `SETTLED_SPEED_IN_PER_S` | `2.0` | "Stopped" = slower than this. A waypoint only counts once the robot is close enough AND stopped, so a slide through the spot doesn't count | Takes long to "finish" each waypoint? raise it a little | 🔧 |
 | `WAYPOINT_TIMEOUT_S` | `4.0` | Give up on one waypoint after this many seconds, plus the per-inch time below | | ✅ |
 | `WAYPOINT_TIMEOUT_PER_INCH_S` | `0.15` | Extra timeout per inch of the move (100 in = 4 + 15 = 19 s). A fixed 8 s gave up on the long FAR drive | Times out on a drive that was going fine? raise it | 🔧 |
-| `WAYPOINT_PAUSE_S` | `2.0` | After each waypoint, stop and sit still this long before the next move (lets the robot settle; telemetry shows the Pinpoint position). Shoot Auton has its own: `SHOOT_WAYPOINT_PAUSE_S` | Longer = easier to watch and measure; shorter = faster run. Everything must still finish by `STOP_BY_S` | 🔧 |
+| `WAYPOINT_PAUSE_S` | `1.0` | After each waypoint, stop and sit still this long before the next move (lets the robot settle; telemetry shows the Pinpoint position). Shoot Auton has its own: `SHOOT_WAYPOINT_PAUSE_S` | Longer = easier to watch and measure; shorter = faster run. Everything must still finish by `STOP_BY_S` | 🔧 |
 | `STOP_BY_S` | `28.0` | Stop everything by this time (AUTO is 30 s) | Keep below 30 | 🔒 |
 | `MAX_DELAY_S` | `10` | Longest start delay the drive team can pick in INIT | | ✅ |
 | `RECALIBRATE_AT_START` | `true` | Re-calibrate the Pinpoint gyro at START, when the robot is surely still. If someone bumps the robot during INIT's calibration the heading drifts all run | Keep on. Costs about half a second of AUTO | ✅ |
@@ -135,14 +136,14 @@ Positions are **field coordinates** (011). To tune a route on any clear floor, u
 | `STOPPED_EARLY_COLOR` | `Light.Color.YELLOW` | Lights at the end when it stopped early | Team's choice | ✅ |
 
 ## Shoot Auton (test): `opmodes/test/ShootAuton.java`
-Main Auton FAR, but it shoots first: 22.5 in right (RED B1 → C1, BLUE E6 → D6), shoot, back to the start, then `MAIN_FAR_PATH`. Hidden with `@Disabled` (052). Uses all the Basic Auton driving values above. The whole run must finish by `STOP_BY_S`.
+Main Auton FAR, but it shoots first: 22.5 in right (RED B1 → C1, BLUE E6 → D6), shoot, back to the start, then `MAIN_FAR_EDGE_PATH`. Hidden with `@Disabled` (052). Uses all the Basic Auton driving values above. The whole run must finish by `STOP_BY_S`.
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
 | `SHOOT_SPOT` | `pose(0, -22.5, 0)` | Where it shoots, from the (0, 0, 0) start: 22.5 in to the RIGHT (-Y), one tile over | Robot lands short of / past the middle of C1 (D6)? change the -22.5 | 🔧 |
 | `FLYWHEEL_SPIN_UP_S` | `2.0` | Flywheel (and intake + water wheel) ON this long before the gate opens | First ball falls short? raise it. Running out of time? lower it | 🔧 |
 | `SHOOT_TIME_S` | `6.0` | Gate HELD open this long, so the water wheel feeds all 4 balls through | Ball left in the robot? raise it. All 4 gone well before it ends? lower it | 🔧 |
-| `SHOOT_WAYPOINT_PAUSE_S` | `1.0` | Shoot Auton only: sit still this long after each waypoint (Main Auton uses `WAYPOINT_PAUSE_S`, 2.0) | Robot still rocking when it starts the next move? raise it. Running out of time? lower it | 🔧 |
+| `SHOOT_WAYPOINT_PAUSE_S` | `1.0` | Shoot Auton only: sit still this long after each waypoint (Main Auton uses `WAYPOINT_PAUSE_S`) | Robot still rocking when it starts the next move? raise it. Running out of time? lower it | 🔧 |
 
 ### Timed Shoot Auton (test): `opmodes/test/TimedShootAuton.java`
 Timed Auton FAR, but it shoots first, with NO sensors: strafe right for a set time (flywheel spinning up on the way), shoot, strafe back left for the same time, then Timed Auton FAR's moves (`FAR_FORWARD_S`, `FAR_LEFT_S`). The shooting uses Shoot Auton's `FLYWHEEL_SPIN_UP_S` and `SHOOT_TIME_S` (above), so they're tuned once for both. Shown on the Driver Station for testing (**Timed Shoot Auton Red / Blue Far**, Tests group); hide it with `@Disabled` before a competition (052).
@@ -150,6 +151,16 @@ Timed Auton FAR, but it shoots first, with NO sensors: strafe right for a set ti
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
 | `SHOOT_RIGHT_S` | `1.5` | Seconds strafing RIGHT to the shooting spot (goal: 22.5 in, RED B1 → C1, BLUE E6 → D6), and the same time back LEFT. Starting guess: about 15 in/s sideways at `DRIVE_POWER` | Measure the strafe; new time = old time × 22.5 / measured. Doesn't end back at the start? The FAR route after it will be off by the same amount | 🔧 not tested yet |
+
+### Timed Near Auton (test): `opmodes/test/TimedNearAuton.java`
+Two NEAR starting spots with Timed Auton's no-sensor driving (same `DRIVE_POWER`, `PAUSE_S`, setup as Timed Auton NEAR). **CORNER** = (0, -10): 10 in right, staying near the corner (the back stays on the wall, so probably no LEAVE). **EDGE** = (24, 0) → (23, -16) → (2, -16): forward 24, right 16, back 21. Times are starting guesses from Timed Auton NEAR's speeds (forward ~23 in/s, right ~15 in/s, back ~22.5 in/s). Shown for testing as **Timed Near Corner Red / Blue** and **Timed Near Edge Red / Blue** (Tests group); hide with `@Disabled` before a competition (052).
+
+| Setting | Now | What it does | How to find it | Status |
+|---|---|---|---|---|
+| `NEAR_CORNER_RIGHT_S` | `0.65` | CORNER: seconds strafing right (goal: 10 in) | Measure; new time = old time × 10 / measured | 🔧 not tested yet |
+| `NEAR_EDGE_FORWARD_S` | `1.05` | EDGE move 1: seconds forward, off the wall (goal: 24 in, LEAVE) | New time = old time × 24 / measured | 🔧 not tested yet |
+| `NEAR_EDGE_RIGHT_S` | `1.05` | EDGE move 2: seconds strafing right (goal: 16 in) | New time = old time × 16 / measured | 🔧 not tested yet |
+| `NEAR_EDGE_BACK_S` | `0.95` | EDGE move 3: seconds back into the LOADING ZONE (goal: 21 in, ending 2 in from the start line). Must stop before the wall | New time = old time × 21 / measured | 🔧 not tested yet |
 
 ## Timed Auton: `opmodes/auto/TimedAuton.java`
 The no-sensor backup for Basic Auton NEAR and FAR (decisions 054, 057): plain power for a set time, no Pinpoint, no encoders. Tune with a **charged battery**; a weak battery drives shorter.
@@ -171,7 +182,7 @@ Worksheet: `intake-test.pdf`. Test with **Intake Test**. Issue #4.
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
 | `INTAKE_SPEED` | `1.0` | Intake servo speed (0 to 1). 1.0 since 11/8 testing (was 0.65, decision 041) | Intake Test: dpad up / down changes the speed of both live (0.05 steps), then copy the number here. Lower it if balls bounce off | 🔧 |
-| `WATER_WHEEL_SPEED` | `0.2` | Water wheel MOTOR power (0 to 1). Since 11/11 the water wheel is a goBILDA 117 RPM motor (decision 056); 0.2 since 11/12 (was 0.4). About twice as fast as the old servo at the same number, so 1.0 may be too fast: re-tune. (Servo history: 1.0 since 11/8, was 0.65) | Intake Test: same dpad speed as the intake; use X = water wheel only to tune it alone, then copy the number here. Lower it if balls jam at the top | 🔧 |
+| `WATER_WHEEL_SPEED` | `0.3` | Water wheel MOTOR power (0 to 1). Since 11/11 the water wheel is a goBILDA 117 RPM motor (decision 056); 0.3 since 11/23 (set on the robot), 0.2 from 11/12 (was 0.4). About twice as fast as the old servo at the same number, so 1.0 may be too fast: re-tune. (Servo history: 1.0 since 11/8, was 0.65) | Intake Test: same dpad speed as the intake; use X = water wheel only to tune it alone, then copy the number here. Lower it if balls jam at the top | 🔧 |
 | `INTAKE_REVERSED` | `true` | Set `true` if "intake IN" pushes balls OUT. 11/7: Main TeleOp ran OUT at start, so `true`. Confirmed 11/7: IN at start, eject pushes balls out | Intake Test, A button | ✅ |
 | `WATER_WHEEL_REVERSED` | `true` | Set `true` if "water wheel UP" moves balls DOWN. Was confirmed 11/7 for the old servo; the new motor (11/11) has NOT been checked | Intake Test step 2: X = water wheel only, A, balls must go UP | 🔧 |
 | `NECTAR_DETECTOR_ENABLED` | `false` | Are the nectar detector switches used? `false` = OFF everywhere: no NECTAR auto-launch, no purple lights, Y launches every ball (decision 065) | Set `true` to turn them back on | 🔧 |
@@ -182,7 +193,7 @@ Worksheet: `launcher-test.pdf`. Test with **Launcher Test**. Issue #5, decision 
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `DEFAULT_SPIN_POWER` | `0.75` | Flywheel power (0 to 1). Runs the whole match. 0.75 since 11/23 (set on the robot); 0.83 on 11/15 ("the sweet spot arc" after more testing); 0.70 on 11/14 (shots overshot in the competition matches; was 0.75 on 11/12, 1.0 from 11/8 testing, 0.45 before, decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
+| `DEFAULT_SPIN_POWER` | `0.73` | Flywheel power (0 to 1). Runs the whole match. 0.73 since 11/23 (set on the robot, after 0.75 earlier that day); 0.83 on 11/15 ("the sweet spot arc" after more testing); 0.70 on 11/14 (shots overshot in the competition matches; was 0.75 on 11/12, 1.0 from 11/8 testing, 0.45 before, decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
 | `MOTOR_REVERSED` | `true` | Flywheel direction | Launcher Test: balls must go OUT | 🔧 |
 | `ENCODER_TICKS_PER_REV` | `28.0` | Encoder ticks per turn of the flywheel motor's shaft, to show the speed in RPM. Depends on the motor: 6000 RPM = 28.0, 1620 RPM = 103.8, 1150 RPM = 145.1, 435 RPM = 384.5 | Read the RPM on the motor's label. Check: at 100% power "Launcher Speed" should be a bit under the label's RPM | ✅ 5203-2402-0001 = 6000 RPM, 1:1 (11/23) |
 | `READY_RPM` | `2000.0` | The flywheel counts as READY at this speed (RPM). Was `READY_VELOCITY_THRESHOLD` (1000 ticks/s) until 11/23 | Launcher Test: read "Launcher Speed" once settled; use ~90% of it | 🔧 placeholder |

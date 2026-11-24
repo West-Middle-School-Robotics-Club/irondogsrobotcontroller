@@ -45,6 +45,7 @@ public class BrakeModeCheck extends LinearOpMode {
             power.addTelemetry(telemetry);
             telemetry.update();
         }
+        robot.launcher.resetTrigger();   // START: trigger CLOSED (blocks the balls) until something opens it
 
         while (opModeIsActive()) {
             if (gamepad1.xWasPressed()) {

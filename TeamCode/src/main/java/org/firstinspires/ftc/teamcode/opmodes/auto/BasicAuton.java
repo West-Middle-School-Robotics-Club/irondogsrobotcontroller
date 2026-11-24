@@ -115,7 +115,7 @@ public abstract class BasicAuton extends LinearOpMode {
             pose(22, 36, 0),    // LEAVE: 85 in forward, up column B (x -63 -> 22). The HIVE is in column C, to the right
             pose(22, 58, 0),    // PARK: 22 in LEFT (y 36 -> 58), on the line between rows 4 and 5, partly in the LOADING ZONE
     };
-    // Same moves as Main Auton FAR (MAIN_FAR_PATH: forward 85, left 22), so the route sheet shows what we run (060).
+    // Same moves as Main Auton FAR EDGE was (forward 85, left 22; MAIN_FAR_EDGE_PATH is 83 / 22 since 11/23), so the route sheet shows what we run (060).
     // Park between rows 4 and 5: the robot spans x 13-31, y 50-66; the row 4/5 line is x = 24. The LOADING ZONE is
     // x 24.5-47.5, y 61-72, so the robot is partly in it, and x 31-47.5 (most of row 5) is left for our partner.
 
@@ -145,7 +145,7 @@ public abstract class BasicAuton extends LinearOpMode {
     static final double SETTLED_SPEED_IN_PER_S = 2.0; // "stopped" = slower than this. A waypoint counts only once the robot has stopped on it
     static final double WAYPOINT_TIMEOUT_S = 4.0;    // give up on a waypoint after this long, PLUS...
     static final double WAYPOINT_TIMEOUT_PER_INCH_S = 0.15; // ...this much per inch of the move (100 in: 4 + 15 = 19 s). Long drives need longer
-    static final double WAYPOINT_PAUSE_S = 2.0;      // stop and sit still this long after each waypoint (settle, read the position). 5.0 while measuring 11/10
+    static final double WAYPOINT_PAUSE_S = 1.0;      // stop and sit still this long after each waypoint (settle, read the position). 5.0 while measuring 11/10
     protected static final double STOP_BY_S = 28.0;           // stop everything by this time (AUTO is 30 s)
     static final int MAX_DELAY_S = 10;               // start delay the drive team can choose in INIT
     static final boolean RECALIBRATE_AT_START = true; // re-calibrate the Pinpoint gyro at START, when the robot is surely still (see Odometry.recalibrateImu)
@@ -207,6 +207,7 @@ public abstract class BasicAuton extends LinearOpMode {
 
         // ---------- AUTO ----------
         ElapsedTime autoTimer = new ElapsedTime();
+        robot.launcher.resetTrigger();   // START: trigger CLOSED (blocks the balls) until something opens it
 
         // The robot is surely sitting still right now (just placed, hands off), so this is the best moment to
         // calibrate the Pinpoint's gyro. INIT's calibration is ruined if anyone nudges the robot while it runs,

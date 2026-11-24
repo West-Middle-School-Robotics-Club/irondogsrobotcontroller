@@ -653,3 +653,17 @@ Issue: #4, #5
 Context: The two nectar detector switches (028) tell the code when the next ball to launch is a NECTAR. Main TeleOp used them to launch NECTARs by themselves (059) and to turn the lights purple. The team is not using the nectar detectors now, but may want them back later.
 Decision: New `Intake.NECTAR_DETECTOR_ENABLED = false`. While it is `false`, `isNectarDetected()` always says false, so nothing auto-fires and the lights never turn purple, in every TeleOp, Auton and test (no Auton used them). The operator holds **Y** to launch every ball. Intake telemetry just says "NECTAR detector: OFF". All the nectar code stays where it is (switch reading, `NECTAR_SWITCH_WIRING`, `AUTO_FIRE_NECTAR`, `AUTO_FIRE_HOLD_S`, `NECTAR_COLOR`); set the flag `true` to bring it all back. The switches can stay in the Driver Station config. This changes 059 (auto-launch) and the purple lights of 028 for now.
 Who: Mentor (11/21)
+
+## 066 – Two FAR starting spots: Edge and Corner  (2026-11-23)
+Status: Accepted
+Issue: #22
+Context: Main Auton FAR started from one spot (tile B1 / E6, BACK touching the wall, decision 046) and drove forward 85, then left 22. The team wants a second FAR start, closer to the corner of the field, and measured both routes on the floor.
+Decision: FAR gets two spots, each with its own OpModes, for RED and BLUE: **EDGE** (the spot we've been using) = `MAIN_FAR_EDGE_PATH`, (83, 0) then (83, 22); **CORNER** (closer to the field corner) = `MAIN_FAR_CORNER_PATH`, (87, 0) then (87, 22). Both are robot moves from the (0, 0, 0) start, the same for RED and BLUE. The OpMode files `MainAutonRedFar` / `BlueFar` are renamed `MainAutonRedFarEdge` / `BlueFarEdge`, and new `MainAutonRedFarCorner` / `BlueFarCorner` pick `FarSpot.CORNER`. Driver Station names: **Auton Red / Blue Far Edge** and **Auton Red / Blue Far Corner**, so the Driver Station shows **6** AUTOs (Auton Red / Blue Near + the 4 FAR). The INIT screen's SET UP line says EDGE or CORNER. Shoot Auton drives the EDGE moves after it shoots. This changes 064's list of 4.
+Who: Mentor (11/23)
+
+## 067 – Main TeleOp: the intake runs the whole match; A only starts and stops the water wheel  (2026-11-23)
+Status: Accepted
+Issue: #4
+Context: Since 062, A (gamepad 2) started and stopped the intake AND the water wheel together, and both started OFF. The team wants the intake to keep turning all the time, so balls keep coming in; only the water wheel (which carries them up to the launcher) should stop.
+Decision: New `OperatorControls.INTAKE_ALWAYS_ON = true`: in Main TeleOp the intake runs IN from START to the end of the match (not in INIT, G304.H). **A** toggles only the **water wheel** (UP). It starts OFF (`WATER_WHEEL_ON_AT_START = false`, was `INTAKE_ON_AT_START`). **Left trigger** (EJECT) still runs the intake OUT and the water wheel DOWN while held; let go = water wheel OFF and the intake back to IN. `INTAKE_ALWAYS_ON = false` brings back 062's way. Only Main TeleOp changes: Intake Test and Intake + Launcher Test keep their own A buttons (test tools that pick which part runs), and the autons already run their own intake steps. Controller layout updated. This changes 062.
+Who: Mentor (11/23)

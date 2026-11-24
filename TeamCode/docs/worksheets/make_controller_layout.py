@@ -32,8 +32,8 @@ DRIVER = {
 }
 LAUNCHER = {  # gamepad 2 (OperatorControls.java), decisions 029, 035, 062
     "Y": ("LAUNCH (hold)", "every ball: NECTAR and POLLEN"),
-    "A": ("INTAKE SYSTEM on/off", "Starts OFF: you MUST press A to start it!"),
-    "LT": ("EJECT (hold)", "pushes balls out; let go = all off"),
+    "A": ("WATER WHEEL on/off", "Starts OFF: press A to send balls up!"),
+    "LT": ("EJECT (hold)", "pushes balls out; let go = water wheel off"),
 }
 
 # (key, button name, anchor x, anchor y). Positions are in inches on a landscape page.
@@ -254,13 +254,12 @@ def main():
         ], size=8.6)
     else:
         box(c, 0.45, 0.55, 10.1, 1.4, "Good to know", [
-            [("You MUST press A after START! ", True), ("The intake + water wheel start OFF, so no balls come in until "
-                                                        "you press A.", False)],
+            [("Intake: ", True), ("runs by itself the whole match. ", False), ("Press A", True), (" to start the water wheel (it starts OFF) and send balls up to the launcher.", False)],
             [("Flywheel: ", True), ("starts by itself when START is pressed and runs the whole match. "
                                     "Watch \"Launcher Status\" for READY.", False)],
             [("Launch: ", True), ("hold ", False), ("Y", True), (" for every ball (NECTAR and POLLEN). Nothing launches "
                                                     "by itself.", False)],
-            [("EJECT ", True), ("(left trigger) beats everything; let go and the intake + water wheel are OFF.", False)],
+            [("EJECT ", True), ("(left trigger) beats everything; let go: water wheel OFF, intake back to IN.", False)],
             [("Lights: ", True), ("our alliance color; GREEN while the turret turns to its rest spot.", False)],
         ], size=9.5)
     c.showPage()

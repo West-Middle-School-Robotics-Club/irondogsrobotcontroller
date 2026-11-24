@@ -40,6 +40,7 @@ public class EncoderModeToggle extends LinearOpMode {
         power.addTelemetry(telemetry);
         telemetry.update();
         waitForStart();
+        robot.launcher.resetTrigger();   // START: trigger CLOSED (blocks the balls) until something opens it
 
         while (opModeIsActive()) {
             if (gamepad1.yWasPressed() || gamepad2.yWasPressed()) {

@@ -140,6 +140,7 @@ public class TestLauncher extends LinearOpMode {
             telemetry.addLine("Press START. Nobody in front of the launcher!");
             telemetry.update();
         }
+        launcher.resetTrigger();   // START: trigger CLOSED (blocks the balls) until LB opens it
 
         while (opModeIsActive()) {
             // ---------- Gamepad 1: mode, speed, spin ----------

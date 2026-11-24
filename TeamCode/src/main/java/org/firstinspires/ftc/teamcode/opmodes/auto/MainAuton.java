@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.Alliance;
 
 /**
  * MAIN AUTON (issue #22, decision 060): the AUTO we run for the FAR start (Timed Auton is the plan for NEAR, but
@@ -31,8 +32,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
  *     (37, 56) -> and 20 to the left  = (100, 20)
  * The team then tuned them on the floor (the numbers below), so they no longer match BasicAuton exactly.
  *
- * Four OpModes use this class: Main Auton RED / BLUE NEAR and RED / BLUE FAR. They only pick the alliance (for the
- * INIT lights, the SET UP line and the TeleOp that comes next) and the route.
+ * FAR has TWO starting spots (decision 066), each with its own OpModes: EDGE (the spot we've been using) and CORNER
+ * (closer to the corner of the field). Both drive forward, then 22 in left; only the forward distance differs.
+ *
+ * Six OpModes use this class: Main Auton RED / BLUE NEAR, RED / BLUE FAR EDGE and RED / BLUE FAR CORNER. They only
+ * pick the alliance (for the INIT lights, the SET UP line and the TeleOp that comes next), the route and the FAR spot.
  * Lights: GREEN = reached every waypoint, YELLOW = stopped early.
  */
 public abstract class MainAuton extends BasicAuton {
@@ -47,11 +51,25 @@ public abstract class MainAuton extends BasicAuton {
             pose(2, -15, 0),   // PARK: back
     };
 
-    /** FAR moves, relative to the start. Shoot Auton (opmodes/test) drives these too, after it shoots. */
-    protected static final Pose2D[] MAIN_FAR_PATH = {
-            pose(85, 0, 0),   // LEAVE + the long drive: 85 in forward
-            pose(85, 22, 0),  // PARK: 22 in left
+    /** Which FAR starting spot (decision 066). */
+    public enum FarSpot { EDGE, CORNER }
+
+    /** FAR from the EDGE spot (the one we've been using), relative to the start. Shoot Auton drives these too. */
+    protected static final Pose2D[] MAIN_FAR_EDGE_PATH = {
+            pose(83, 0, 0),   // LEAVE + the long drive: 83 in forward (was 85 until 11/23)
+            pose(83, 22, 0),  // PARK: 22 in left
     };
+
+    /** FAR from the CORNER spot (closer to the corner of the field), relative to the start. */
+    protected static final Pose2D[] MAIN_FAR_CORNER_PATH = {
+            pose(87, 0, 0),   // LEAVE + the long drive: 87 in forward
+            pose(87, 22, 0),  // PARK: 22 in left
+    };
+
+    /** The FAR spot this OpMode starts from. EDGE unless an OpMode file says CORNER. Not used for NEAR. */
+    protected FarSpot farSpot() {
+        return FarSpot.EDGE;
+    }
 
     @Override
     protected Pose2D startPose() {
@@ -61,6 +79,23 @@ public abstract class MainAuton extends BasicAuton {
     /** The paths are robot moves, so they are NOT rotated for BLUE: both alliances drive the same moves. */
     @Override
     protected Pose2D[] path() {
-        return route() == Route.NEAR ? MAIN_NEAR_PATH : MAIN_FAR_PATH;
+        if (route() == Route.NEAR) {
+            return MAIN_NEAR_PATH;
+        }
+        return farSpot() == FarSpot.CORNER ? MAIN_FAR_CORNER_PATH : MAIN_FAR_EDGE_PATH;
+    }
+
+    /** The SET UP line on the INIT screen: for FAR it also says which spot, so the drive team puts the robot there. */
+    @Override
+    protected String setupInstructions() {
+        if (route() == Route.NEAR) {
+            return super.setupInstructions();
+        }
+        boolean red = alliance() == Alliance.RED;
+        if (farSpot() == FarSpot.CORNER) {
+            return red ? "FAR CORNER spot (closer to the field corner), BACK touching the AUDIENCE wall, FRONT facing the FAR wall"
+                       : "FAR CORNER spot (closer to the field corner), BACK touching the FAR wall, FRONT facing the AUDIENCE";
+        }
+        return "FAR EDGE spot: " + super.setupInstructions();
     }
 }

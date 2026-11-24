@@ -66,9 +66,21 @@ public abstract class TimedAuton extends LinearOpMode {
         robot.drivetrain.setBrakeOnStop(true);           // stop when the power goes to 0 (decision 023)
 
         waitForStart();
+        robot.launcher.resetTrigger();   // START: trigger CLOSED (blocks the balls) until something opens it
 
         // ---------- AUTO: one move at a time ----------
         hold(START_DELAY_S);
+        driveRoute();
+
+        robot.stop();
+    }
+
+    /**
+     * The moves, one after another. Timed Auton drives its NEAR box or its FAR L. A test OpMode can override this
+     * with its own moves (Timed Near Auton in opmodes/test does). It must keep checking opModeIsActive() (move() and
+     * hold() do).
+     */
+    protected void driveRoute() {
         if (route() == BasicAuton.Route.NEAR) {
             move(DRIVE_POWER, 0, FORWARD_S);    // 1. forward
             hold(PAUSE_S);
@@ -81,8 +93,6 @@ public abstract class TimedAuton extends LinearOpMode {
             hold(PAUSE_S);
             move(0, DRIVE_POWER, FAR_LEFT_S);    // 2. left (plus = LEFT, decision 007)
         }
-
-        robot.stop();
     }
 
     /**

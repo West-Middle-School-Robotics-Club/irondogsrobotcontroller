@@ -17,15 +17,17 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
  *                 When turned back on: NECTARs launch by THEMSELVES (AUTO_FIRE_NECTAR, decision 059): when a NECTAR
  *                 presses a nectar detector switch, the trigger opens, and stays open AUTO_FIRE_HOLD_S after the
  *                 switch lets go, so the ball gets through. POLLEN still needs Y. Not while ejecting.
- *   A             INTAKE SYSTEM on / off (toggle): the intake AND the water wheel run together.
- *                 Starts OFF (INTAKE_ON_AT_START = false): press A to start them, A again to stop.
- *                 They always run the SHOOTING way: intake IN + water wheel UP
+ *   (no button)   The INTAKE runs IN the whole match, from START (INTAKE_ALWAYS_ON = true, decision 067).
+ *   A             WATER WHEEL on / off (toggle). Only the water wheel: the intake keeps turning.
+ *                 Starts OFF (WATER_WHEEL_ON_AT_START = false): press A to start it, A again to stop.
+ *                 It runs the SHOOTING way: water wheel UP.
+ *                 (INTAKE_ALWAYS_ON = false brings back the old way: A starts and stops the intake AND the water wheel.)
  *   B             does NOTHING for now (DIRECTION_TOGGLE_ENABLED = false): the direction is always IN.
  *                 To push balls out, hold the left trigger (EJECT).
  *                 When turned back on, B = DIRECTION (toggle): IN (intake in + water wheel UP) or OUT (intake out +
  *                 water wheel DOWN, to push balls out). Starts as IN. Works whether the system is on or off
  *   Left trigger  HOLD to EJECT: water wheel DOWN + intake OUT, for a quick push out. Eject beats the toggles.
- *                 When you let go, the intake and water wheel are OFF.
+ *                 When you let go, the water wheel is OFF and the intake goes back to IN (always on).
  *   (TURRET_ENABLED = false for now, decision 050: the turret does NOT move, so X and the left stick do nothing.)
  *   X             TURRET REST SPOT: turn the turret onto the home magnet (decision 042), from
  *                 wherever it is. If it isn't homed yet it first turns left to find the home switch, then goes there.
@@ -44,8 +46,13 @@ public class OperatorControls {
     // The triggers are analog (0 = released, 1 = all the way down). Pressed past this = "held".
     public static final double TRIGGER_HELD = 0.5;
 
-    // Does the intake system (intake + water wheel) start ON when the match starts? (A toggles it, decision 041)
-    public static final boolean INTAKE_ON_AT_START = false;
+    // Does the intake run the WHOLE match (from START), so A only starts / stops the water wheel? (decision 067)
+    // false = the old way (062): A starts and stops the intake AND the water wheel together.
+    public static final boolean INTAKE_ALWAYS_ON = true;
+
+    // Does the water wheel start ON when the match starts? (A toggles it, decisions 041, 062, 067)
+    // When INTAKE_ALWAYS_ON is false, this is for the intake too (they run together).
+    public static final boolean WATER_WHEEL_ON_AT_START = false;
 
     // Can B flip the intake + water wheel to OUT? false = B does nothing, so the operator can't reverse them by
     // accident (the left trigger EJECT still pushes balls out). Set true to turn the B toggle back on.
@@ -70,7 +77,7 @@ public class OperatorControls {
     private boolean nectarSeen = false;      // has a NECTAR pressed a switch yet this match?
     private boolean autoFiring = false;
 
-    private boolean intakeSystemOn = INTAKE_ON_AT_START;  // intake + water wheel, running together
+    private boolean waterWheelOn = WATER_WHEEL_ON_AT_START;  // A toggle (the intake too if INTAKE_ALWAYS_ON is false)
     private boolean directionOut = false;    // false = IN (intake in, water wheel up), true = OUT (balls leave)
     private boolean ejecting = false;
 
@@ -78,7 +85,7 @@ public class OperatorControls {
     public void update(Robot robot, Gamepad gamepad) {
         // --- Toggles. aWasPressed() is true only ONCE per press, so holding A doesn't flicker on/off ---
         if (gamepad.aWasPressed()) {
-            intakeSystemOn = !intakeSystemOn;
+            waterWheelOn = !waterWheelOn;
         }
         if (DIRECTION_TOGGLE_ENABLED && gamepad.bWasPressed()) {
             directionOut = !directionOut;
@@ -87,20 +94,31 @@ public class OperatorControls {
         // --- Eject (hold left trigger) beats the toggles ---
         ejecting = gamepad.left_trigger > TRIGGER_HELD;
         if (ejecting) {
-            intakeSystemOn = false;  // so both are OFF when the trigger is let go
+            waterWheelOn = false;  // so the water wheel is OFF when the trigger is let go
             robot.intake.waterWheelDown();
             robot.intake.out();
-        } else if (intakeSystemOn) {
-            // The intake and the water wheel always go the same way: both IN/UP, or both OUT/DOWN.
-            if (directionOut) {
-                robot.intake.out();
-                robot.intake.waterWheelDown();
-            } else {
-                robot.intake.in();
-                robot.intake.waterWheelUp();
-            }
         } else {
-            robot.intake.stop();
+            // The intake and the water wheel always go the same way: both IN/UP, or both OUT/DOWN.
+            // Intake: always on (INTAKE_ALWAYS_ON), or only together with the water wheel (the old way)
+            if (INTAKE_ALWAYS_ON || waterWheelOn) {
+                if (directionOut) {
+                    robot.intake.out();
+                } else {
+                    robot.intake.in();
+                }
+            } else {
+                robot.intake.stopIntake();
+            }
+            // Water wheel: A turns it on / off
+            if (waterWheelOn) {
+                if (directionOut) {
+                    robot.intake.waterWheelDown();
+                } else {
+                    robot.intake.waterWheelUp();
+                }
+            } else {
+                robot.intake.stopWaterWheel();
+            }
         }
 
         // --- Turret (left stick, left / right) ---
@@ -140,7 +158,8 @@ public class OperatorControls {
     /** Show what the operator has switched on. */
     public void addTelemetry(Telemetry telemetry) {
         telemetry.addData("Operator", ejecting ? "EJECTING"
-                : String.format("intake system %s, direction %s", intakeSystemOn ? "ON" : "off",
+                : String.format("intake %s, water wheel %s (A), direction %s",
+                INTAKE_ALWAYS_ON || waterWheelOn ? "ON" : "off", waterWheelOn ? "ON" : "off",
                 directionOut ? "OUT (balls leave)" : "IN"));
         telemetry.addData("NECTAR auto-launch", !Intake.NECTAR_DETECTOR_ENABLED ? "OFF (nectar detector off)"
                 : !AUTO_FIRE_NECTAR ? "OFF (AUTO_FIRE_NECTAR = false)"

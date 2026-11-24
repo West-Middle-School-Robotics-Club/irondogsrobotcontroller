@@ -19,11 +19,11 @@ import org.firstinspires.ftc.teamcode.subsystems.Odometry;
  *   2. Shoot: flywheel + intake + water wheel ON, wait FLYWHEEL_SPIN_UP_S, then HOLD the gate open (trigger at FIRE)
  *      for SHOOT_TIME_S so the water wheel feeds the balls through. Then everything OFF and the gate closed
  *   3. Back to the start (0, 0), 22.5 in left
- *   4. Main Auton FAR's route (MAIN_FAR_PATH): forward 85, left 22 = PARK
+ *   4. Main Auton FAR EDGE's route (MAIN_FAR_EDGE_PATH): forward 83, left 22 = PARK
  *
  * The driving is Main Auton's / Basic Auton's (same gains, start delay, lights, STOP_BY_S). The new parts are the path,
  * the shooting (in atWaypoint() at the first waypoint) and a shorter pause after each waypoint (SHOOT_WAYPOINT_PAUSE_S,
- * 1 s; Main Auton keeps WAYPOINT_PAUSE_S = 2 s).
+ * 1 s; Main Auton uses WAYPOINT_PAUSE_S).
  * The turret is NOT moved: it shoots wherever the turret already points (forward, if it was left at home).
  *
  * TIME: this route is longer than Main Auton FAR (two extra 22.5 in strafes, the shooting, two extra pauses).
@@ -36,7 +36,7 @@ public abstract class ShootAuton extends MainAuton {
     static final Pose2D SHOOT_SPOT = pose(0, -22.5, 0); // 22.5 in RIGHT of the start: RED B1 -> C1, BLUE E6 -> D6
     static final double FLYWHEEL_SPIN_UP_S = 2.0;       // flywheel ON this long before the gate opens (intake runs too)
     static final double SHOOT_TIME_S = 6.0;             // gate HELD open this long: enough for all 4 balls to go through
-    static final double SHOOT_WAYPOINT_PAUSE_S = 1.0;   // sit still this long after each waypoint (Main Auton: 2.0)
+    static final double SHOOT_WAYPOINT_PAUSE_S = 1.0;   // sit still this long after each waypoint (Main Auton: WAYPOINT_PAUSE_S)
 
     /** The shooting happens at the first waypoint (SHOOT_SPOT). */
     private static final int SHOOT_WAYPOINT = 0;
@@ -44,10 +44,10 @@ public abstract class ShootAuton extends MainAuton {
     /** SHOOT_SPOT, back to the start, then Main Auton FAR's moves. */
     @Override
     protected Pose2D[] path() {
-        Pose2D[] path = new Pose2D[2 + MAIN_FAR_PATH.length];
+        Pose2D[] path = new Pose2D[2 + MAIN_FAR_EDGE_PATH.length];
         path[0] = SHOOT_SPOT;
         path[1] = MAIN_START;   // back where we started, so the normal FAR route works unchanged
-        System.arraycopy(MAIN_FAR_PATH, 0, path, 2, MAIN_FAR_PATH.length);
+        System.arraycopy(MAIN_FAR_EDGE_PATH, 0, path, 2, MAIN_FAR_EDGE_PATH.length);
         return path;
     }
 
