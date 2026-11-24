@@ -256,7 +256,7 @@ public abstract class BasicAuton extends LinearOpMode {
             atWaypoint(i, robot, odometry, autoTimer);   // Basic / Main Auton: nothing. Shoot Auton: launch here
             // Pause: let the robot settle (BRAKE) and show where the Pinpoint thinks it is, before the next move
             ElapsedTime pauseTimer = new ElapsedTime();
-            while (opModeIsActive() && pauseTimer.seconds() < WAYPOINT_PAUSE_S && autoTimer.seconds() < STOP_BY_S) {
+            while (opModeIsActive() && pauseTimer.seconds() < waypointPauseSeconds() && autoTimer.seconds() < STOP_BY_S) {
                 odometry.update();
                 showStatus("Paused after waypoint " + (i + 1) + (reached ? "" : " (NOT reached)"), autoTimer, odometry, target);
             }
@@ -367,6 +367,14 @@ public abstract class BasicAuton extends LinearOpMode {
      */
     protected void atWaypoint(int index, Robot robot, Odometry odometry, ElapsedTime autoTimer) {
         // nothing: drive-only
+    }
+
+    /**
+     * How long to sit still after each waypoint. Basic Auton and Main Auton use WAYPOINT_PAUSE_S.
+     * An OpMode can override it with its own pause (Shoot Auton uses a shorter one).
+     */
+    protected double waypointPauseSeconds() {
+        return WAYPOINT_PAUSE_S;
     }
 
     protected void showStatus(String step, ElapsedTime autoTimer, Odometry odometry, Pose2D target) {

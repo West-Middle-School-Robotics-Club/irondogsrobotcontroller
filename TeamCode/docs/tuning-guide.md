@@ -125,7 +125,7 @@ Positions are **field coordinates** (011). To tune a route on any clear floor, u
 | `SETTLED_SPEED_IN_PER_S` | `2.0` | "Stopped" = slower than this. A waypoint only counts once the robot is close enough AND stopped, so a slide through the spot doesn't count | Takes long to "finish" each waypoint? raise it a little | 🔧 |
 | `WAYPOINT_TIMEOUT_S` | `4.0` | Give up on one waypoint after this many seconds, plus the per-inch time below | | ✅ |
 | `WAYPOINT_TIMEOUT_PER_INCH_S` | `0.15` | Extra timeout per inch of the move (100 in = 4 + 15 = 19 s). A fixed 8 s gave up on the long FAR drive | Times out on a drive that was going fine? raise it | 🔧 |
-| `WAYPOINT_PAUSE_S` | `2.0` | After each waypoint, stop and sit still this long before the next move (lets the robot settle; telemetry shows the Pinpoint position) | Longer = easier to watch and measure; shorter = faster run. Everything must still finish by `STOP_BY_S` | 🔧 |
+| `WAYPOINT_PAUSE_S` | `2.0` | After each waypoint, stop and sit still this long before the next move (lets the robot settle; telemetry shows the Pinpoint position). Shoot Auton has its own: `SHOOT_WAYPOINT_PAUSE_S` | Longer = easier to watch and measure; shorter = faster run. Everything must still finish by `STOP_BY_S` | 🔧 |
 | `STOP_BY_S` | `28.0` | Stop everything by this time (AUTO is 30 s) | Keep below 30 | 🔒 |
 | `MAX_DELAY_S` | `10` | Longest start delay the drive team can pick in INIT | | ✅ |
 | `RECALIBRATE_AT_START` | `true` | Re-calibrate the Pinpoint gyro at START, when the robot is surely still. If someone bumps the robot during INIT's calibration the heading drifts all run | Keep on. Costs about half a second of AUTO | ✅ |
@@ -140,8 +140,9 @@ Main Auton FAR, but it shoots first: 22.5 in right (RED B1 → C1, BLUE E6 → D
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
 | `SHOOT_SPOT` | `pose(0, -22.5, 0)` | Where it shoots, from the (0, 0, 0) start: 22.5 in to the RIGHT (-Y), one tile over | Robot lands short of / past the middle of C1 (D6)? change the -22.5 | 🔧 |
-| `FLYWHEEL_SPIN_UP_S` | `1.0` | Flywheel (and intake + water wheel) ON this long before the gate opens | First ball falls short? raise it. Running out of time? lower it | 🔧 |
-| `SHOOT_TIME_S` | `4.0` | Gate open this long, so the water wheel feeds all 4 balls through | Ball left in the robot? raise it. All 4 gone well before it ends? lower it | 🔧 |
+| `FLYWHEEL_SPIN_UP_S` | `2.0` | Flywheel (and intake + water wheel) ON this long before the gate opens | First ball falls short? raise it. Running out of time? lower it | 🔧 |
+| `SHOOT_TIME_S` | `6.0` | Gate HELD open this long, so the water wheel feeds all 4 balls through | Ball left in the robot? raise it. All 4 gone well before it ends? lower it | 🔧 |
+| `SHOOT_WAYPOINT_PAUSE_S` | `1.0` | Shoot Auton only: sit still this long after each waypoint (Main Auton uses `WAYPOINT_PAUSE_S`, 2.0) | Robot still rocking when it starts the next move? raise it. Running out of time? lower it | 🔧 |
 
 ## Timed Auton: `opmodes/auto/TimedAuton.java`
 The no-sensor backup for Basic Auton NEAR and FAR (decisions 054, 057): plain power for a set time, no Pinpoint, no encoders. Tune with a **charged battery**; a weak battery drives shorter.
