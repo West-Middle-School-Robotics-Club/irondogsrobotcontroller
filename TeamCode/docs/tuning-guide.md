@@ -30,7 +30,7 @@ Most of these have a **printable worksheet** in `TeamCode/docs/worksheets/` (see
 | `SLOW_MODE_SCALE` | `opmodes/teleop/DriverControls.java` | `0.5` | Hold a bumper: slow, for lining up (OFF for now: `SPEED_MODES_ENABLED = false`) |
 | `TURBO_SCALE` | `opmodes/teleop/DriverControls.java` | `1.0` | Hold a trigger: full speed (OFF for now: `SPEED_MODES_ENABLED = false`) |
 | `SNAP_ANGLE_DEGREES` | `opmodes/teleop/DriverControls.java` | `20.0` | Straight-line assist: how forgiving it is |
-| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `0.73` | Flywheel power (it runs the whole match) |
+| `DEFAULT_SPIN_POWER` | `subsystems/Launcher.java` | `0.70` | Flywheel power (it runs the whole match) |
 | `X_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the X odometry pod is, sideways from the turning center |
 | `Y_POD_OFFSET_MM` | `subsystems/Odometry.java` | `0.0` | Where the Y odometry pod is, forward from the turning center |
 
@@ -146,21 +146,33 @@ Main Auton FAR, but it shoots first: 22.5 in right (RED B1 → C1, BLUE E6 → D
 | `SHOOT_WAYPOINT_PAUSE_S` | `1.0` | Shoot Auton only: sit still this long after each waypoint (Main Auton uses `WAYPOINT_PAUSE_S`) | Robot still rocking when it starts the next move? raise it. Running out of time? lower it | 🔧 |
 
 ### Timed Shoot Auton (test): `opmodes/test/TimedShootAuton.java`
-Timed Auton FAR, but it shoots first, with NO sensors: strafe right for a set time (flywheel spinning up on the way), shoot, strafe back left for the same time, then Timed Auton FAR's moves (`FAR_FORWARD_S`, `FAR_LEFT_S`). The shooting uses Shoot Auton's `FLYWHEEL_SPIN_UP_S` and `SHOOT_TIME_S` (above), so they're tuned once for both. Shown on the Driver Station for testing (**Timed Shoot Auton Red / Blue Far**, Tests group); hide it with `@Disabled` before a competition (052).
+Timed Auton FAR, but it shoots first, with NO sensors: strafe right for a set time (flywheel spinning up on the way), shoot, strafe back left for the same time, then Timed Far Auton's CORNER times (`FAR_CORNER_FORWARD_S`, `FAR_CORNER_LEFT_S`, below), so they're tuned once for both. The shooting uses Shoot Auton's `FLYWHEEL_SPIN_UP_S` and `SHOOT_TIME_S` (above), so they're tuned once for both. Shown on the Driver Station for testing (**Timed Shoot Auton Red / Blue Far**, Tests group); hide it with `@Disabled` before a competition (052).
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
 | `SHOOT_RIGHT_S` | `1.5` | Seconds strafing RIGHT to the shooting spot (goal: 22.5 in, RED B1 → C1, BLUE E6 → D6), and the same time back LEFT. Starting guess: about 15 in/s sideways at `DRIVE_POWER` | Measure the strafe; new time = old time × 22.5 / measured. Doesn't end back at the start? The FAR route after it will be off by the same amount | 🔧 not tested yet |
 
 ### Timed Near Auton (test): `opmodes/test/TimedNearAuton.java`
-Two NEAR starting spots with Timed Auton's no-sensor driving (same `DRIVE_POWER`, `PAUSE_S`, setup as Timed Auton NEAR). **CORNER** = (0, -10): 10 in right, staying near the corner (the back stays on the wall, so probably no LEAVE). **EDGE** = (24, 0) → (23, -16) → (2, -16): forward 24, right 16, back 21. Times are starting guesses from Timed Auton NEAR's speeds (forward ~23 in/s, right ~15 in/s, back ~22.5 in/s). Shown for testing as **Timed Near Corner Red / Blue** and **Timed Near Edge Red / Blue** (Tests group); hide with `@Disabled` before a competition (052).
+Two NEAR starting spots with Timed Auton's no-sensor driving (same `DRIVE_POWER`, `PAUSE_S`, setup as Timed Auton NEAR). **CORNER** = (4, 0) → (4, -10) → (2, -10): forward 4 (off the wall), right 10, back 2, ending near the corner about 2 in off the wall (LEAVE needs it off the wall). **EDGE** = `MAIN_NEAR_PATH`, (24, 0) → (23, -15) → (2, -15): forward 24, right 15, back 21. Times are starting guesses from Timed Auton NEAR's speeds (forward ~23 in/s, right ~15 in/s, back ~22.5 in/s). Shown for testing as **Timed Near Corner Red / Blue** and **Timed Near Edge Red / Blue** (Tests group); hide with `@Disabled` before a competition (052).
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `NEAR_CORNER_RIGHT_S` | `0.65` | CORNER: seconds strafing right (goal: 10 in) | Measure; new time = old time × 10 / measured | 🔧 not tested yet |
+| `NEAR_CORNER_FORWARD_S` | `0.35` | CORNER move 1: seconds forward, just off the wall (goal: 4 in, LEAVE). 1.0 × 4 / 23 = 0.17 s, plus a little because a short move is mostly speeding up | New time = old time × 4 / measured. Still touching the wall? raise it | 🔧 not tested yet |
+| `NEAR_CORNER_RIGHT_S` | `0.65` | CORNER move 2: seconds strafing right (goal: 10 in) | Measure; new time = old time × 10 / measured | 🔧 not tested yet |
+| `NEAR_CORNER_BACK_S` | `0.15` | CORNER move 3: seconds back (goal: 2 in, ending about 2 in OFF the wall). Must stay shorter than the forward move | Back touches the wall (no LEAVE)? lower it. Not in the LOADING ZONE? check the right move first | 🔧 not tested yet |
 | `NEAR_EDGE_FORWARD_S` | `1.05` | EDGE move 1: seconds forward, off the wall (goal: 24 in, LEAVE) | New time = old time × 24 / measured | 🔧 not tested yet |
-| `NEAR_EDGE_RIGHT_S` | `1.05` | EDGE move 2: seconds strafing right (goal: 16 in) | New time = old time × 16 / measured | 🔧 not tested yet |
+| `NEAR_EDGE_RIGHT_S` | `1.0` | EDGE move 2: seconds strafing right (goal: 15 in, like `MAIN_NEAR_PATH`) | New time = old time × 15 / measured | 🔧 not tested yet |
 | `NEAR_EDGE_BACK_S` | `0.95` | EDGE move 3: seconds back into the LOADING ZONE (goal: 21 in, ending 2 in from the start line). Must stop before the wall | New time = old time × 21 / measured | 🔧 not tested yet |
+
+### Timed Far Auton (test): `opmodes/test/TimedFarAuton.java`
+Two FAR starting spots with Timed Auton's no-sensor driving, like Main Auton FAR (decision 066): **EDGE** and **CORNER**, each forward up the field then left into the LOADING ZONE. Same setup as Timed Auton FAR. Shown for testing as **Timed Far Edge Red / Blue** and **Timed Far Corner Red / Blue** (Tests group); hide with `@Disabled` before a competition (052).
+
+| Setting | Now | What it does | How to find it | Status |
+|---|---|---|---|---|
+| `FAR_EDGE_FORWARD_S` | `4.2` | EDGE move 1: seconds forward up column B (LEAVE). Main Auton FAR EDGE goes 83 in | Measure; new time = old time × goal / measured. Too long = into the far end | 🔧 not tested yet |
+| `FAR_EDGE_LEFT_S` | `1.7` | EDGE move 2: seconds strafing left into the LOADING ZONE (PARK). Main Auton goes 22 in | Must stop before the wall | 🔧 not tested yet |
+| `FAR_CORNER_FORWARD_S` | `5.0` | CORNER move 1: seconds forward up the field (LEAVE). Main Auton FAR CORNER goes 87 in | Measure; new time = old time × goal / measured | 🔧 not tested yet |
+| `FAR_CORNER_LEFT_S` | `1.7` | CORNER move 2: seconds strafing left into the LOADING ZONE (PARK). Main Auton goes 22 in | Must stop before the wall | 🔧 not tested yet |
 
 ## Timed Auton: `opmodes/auto/TimedAuton.java`
 The no-sensor backup for Basic Auton NEAR and FAR (decisions 054, 057): plain power for a set time, no Pinpoint, no encoders. Tune with a **charged battery**; a weak battery drives shorter.
@@ -171,8 +183,8 @@ The no-sensor backup for Basic Auton NEAR and FAR (decisions 054, 057): plain po
 | `FORWARD_S` | `1.0` | Seconds driving forward off the wall (goal: 23 in) | Run it, measure how far it went, scale: new time = time × 23 / inches measured. **Worked on the robot 11/11 (Timed Auton NEAR, RED and BLUE)** | ✅ |
 | `RIGHT_S` | `0.8` | Seconds strafing right, toward the audience (goal: 12 in) | Same, × 12 / measured. Strafing is slower than driving, so it needs more time per inch. **Worked on the robot 11/11 (Timed Auton NEAR, RED and BLUE)** | ✅ |
 | `BACK_S` | `0.8` | Seconds driving back into the LOADING ZONE (goal: 18 in) | Same, × 18 / measured. Must stop before hitting the wall. **Worked on the robot 11/11 (Timed Auton NEAR, RED and BLUE)** | ✅ |
-| `FAR_FORWARD_S` | `3.7` | FAR: seconds driving forward up column B, the long drive (goal: 85 in, was 100 until 11/11). Starting guess scaled from `FORWARD_S` | Same, × 85 / measured. Too short = no LEAVE; too long = into the far end of the field | 🔧 |
-| `FAR_LEFT_S` | `1.5` | FAR: seconds strafing left into the LOADING ZONE (goal: 23 in, was 20 until 11/11). Starting guess scaled from `RIGHT_S` | Same, × 23 / measured. Must stop before hitting the wall | 🔧 |
+| `FAR_FORWARD_S` | `4.2` | FAR: seconds driving forward up column B, the long drive (goal: 85 in, was 100 until 11/11). 4.2 since 11/23 (set by the team; was a 3.7 starting guess) | Same, × 85 / measured. Too short = no LEAVE; too long = into the far end of the field | 🔧 |
+| `FAR_LEFT_S` | `1.7` | FAR: seconds strafing left into the LOADING ZONE (goal: 23 in, was 20 until 11/11). 1.7 since 11/23 (set by the team; was a 1.5 starting guess) | Same, × 23 / measured. Must stop before hitting the wall | 🔧 |
 | `PAUSE_S` | `0.5` | Sit still between moves so one slide doesn't carry into the next | Moves blend together? longer | 🔧 |
 | `START_DELAY_S` | `0.0` | Wait after START before moving (no dpad: change it in the code before the match) | Agree with the partner | 🔧 |
 
@@ -193,7 +205,7 @@ Worksheet: `launcher-test.pdf`. Test with **Launcher Test**. Issue #5, decision 
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `DEFAULT_SPIN_POWER` | `0.73` | Flywheel power (0 to 1). Runs the whole match. 0.73 since 11/23 (set on the robot, after 0.75 earlier that day); 0.83 on 11/15 ("the sweet spot arc" after more testing); 0.70 on 11/14 (shots overshot in the competition matches; was 0.75 on 11/12, 1.0 from 11/8 testing, 0.45 before, decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
+| `DEFAULT_SPIN_POWER` | `0.70` | Flywheel power (0 to 1). Runs the whole match. 0.70 since 11/23 (set on the robot, after 0.75 and 0.73 earlier that day); 0.83 on 11/15 ("the sweet spot arc" after more testing); 0.70 on 11/14 (shots overshot in the competition matches; was 0.75 on 11/12, 1.0 from 11/8 testing, 0.45 before, decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
 | `MOTOR_REVERSED` | `true` | Flywheel direction | Launcher Test: balls must go OUT | 🔧 |
 | `ENCODER_TICKS_PER_REV` | `28.0` | Encoder ticks per turn of the flywheel motor's shaft, to show the speed in RPM. Depends on the motor: 6000 RPM = 28.0, 1620 RPM = 103.8, 1150 RPM = 145.1, 435 RPM = 384.5 | Read the RPM on the motor's label. Check: at 100% power "Launcher Speed" should be a bit under the label's RPM | ✅ 5203-2402-0001 = 6000 RPM, 1:1 (11/23) |
 | `READY_RPM` | `2000.0` | The flywheel counts as READY at this speed (RPM). Was `READY_VELOCITY_THRESHOLD` (1000 ticks/s) until 11/23 | Launcher Test: read "Launcher Speed" once settled; use ~90% of it | 🔧 placeholder |

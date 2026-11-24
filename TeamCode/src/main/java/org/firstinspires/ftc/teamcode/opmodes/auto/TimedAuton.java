@@ -44,8 +44,8 @@ public abstract class TimedAuton extends LinearOpMode {
     static final double BACK_S = 0.8;      // 3. back into the LOADING ZONE (goal: 18 in; stop before the wall)
 
     // FAR: STARTING GUESSES, scaled from the NEAR times that worked (about 23 in per second forward, 15 in per second sideways).
-    static final double FAR_FORWARD_S = 3.7; // 1. forward up column B (goal: 85 in). The HIVE is in column C, to the right
-    static final double FAR_LEFT_S = 1.5;    // 2. strafe left into the LOADING ZONE (goal: 23 in; stop before the wall)
+    static final double FAR_FORWARD_S = 4.2; // 1. forward up column B (goal: 85 in). The HIVE is in column C, to the right
+    static final double FAR_LEFT_S = 1.7;    // 2. strafe left into the LOADING ZONE (goal: 23 in; stop before the wall)
 
     // Stop and sit still this long between moves, so one move's slide doesn't carry into the next.
     protected static final double PAUSE_S = 0.5;

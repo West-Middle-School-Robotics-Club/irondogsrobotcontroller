@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;  // for hiding it again
 
 /**
  * TEST: Timed Near Auton for RED, NEAR EDGE spot: tile A6, BACK touching the RED wall, FRONT facing into the field.
- * Forward 24, right 16, back 21. All the code is in TimedNearAuton. After AUTO, "Main TeleOp RED" is queued up automatically.
+ * Forward 24, right 15, back 21 (MAIN_NEAR_PATH). All the code is in TimedNearAuton. After AUTO, "Main TeleOp RED" is queued up automatically.
  */
 // SHOWN on the Driver Station for testing (11/23). Test OpModes are hidden at competitions (decision 052):
 // add a line "@Disabled" right above @Autonomous before a competition.

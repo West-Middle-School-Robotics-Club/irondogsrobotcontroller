@@ -16,7 +16,8 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.TimedAuton;
  *   2. Wait until the flywheel has had ShootAuton.FLYWHEEL_SPIN_UP_S, then HOLD the gate open for
  *      ShootAuton.SHOOT_TIME_S. Then everything OFF and the gate closed
  *   3. Strafe LEFT for SHOOT_RIGHT_S, back to the start
- *   4. Timed Auton FAR's route: forward FAR_FORWARD_S, left FAR_LEFT_S = PARK
+ *   4. Timed Far Auton's CORNER times: forward TimedFarAuton.FAR_CORNER_FORWARD_S, left FAR_CORNER_LEFT_S = PARK
+ *      (the same numbers as Timed Far Corner, so they are tuned once for both)
  *
  * The shooting uses the SAME two numbers as Shoot Auton (FLYWHEEL_SPIN_UP_S, SHOOT_TIME_S in ShootAuton.java), so
  * they are tuned once for both. The turret is NOT moved.
@@ -30,6 +31,17 @@ public abstract class TimedShootAuton extends TimedAuton {
     // Tune on the robot (tuning-guide.md has a row). STARTING GUESS from Timed Auton NEAR: about 15 in per second
     // sideways at DRIVE_POWER, so 22.5 in = 1.5 s.
     static final double SHOOT_RIGHT_S = 1.5;   // strafe right to the shooting spot (goal: 22.5 in), and back left
+
+    /** Shoot first (beforeFarRoute), then drive Timed Far Auton's CORNER times to PARK. */
+    @Override
+    protected void driveRoute() {
+        beforeFarRoute();
+        move(DRIVE_POWER, 0, TimedFarAuton.FAR_CORNER_FORWARD_S);   // forward up the field (LEAVE)
+        hold(PAUSE_S);
+        show("Left into the LOADING ZONE (PARK)");
+        move(0, DRIVE_POWER, TimedFarAuton.FAR_CORNER_LEFT_S);      // left (plus = LEFT, decision 007)
+        show("Done");
+    }
 
     @Override
     protected void beforeFarRoute() {
@@ -64,7 +76,7 @@ public abstract class TimedShootAuton extends TimedAuton {
         show("Strafing LEFT back to the start");
         move(0, DRIVE_POWER, SHOOT_RIGHT_S);
         hold(PAUSE_S);
-        show("Timed Auton FAR route: forward, then left = PARK");
+        show("Forward up the field (Timed Far CORNER times)");
     }
 
     /** One line on the Driver Station, so the drive team can see which step it is on. */
