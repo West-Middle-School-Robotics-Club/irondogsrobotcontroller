@@ -686,3 +686,14 @@ Decision: Four groups, one folder each in `opmodes/auto/`:
 - **Shoot Auton** (`shoot/`): Shoot Auton Red / Blue Far (moved from `test/`).
 Timed Shoot Auton is removed for now: the Timed Auton times get tuned first (it's in git history, commit e9c2b55). The leftover `MainAutonBlueFar` and the old Timed Auton FAR OpModes are gone (the Edge ones replace them). 22 AUTOs, all shown. This changes the Driver Station lists of 064, 066 and 068.
 Who: Mentor (11/24)
+
+## 070 – Pedro Pathing 3 setup: where the files live, and no driving until tuned  (2026-11-25)
+Status: Proposed (PR on the `pedro-pathing` branch; accept after it builds and the tuners run on the robot)
+Issue: #25
+Context: Decision 012 picked Pedro Pathing (trial). The current Pedro is **version 3**, a rewrite: the setup, the paths and the tuning are different from Pedro 2 and from most older examples online (no `FollowerConstants`, `BezierLine` or `PathChain`). Its tuning runs from a web page on the robot ("AutoTune") instead of Driver Station OpModes. Pedro 3 doesn't use the robot's weight.
+Decision:
+- **Libraries** in `TeamCode/build.gradle` (decision 001): `com.pedropathing:revhub:3.0.2` and `com.pedropathing:tuning:1.0.3`, the versions in Pedro's own Quickstart, plus the Dairy repository (the tuning library needs "Sloth" from there). No other Gradle changes: our Android plugin and SDK versions stay.
+- **`pedro/Constants.java`** builds Pedro's Follower (Pinpoint + motors + "Foresight" tuning). It **reads** our constants (013): motor names and the new `Drivetrain.LEFT_SIDE_DIRECTION` / `RIGHT_SIDE_DIRECTION`, and the Pinpoint settings from `Odometry`. It also makes our `Drivetrain` first, so Pedro always runs in plain power + BRAKE (008, 055). The tuning values are named constants with tuning-guide rows (rule 3).
+- **Tuning** is test code in `opmodes/test/pedro/`: Pedro's `ForesightTuner` and `Tests` (copied unchanged from the Quickstart) and our `PedroTuners.java`, which lists them on the AutoTune page. Pedro's Pinpoint and Mecanum tuners are skipped: those settings are already tested.
+- **Pedro Test** (`opmodes/test/PedroTest.java`, hidden with `@Disabled`, 052): forward 24 in and back. It **won't drive** while `Constants.FORESIGHT_TUNED = false`, because the placeholder numbers are from someone else's robot.
+Who: Mentor (11/25)

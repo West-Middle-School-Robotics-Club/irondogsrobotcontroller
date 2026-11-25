@@ -63,4 +63,10 @@ Four OpModes in the **Timed Auton** group: **Timed Auton RED / BLUE NEAR** and *
 - **NEAR is what we run (decision 060)**; FAR is the backup for Main Auton FAR. Tune the seconds with a charged battery (rows in `docs/tuning-guide.md`)
 
 ## Advanced Auton (issue #25)
-Pedro Pathing, later. Launching, the turret and the camera belong there, not in Basic Auton (decision 020).
+Pedro Pathing. Launching, the turret and the camera belong there, not in Basic Auton (decision 020).
+**Installed, not tuned yet (decision 070).** Steps:
+1. Tune: Pedro's **AutoTune** web page, "Foresight Tuner". How to open it: `opmodes/test/pedro/PedroTuners.java`
+2. Copy the numbers into `pedro/Constants.java`, set `FORESIGHT_TUNED = true` (rows in `docs/tuning-guide.md`)
+3. Check: **Pedro Test** (`opmodes/test/PedroTest.java`, delete its `@Disabled`): forward 24 in and back
+4. Then the real Advanced Auton: get Pedro with `Follower follower = Constants.create(hardwareMap);` in INIT,
+   `follower.follow(path)` after START, and `follower.update()` every loop

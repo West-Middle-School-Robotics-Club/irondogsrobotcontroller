@@ -9,6 +9,8 @@ We use **structured subsystems** (decision 006).
 teamcode/
 ├── Alliance.java           ← RED or BLUE; the OpMode picks it (decision 022)
 ├── Robot.java              ← holds every subsystem
+├── pedro/
+│   └── Constants.java      ← Pedro Pathing's setup + tuning values (decisions 012, 013, 070). Reads Drivetrain + Odometry
 ├── subsystems/             ← one class per mechanism; the ONLY code that touches hardware
 │   ├── Camera.java         ← the Limelight. Not in Robot.java yet; see below
 │   ├── Drivetrain.java
@@ -51,7 +53,11 @@ teamcode/
         ├── IntakeTest.java ← hold buttons to run the intake and water wheel (#4)
         ├── IntakeLauncherTest.java ← Intake Test + Launcher Test in one: check a ball goes in, up and out (#4, #5)
         ├── LightTest.java ← check the colors on both lights
+        ├── PedroTest.java ← Pedro drives forward 24 in and back (#25). Won't drive until Pedro is tuned
         ├── PinpointTest.java
+        ├── pedro/ ← Pedro's tuning steps, run from Pedro's AutoTune web page, not the Driver Station (#25, 070)
+        │   ├── PedroTuners.java ← lists the tuners on the AutoTune page, and how to open it
+        │   └── ForesightTuner.java, Tests.java ← copied unchanged from Pedro's Quickstart
         ├── RedCameraTest.java ← camera as RED: only tags 30-37 are targets
         ├── TestLauncher.java ← test whether the launcher flywheel motor spins (#5)
         └── TurretTest.java ← turn the (continuous) turret with the dpad, learn the ELC encoder, calibrate (#31)

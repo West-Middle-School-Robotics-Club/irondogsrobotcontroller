@@ -80,7 +80,8 @@ Test with **Main TeleOp**. Decision 041.
 |---|---|---|---|---|
 | `USE_ENCODER_SPEED_CONTROL` | `false` | `true` = motors hold a speed using their encoders; `false` = plain power (% of battery voltage). Every OpMode starts in this mode | Decision 055 (11/11): plain power everywhere, after encoder mode lurched at Basic Auton waypoints. "Encoder Mode Toggle" test compares the two | ✅ |
 
-The left motors are set to REVERSE in the constructor. That matches the robot's wiring; change it only if a side drives backwards.
+| `LEFT_SIDE_DIRECTION` | `DcMotorSimple.Direction.REVERSE` | Which way the left motors spin for "forward". Pedro reads it too | Matches the wiring (9/23); change only if a side drives backwards | ✅ |
+| `RIGHT_SIDE_DIRECTION` | `DcMotorSimple.Direction.FORWARD` | Same, right motors | Same | ✅ |
 
 ## Odometry (Pinpoint): `subsystems/Odometry.java`
 Worksheet: `pinpoint-test.pdf`. Test with **Pinpoint Test**. Issues #6, #21.
@@ -100,6 +101,41 @@ The Pinpoint Test OpMode drives in BRAKE with straight-line assist ON and a dpad
 | `SPEED_DIAL_START` | `opmodes/test/PinpointTest.java` | `0.5` | Where the speed dial is at START (times the normal drive power) | ✅ |
 | `SPEED_DIAL_STEP` | `opmodes/test/PinpointTest.java` | `0.1` | How much one dpad up / down press changes it | ✅ |
 | `SPEED_DIAL_MIN` | `opmodes/test/PinpointTest.java` | `0.1` | The dial never goes below this | ✅ |
+
+## Pedro Pathing (Advanced Auton): `pedro/Constants.java`
+Issue #25, decisions 012, 013, 070. **All 🔧: placeholders** (the example numbers from Pedro's docs, from someone else's robot).
+Tune them with Pedro's **AutoTune** web page, "Foresight Tuner" (how to open it: `opmodes/test/pedro/PedroTuners.java`).
+At the end it shows a block of code: copy each number into the matching line, then set `FORESIGHT_TUNED` to `true`.
+Pedro reads the motor names / directions from `Drivetrain.java` and the Pinpoint settings from `Odometry.java`, so those aren't here.
+
+| Setting | Now | What it does | How to find it | Status |
+|---|---|---|---|---|
+| `FORESIGHT_TUNED` | `false` | `false` = the numbers below are still placeholders, so Pedro Test won't drive | Set `true` after copying in the tuner's numbers | 🔧 |
+| `MAX_FORWARD_VELOCITY` | `72.72923108818539` | Top speed forward at full power (in/s) | Foresight Tuner: Max Forward Velocity | 🔧 |
+| `MAX_STRAFE_VELOCITY` | `52.34323936525474` | Top speed sideways at full power (in/s) | Foresight Tuner: Max Strafe Velocity | 🔧 |
+| `NATURAL_FORWARD_DECELERATION` | `85.01144677379789` | How fast it slows down by itself, forward (in/s²) | Foresight Tuner: Forward Deceleration | 🔧 |
+| `NATURAL_STRAFE_DECELERATION` | `104.49787535782846` | How fast it slows down by itself, sideways (in/s²) | Foresight Tuner: Strafe Deceleration | 🔧 |
+| `HEADING_KP` | `5.258721785960744` | How hard to correct a heading error | Foresight Tuner: Heading Tuner | 🔧 |
+| `HEADING_BRAKE_LINEAR` | `0.05642143125655298` | Braking a turn (linear part) | Foresight Tuner: Heading Braking | 🔧 |
+| `HEADING_BRAKE_QUADRATIC` | `0.0063829525363003695` | Braking a turn (squared part) | Foresight Tuner: Heading Braking | 🔧 |
+| `FORWARD_BRAKE_LINEAR` | `0.10605894992901523` | Braking forward (linear part) | Foresight Tuner: Forward Braking | 🔧 |
+| `FORWARD_BRAKE_QUADRATIC` | `0.0014663966976606565` | Braking forward (squared part) | Foresight Tuner: Forward Braking | 🔧 |
+| `STRAFE_BRAKE_LINEAR` | `0.08719146175596092` | Braking sideways (linear part) | Foresight Tuner: Strafe Braking | 🔧 |
+| `STRAFE_BRAKE_QUADRATIC` | `0.0013837064502458813` | Braking sideways (squared part) | Foresight Tuner: Strafe Braking | 🔧 |
+| `FORWARD_TRANSLATIONAL_PRIMARY_KP` | `0.3` | Pushing back onto the path, forward, when far off | Foresight Tuner: Forward Translational | 🔧 |
+| `FORWARD_TRANSLATIONAL_SECONDARY_KP` | `0.1` | Same, when close to the path | Foresight Tuner: Forward Translational | 🔧 |
+| `STRAFE_TRANSLATIONAL_PRIMARY_KP` | `0.3` | Pushing back onto the path, sideways, when far off | Foresight Tuner: Strafe Translational | 🔧 |
+| `STRAFE_TRANSLATIONAL_SECONDARY_KP` | `0.1` | Same, when close to the path | Foresight Tuner: Strafe Translational | 🔧 |
+| `TRANSLATIONAL_SWITCH_IN` | `2.5` | "Far off" vs "close" for the two above (inches) | Pedro's default; the tuner doesn't change it | 🔒 |
+| `COAST_KV` | `0.010978350889324107` | Power per in/s of speed while coasting | Foresight Tuner: Forward Translational (coast kV) | 🔧 |
+| `BRAKE_KV` | `0.008731598255925491` | Power per in/s of speed while braking | Foresight Tuner: Forward Translational (brake kV) | 🔧 |
+
+The **Pedro Test** OpMode (forward and back, after tuning):
+
+| Setting | File | Now | What it does | Status |
+|---|---|---|---|---|
+| `TEST_DISTANCE_IN` | `opmodes/test/PedroTest.java` | `24.0` | How far forward it drives, then back (inches) | 🔧 |
+| `LEG_TIMEOUT_S` | `opmodes/test/PedroTest.java` | `5.0` | Gives up on a move after this many seconds | 🔧 |
 
 ## Basic Auton: `opmodes/auto/BasicAuton.java`
 Guide: `basic-auton-guide.pdf`, routes: `docs/game/diagrams/auton-near.pdf` / `auton-far.pdf`. Issue #22, decisions 026, 053.

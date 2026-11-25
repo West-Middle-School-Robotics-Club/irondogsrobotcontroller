@@ -24,6 +24,19 @@ android {
     }
 }
 
+// Pedro Pathing (decision 012, issue #25). Added HERE, not in FIRST's root Gradle files (decision 001),
+// so SDK updates still merge cleanly. Versions match Pedro's own Quickstart (11/25):
+//   revhub = Pedro 3 for REV hubs (Follower, Mecanum drive, Pinpoint localizer; pulls in "core" itself)
+//   tuning = the AutoTune web page that runs the tuning steps (pedro/ and opmodes/test/pedro/)
+// Pedro itself comes from mavenCentral (already listed in build.dependencies.gradle). The tuning library
+// also needs "Sloth" (dev.frozenmilk), which only lives on the Dairy repository below.
+repositories {
+    maven { url 'https://repo.dairy.foundation/releases/' }
+}
+
 dependencies {
     implementation project(':FtcRobotController')
+
+    implementation 'com.pedropathing:revhub:3.0.2'
+    implementation 'com.pedropathing:tuning:1.0.3'
 }

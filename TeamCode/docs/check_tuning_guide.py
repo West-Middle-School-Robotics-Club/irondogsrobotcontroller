@@ -16,7 +16,7 @@ DOCS = os.path.dirname(os.path.abspath(__file__))
 GUIDE = os.path.join(DOCS, "tuning-guide.md")
 CODE = os.path.join(DOCS, "..", "src", "main", "java", "org", "firstinspires", "ftc", "teamcode")
 
-JAVA_PATH = re.compile(r"`((?:subsystems|opmodes)/[\w/]+\.java)`")
+JAVA_PATH = re.compile(r"`((?:subsystems|opmodes|pedro)/[\w/]+\.java)`")
 NAME = re.compile(r"^`([A-Z][A-Z0-9_]+)`$")
 VALUE = re.compile(r"^`([^`]+)`")
 

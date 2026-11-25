@@ -25,6 +25,12 @@ public class Drivetrain {
     public static final String BACK_LEFT_DRIVE_NAME   = "backLeftDrive"; //2
     public static final String BACK_RIGHT_DRIVE_NAME  = "backRightDrive"; //4
 
+    // Which way each side spins for "forward". The LEFT side is reversed on our robot (tested 9/23 with manualDriver).
+    // If the robot drives backwards when you push the stick forward, swap these.
+    // Pedro Pathing reads these too (pedro/Constants.java, decision 013), so change them only here.
+    public static final DcMotorSimple.Direction LEFT_SIDE_DIRECTION  = DcMotorSimple.Direction.REVERSE;
+    public static final DcMotorSimple.Direction RIGHT_SIDE_DIRECTION = DcMotorSimple.Direction.FORWARD;
+
     // How the drive motors take "power" (decision 055: plain power everywhere):
     // false = RUN_WITHOUT_ENCODER (power = % of battery voltage, plain and simple)
     // true  = RUN_USING_ENCODER (power = % of top speed, the hub uses the encoders to hold that speed)
@@ -45,12 +51,11 @@ public class Drivetrain {
         backLeftDrive   = hardwareMap.get(DcMotor.class, BACK_LEFT_DRIVE_NAME);
         backRightDrive  = hardwareMap.get(DcMotor.class, BACK_RIGHT_DRIVE_NAME);
 
-        // The LEFT side is reversed on our robot (tested 9/23 with manualDriver).
-        // If the robot drives backwards when you push the stick forward, swap these.
-        frontLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontRightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        backRightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        // The LEFT side is reversed on our robot (see LEFT_SIDE_DIRECTION above).
+        frontLeftDrive.setDirection(LEFT_SIDE_DIRECTION);
+        backLeftDrive.setDirection(LEFT_SIDE_DIRECTION);
+        frontRightDrive.setDirection(RIGHT_SIDE_DIRECTION);
+        backRightDrive.setDirection(RIGHT_SIDE_DIRECTION);
 
         setEncoderSpeedControl(USE_ENCODER_SPEED_CONTROL);
 
