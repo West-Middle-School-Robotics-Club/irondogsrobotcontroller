@@ -232,8 +232,18 @@ public class Launcher {
         return launcherMotor != null;
     }
 
-    /** Show this subsystem's status on the Driver Station. */
+    /** Show this subsystem's status on the Driver Station (tests): the match lines + the encoder cable warning. */
     public void addTelemetry(Telemetry telemetry) {
+        addMatchTelemetry(telemetry);
+        if (launcherMotor != null
+                && (velocityMode ? targetRpm > 0 : Math.abs(getPower()) > 0.2) && getRpm() == 0.0) {
+            // Powered but EXACTLY 0: the hub isn't getting encoder pulses. The speed can't be measured.
+            telemetry.addLine("  ⚠️ Speed 0 while powered: check the flywheel ENCODER cable (same port number as the motor)");
+        }
+    }
+
+    /** The short version for Main TeleOp's match screen: status, speed, current, trigger. */
+    public void addMatchTelemetry(Telemetry telemetry) {
         if (launcherMotor != null) {
             boolean spinning = velocityMode ? targetRpm != 0 : getPower() != 0;
             telemetry.addData("Launcher Status", isReady() ? "READY" : (spinning ? "SPINNING UP (not ready)" : "STOPPED"));
@@ -242,10 +252,6 @@ public class Launcher {
             } else {
                 telemetry.addData("Launcher Power", "%.2f", getPower());
                 telemetry.addData("Launcher Speed", "%.0f RPM", getRpm());
-            }
-            if ((velocityMode ? targetRpm > 0 : Math.abs(getPower()) > 0.2) && getRpm() == 0.0) {
-                // Powered but EXACTLY 0: the hub isn't getting encoder pulses. The speed can't be measured.
-                telemetry.addLine("  ⚠️ Speed 0 while powered: check the flywheel ENCODER cable (same port number as the motor)");
             }
             telemetry.addData("Launcher Current", "%.2f A", getCurrentAmps());
         } else {
