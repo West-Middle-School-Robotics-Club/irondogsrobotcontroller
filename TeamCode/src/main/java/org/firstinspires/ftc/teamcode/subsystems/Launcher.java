@@ -59,23 +59,28 @@ public class Launcher {
     // Checked 11/23: the flywheel motor is a 5203-2402-0001 = 6000 RPM, no gearbox (1:1), so 28.0.
     public static final double ENCODER_TICKS_PER_REV = 28.0;
 
-    // The flywheel counts as READY once it spins at least this fast (RPM).
-    // TODO(#5): run "Launcher Test" at DEFAULT_SPIN_POWER, read "Launcher Speed" once it settles,
-    // and set this to about 90% of that number. 2000 is a placeholder (was 1000 ticks/s, about 2140 RPM).
-    public static final double READY_RPM = 2000.0;
+    // The flywheel counts as READY once it spins at least this fast (RPM). About 95% of TARGET_RPM.
+    // Note 11/26: 3040 = 95% of 3200. Was a 2000 placeholder. Change it together with TARGET_RPM.
+    public static final double READY_RPM = 3040.0;
 
-    // Steady speed (decision 071). Tune ALL of these in "Launcher Test" VELOCITY mode first (tuning guide, Launcher
-    // section), copy them here, THEN set USE_VELOCITY_CONTROL = true. Until then the flywheel uses DEFAULT_SPIN_POWER.
-    public static final boolean USE_VELOCITY_CONTROL = false;
-    // The speed the hub holds (RPM). Start from the speed DEFAULT_SPIN_POWER gives (Launcher Test, POWER mode).
-    // With velocity control on, set READY_RPM a little under this (about 95%).
-    public static final double TARGET_RPM = 3000.0;   // TODO(#5): placeholder
-    // The hub's PIDF gains for speed. F does most of the work (Launcher Test's "F estimate"), P brings the speed back
-    // after a shot, I and D are usually 0 or tiny for a flywheel. P 10 / I 3 / D 0 are the hub's own defaults.
-    public static final double VELOCITY_P = 10.0;     // TODO(#5): placeholder
-    public static final double VELOCITY_I = 3.0;      // TODO(#5): placeholder
-    public static final double VELOCITY_D = 0.0;      // TODO(#5): placeholder
-    public static final double VELOCITY_F = 0.0;      // TODO(#5): placeholder, must be tuned (expect about 11 to 13)
+    // Steady speed (decision 071). Tuned in "Launcher Test" VELOCITY mode (tuning guide, Launcher section).
+    // false = back to fixed power (DEFAULT_SPIN_POWER), e.g. if the flywheel encoder stops working.
+    // Note 11/26: switched ON after tuning. The flywheel encoder cable needed its A and B wires swapped first:
+    // a backwards encoder makes P push the speed ABOVE the target.
+    public static final boolean USE_VELOCITY_CONTROL = true;
+    // The speed the hub holds (RPM). Note 11/26: 3200 = about what 70% power gave (3171-3214).
+    // Landings looked consistent by eye; TODO(#5): hit-rate test on the field (Sunday 11/29).
+    // Shots short with the speed steady? Raise this (e.g. 3300, with F about 16) and READY_RPM with it.
+    public static final double TARGET_RPM = 3200.0;
+    // The hub's PIDF gains for speed. F does most of the work, P brings the speed back after a shot,
+    // I and D stay 0 for our flywheel.
+    // Note 11/26: F 15.5 holds 3200 alone (Launcher Test's "F estimate" said 15.3; about 16 holds 3300).
+    // P: 0 -> lowest 3000 during 4 balls, 10 -> 3100, 20 -> 3130, 30 -> about the same, so 20.
+    // (Fixed power 70% dropped to 2914.) The speed reading jumps about 40 RPM at rest: encoder noise, not P.
+    public static final double VELOCITY_P = 20.0;
+    public static final double VELOCITY_I = 0.0;
+    public static final double VELOCITY_D = 0.0;
+    public static final double VELOCITY_F = 15.5;
 
     private final DcMotorEx launcherMotor;
     private final Servo launcherTriggerServo;  // null if not in the Driver Station config
