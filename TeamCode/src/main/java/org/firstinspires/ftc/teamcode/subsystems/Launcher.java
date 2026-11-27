@@ -24,9 +24,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
  *                  water wheel (Intake) can feed balls through. The operator holds Y to launch.
  *                  Config type: "Servo". Missing = OFFLINE, no crash.
  *
- * Speed control (decision 032): the flywheel runs in RUN_WITHOUT_ENCODER at a fixed POWER (DEFAULT_SPIN_POWER),
- * not at a set velocity. Simpler, and it runs the whole match so it has time to settle. The encoder is still
- * read so isReady() and telemetry can show the real speed, in RPM (turns per minute) of the motor shaft.
+ * Speed control, two ways (USE_VELOCITY_CONTROL picks):
+ *   false = fixed POWER (decision 032): RUN_WITHOUT_ENCODER at DEFAULT_SPIN_POWER. Simple, but the flywheel
+ *           spins slower on a tired battery and right after each ball.
+ *   true  = steady SPEED (decision 071): the hub holds TARGET_RPM with its PIDF controller, using the encoder.
+ *           Same speed every shot, whatever the battery. Needs the encoder working and the gains tuned.
+ * Either way the encoder is read so isReady() and telemetry can show the real speed, in RPM (turns per minute)
+ * of the motor shaft.
  */
 public class Launcher {
 
@@ -60,10 +64,25 @@ public class Launcher {
     // and set this to about 90% of that number. 2000 is a placeholder (was 1000 ticks/s, about 2140 RPM).
     public static final double READY_RPM = 2000.0;
 
+    // Steady speed (decision 071). Tune ALL of these in "Launcher Test" VELOCITY mode first (tuning guide, Launcher
+    // section), copy them here, THEN set USE_VELOCITY_CONTROL = true. Until then the flywheel uses DEFAULT_SPIN_POWER.
+    public static final boolean USE_VELOCITY_CONTROL = false;
+    // The speed the hub holds (RPM). Start from the speed DEFAULT_SPIN_POWER gives (Launcher Test, POWER mode).
+    // With velocity control on, set READY_RPM a little under this (about 95%).
+    public static final double TARGET_RPM = 3000.0;   // TODO(#5): placeholder
+    // The hub's PIDF gains for speed. F does most of the work (Launcher Test's "F estimate"), P brings the speed back
+    // after a shot, I and D are usually 0 or tiny for a flywheel. P 10 / I 3 / D 0 are the hub's own defaults.
+    public static final double VELOCITY_P = 10.0;     // TODO(#5): placeholder
+    public static final double VELOCITY_I = 3.0;      // TODO(#5): placeholder
+    public static final double VELOCITY_D = 0.0;      // TODO(#5): placeholder
+    public static final double VELOCITY_F = 0.0;      // TODO(#5): placeholder, must be tuned (expect about 11 to 13)
+
     private final DcMotorEx launcherMotor;
     private final Servo launcherTriggerServo;  // null if not in the Driver Station config
     private boolean triggerFired = false;
     private double targetPower = 0.0;
+    private boolean velocityMode = false;   // true while holding a speed (spinAtRpm)
+    private double targetRpm = 0.0;
 
     public Launcher(HardwareMap hardwareMap) {
         DcMotorEx motor;
@@ -73,6 +92,10 @@ public class Launcher {
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             motor.setPower(0.0);
+            if (USE_VELOCITY_CONTROL) {
+                // Give the hub our gains now (nothing moves). Launcher Test starts from these too.
+                motor.setVelocityPIDFCoefficients(VELOCITY_P, VELOCITY_I, VELOCITY_D, VELOCITY_F);
+            }
         } catch (Exception e) {
             motor = null;
         }
@@ -82,16 +105,40 @@ public class Launcher {
         // We do NOT move the trigger here. INIT must not move anything (game rule G304.H).
     }
 
-    /** Start getting the launcher up to full speed. */
+    /**
+     * Start the flywheel for shooting: steady TARGET_RPM if USE_VELOCITY_CONTROL is on, otherwise DEFAULT_SPIN_POWER.
+     * Main TeleOp and Shoot Auton use this one, so the switch changes both.
+     */
     public void spinUp() {
-        spinUp(DEFAULT_SPIN_POWER);
+        if (USE_VELOCITY_CONTROL) {
+            spinAtRpm(TARGET_RPM);
+        } else {
+            spinUp(DEFAULT_SPIN_POWER);
+        }
     }
 
-    /** Spin the launcher at a specific power (-1.0 to 1.0). */
+    /** Spin the launcher at a specific POWER (-1.0 to 1.0), no speed control. */
     public void spinUp(double power) {
+        velocityMode = false;
         targetPower = power;
         if (launcherMotor != null) {
+            if (launcherMotor.getMode() != DcMotor.RunMode.RUN_WITHOUT_ENCODER) {
+                launcherMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
             launcherMotor.setPower(power);
+        }
+    }
+
+    /** Hold a steady speed (RPM) with the hub's PIDF controller and the encoder (decision 071). */
+    public void spinAtRpm(double rpm) {
+        velocityMode = true;
+        targetRpm = rpm;
+        if (launcherMotor != null) {
+            if (launcherMotor.getMode() != DcMotor.RunMode.RUN_USING_ENCODER) {
+                launcherMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
+            // The hub works in ticks per second: RPM / 60 seconds x ticks per turn
+            launcherMotor.setVelocity(rpm / 60.0 * ENCODER_TICKS_PER_REV);
         }
     }
 
@@ -155,7 +202,10 @@ public class Launcher {
         }
     }
 
-    /** Stop the launcher flywheel. */
+    /**
+     * Stop the launcher flywheel. Back to plain power 0, so it COASTS to a stop (FLOAT). Holding a speed of 0
+     * instead would make the hub brake the heavy flywheel hard.
+     */
     public void stop() {
         spinUp(0.0);
     }
@@ -180,10 +230,15 @@ public class Launcher {
     /** Show this subsystem's status on the Driver Station. */
     public void addTelemetry(Telemetry telemetry) {
         if (launcherMotor != null) {
-            telemetry.addData("Launcher Status", isReady() ? "READY" : (getPower() != 0 ? "SPINNING UP (not ready)" : "STOPPED"));
-            telemetry.addData("Launcher Power", "%.2f", getPower());
-            telemetry.addData("Launcher Speed", "%.0f RPM", getRpm());
-            if (Math.abs(getPower()) > 0.2 && getRpm() == 0.0) {
+            boolean spinning = velocityMode ? targetRpm != 0 : getPower() != 0;
+            telemetry.addData("Launcher Status", isReady() ? "READY" : (spinning ? "SPINNING UP (not ready)" : "STOPPED"));
+            if (velocityMode) {
+                telemetry.addData("Launcher Speed", "%.0f RPM (holding %.0f)", getRpm(), targetRpm);
+            } else {
+                telemetry.addData("Launcher Power", "%.2f", getPower());
+                telemetry.addData("Launcher Speed", "%.0f RPM", getRpm());
+            }
+            if ((velocityMode ? targetRpm > 0 : Math.abs(getPower()) > 0.2) && getRpm() == 0.0) {
                 // Powered but EXACTLY 0: the hub isn't getting encoder pulses. The speed can't be measured.
                 telemetry.addLine("  ⚠️ Speed 0 while powered: check the flywheel ENCODER cable (same port number as the motor)");
             }
