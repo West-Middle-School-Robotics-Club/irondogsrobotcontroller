@@ -194,20 +194,24 @@ Worksheet: `launcher-test.pdf`. Test with **Launcher Test**. Issue #5, decision 
 | `DEFAULT_SPIN_POWER` | `0.70` | Flywheel power (0 to 1). Runs the whole match. 0.70 since 11/23 (set on the robot, after 0.75 and 0.73 earlier that day); 0.83 on 11/15 ("the sweet spot arc" after more testing); 0.70 on 11/14 (shots overshot in the competition matches; was 0.75 on 11/12, 1.0 from 11/8 testing, 0.45 before, decision 041) | Hit-rate test at a few powers; pick the most accurate | 🔧 |
 | `MOTOR_REVERSED` | `true` | Flywheel direction | Launcher Test: balls must go OUT | 🔧 |
 | `ENCODER_TICKS_PER_REV` | `28.0` | Encoder ticks per turn of the flywheel motor's shaft, to show the speed in RPM. Depends on the motor: 6000 RPM = 28.0, 1620 RPM = 103.8, 1150 RPM = 145.1, 435 RPM = 384.5 | Read the RPM on the motor's label. Check: at 100% power "Launcher Speed" should be a bit under the label's RPM | ✅ 5203-2402-0001 = 6000 RPM, 1:1 (11/23) |
-| `READY_RPM` | `2000.0` | The flywheel counts as READY at this speed (RPM). Was `READY_VELOCITY_THRESHOLD` (1000 ticks/s) until 11/23 | Launcher Test: read "Launcher Speed" once settled; use ~90% of it | 🔧 placeholder |
+| `READY_RPM` | `3040.0` | The flywheel counts as READY at this speed (RPM). About 95% of `TARGET_RPM`: change them together. Was a 2000 placeholder until 11/26 (and `READY_VELOCITY_THRESHOLD`, 1000 ticks/s, until 11/23) | 95% of `TARGET_RPM` | ✅ 11/26 |
 | `TRIGGER_REST_POSITION` | `0.0` | Trigger gate position that **blocks** the balls (0 to 1) | Launcher Test, left bumper | 🔧 |
 | `TRIGGER_FIRE_POSITION` | `1.0` | Trigger gate position that **lets balls through** | Launcher Test, left bumper | 🔧 |
 
-**Steady speed (velocity control, PIDF), decision 071.** With fixed power (decision 032) the flywheel spins slower on a tired battery and right after each ball. With `USE_VELOCITY_CONTROL = true` the hub holds `TARGET_RPM` instead. **Tune in Launcher Test first, then copy the numbers in and switch it on.** Until then the robot uses `DEFAULT_SPIN_POWER`.
+**Steady speed (velocity control, PIDF), decision 071. ON since 11/26.** With fixed power (decision 032) the flywheel spins slower on a tired battery and right after each ball. With `USE_VELOCITY_CONTROL = true` the hub holds `TARGET_RPM` instead, and `DEFAULT_SPIN_POWER` is only used if it's switched off. Tuned 11/26 in Launcher Test with 4 balls per test: the lowest speed was 2914 on fixed power (70%), 3130 with these gains. Landings judged by eye: **hit-rate test on the field Sunday 11/29**.
+
+⚠️ **The encoder must count the right way.** POWER mode, spinning so balls go out: "Launcher Speed" (Subsystem Telemetry) must be **positive**. Negative = swap the A and B wires on the encoder cable (11/26). A backwards encoder makes P push the speed **above** the target.
 
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
-| `USE_VELOCITY_CONTROL` | `false` | `false` = fixed power (`DEFAULT_SPIN_POWER`). `true` = hold `TARGET_RPM` with the gains below (Main TeleOp and Shoot Auton) | Set `true` only after the four gains and the target are tuned | 🔧 |
-| `TARGET_RPM` | `3000.0` | The speed the hub holds (RPM). With velocity control on, set `READY_RPM` to about 95% of this | Step 1 below: the speed `DEFAULT_SPIN_POWER` gives, then a hit-rate test | 🔧 placeholder |
-| `VELOCITY_F` | `0.0` | Feedforward: the power for the target speed. Does most of the work. Expect about 11 to 13 | Step 2: "F estimate" | 🔧 placeholder |
-| `VELOCITY_P` | `10.0` | Pushes harder the further the speed is below the target: brings it back after a shot | Step 3 | 🔧 placeholder (hub default) |
-| `VELOCITY_I` | `3.0` | Fixes a small error that never goes away. Usually 0 or tiny for a flywheel | Step 3 | 🔧 placeholder (hub default) |
-| `VELOCITY_D` | `0.0` | Damps wobble. Usually 0 for a flywheel | Step 3 | 🔧 placeholder (hub default) |
+| `USE_VELOCITY_CONTROL` | `true` | `false` = fixed power (`DEFAULT_SPIN_POWER`). `true` = hold `TARGET_RPM` with the gains below (Main TeleOp and Shoot Auton). Set `false` if the flywheel encoder stops working | | ✅ 11/26 |
+| `TARGET_RPM` | `3200.0` | The speed the hub holds (RPM). Change `READY_RPM` with it (95%) | Step 1: about what 70% power gave (3171–3214). Then a hit-rate test. Shots short with the speed steady? Raise it (3300 needs F about 16) | 🔧 by eye 11/26; field test 11/29 |
+| `VELOCITY_F` | `15.5` | Feedforward: the power for the target speed. Does most of the work | Step 2: "F estimate" said 15.3; 15.5 held 3200 alone (P = 0) | ✅ 11/26 |
+| `VELOCITY_P` | `20.0` | Pushes harder the further the speed is below the target: brings it back after a shot | Step 3: lowest speed over 4 balls: P 0 → 3000, 10 → 3100, 20 → 3130, 30 → about the same | ✅ 11/26 |
+| `VELOCITY_I` | `0.0` | Fixes a small error that never goes away. Not needed | Step 3 | ✅ 11/26 |
+| `VELOCITY_D` | `0.0` | Damps wobble. Not needed | Step 3 | ✅ 11/26 |
+
+The speed reading jumps about ±40 RPM at rest. That's the encoder (only 28 ticks per turn), not P bouncing: it was the same at P 20 and 30.
 
 In Launcher Test (right bumper = VELOCITY mode, R2 / L2 change the target, dpad left / right picks a gain, dpad up / down changes it, Y = step size; gamepad 2 can change the gains too) (worksheet steps 7 to 11):
 1. **Target:** POWER mode starts at `DEFAULT_SPIN_POWER`. A to spin, wait until "Launcher Speed" is steady, write it down: that's the shooting speed. **Dpad RIGHT** copies it to the VELOCITY target
