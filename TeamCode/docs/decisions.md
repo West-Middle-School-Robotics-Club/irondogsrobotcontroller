@@ -686,3 +686,10 @@ Decision: Four groups, one folder each in `opmodes/auto/`:
 - **Shoot Auton** (`shoot/`): Shoot Auton Red / Blue Far (moved from `test/`).
 Timed Shoot Auton is removed for now: the Timed Auton times get tuned first (it's in git history, commit e9c2b55). The leftover `MainAutonBlueFar` and the old Timed Auton FAR OpModes are gone (the Edge ones replace them). 22 AUTOs, all shown. This changes the Driver Station lists of 064, 066 and 068.
 Who: Mentor (11/24)
+
+## 071 – Flywheel steady speed (velocity control), switched on after tuning  (2026-11-26)
+Status: Proposed (switch it on after the gains are tuned on the robot)
+Issue: #5
+Context: Decision 032 runs the flywheel at a fixed power, because velocity control needs the encoder. The encoders read 0 until 11/25 (the cables' pinout was wrong); they work now. With fixed power the flywheel spins slower on a tired battery and right after each ball, so shots change distance.
+Decision: `Launcher` gets a switch, `USE_VELOCITY_CONTROL`. When `true`, `spinUp()` holds `TARGET_RPM` with the hub's PIDF controller (`RUN_USING_ENCODER`, gains `VELOCITY_P` / `I` / `D` / `F`); Main TeleOp and Shoot Auton use it without other changes. `stop()` goes back to plain power 0, so the flywheel coasts down instead of being braked. It stays `false` (fixed power, 032) until the gains and target are tuned in Launcher Test. Then `READY_RPM` is set to about 95% of `TARGET_RPM`. Changes 032 once switched on. (070 is the Pedro setup, on the `pedro-pathing` branch.)
+Who: Mentor (11/26)

@@ -198,11 +198,23 @@ Worksheet: `launcher-test.pdf`. Test with **Launcher Test**. Issue #5, decision 
 | `TRIGGER_REST_POSITION` | `0.0` | Trigger gate position that **blocks** the balls (0 to 1) | Launcher Test, left bumper | 🔧 |
 | `TRIGGER_FIRE_POSITION` | `1.0` | Trigger gate position that **lets balls through** | Launcher Test, left bumper | 🔧 |
 
-**Trying velocity control (PIDF), in Launcher Test only for now.** Today the flywheel runs at a fixed power (decision 032), so it spins slower on a tired battery and right after each ball. Launcher Test has a **VELOCITY mode** (right bumper) where the hub holds a target speed with its PIDF controller, R2 / L2 change the target, and the dpad changes the gains live (Y = step size; gamepad 2 can do it too) (worksheet steps 7 to 11):
-1. **F first:** POWER mode at 100%, read "F estimate" (= 32767 × power / speed). In VELOCITY mode set F to it, P = I = D = 0, target = the speed `DEFAULT_SPIN_POWER` gives today
-2. **Then P:** raise it until "Last shot VELOCITY" says the speed comes back quickly, with no wobble around the target. I and D usually stay 0 for a flywheel
-   - **Compare with POWER:** POWER mode starts at `DEFAULT_SPIN_POWER`. Once the speed is steady, **dpad RIGHT** copies it to the VELOCITY target, so both modes run at the same speed. Fire a ball in each mode: the screen keeps "Last shot POWER" and "Last shot VELOCITY" side by side. VELOCITY should drop less and get back faster (worksheet table "POWER vs VELOCITY")
-3. **Write the numbers down** (the test doesn't save them). If they work, switching the real `Launcher` to velocity control is a new decision (changes 032) and gets its own rows here
+**Steady speed (velocity control, PIDF), decision 071.** With fixed power (decision 032) the flywheel spins slower on a tired battery and right after each ball. With `USE_VELOCITY_CONTROL = true` the hub holds `TARGET_RPM` instead. **Tune in Launcher Test first, then copy the numbers in and switch it on.** Until then the robot uses `DEFAULT_SPIN_POWER`.
+
+| Setting | Now | What it does | How to find it | Status |
+|---|---|---|---|---|
+| `USE_VELOCITY_CONTROL` | `false` | `false` = fixed power (`DEFAULT_SPIN_POWER`). `true` = hold `TARGET_RPM` with the gains below (Main TeleOp and Shoot Auton) | Set `true` only after the four gains and the target are tuned | 🔧 |
+| `TARGET_RPM` | `3000.0` | The speed the hub holds (RPM). With velocity control on, set `READY_RPM` to about 95% of this | Step 1 below: the speed `DEFAULT_SPIN_POWER` gives, then a hit-rate test | 🔧 placeholder |
+| `VELOCITY_F` | `0.0` | Feedforward: the power for the target speed. Does most of the work. Expect about 11 to 13 | Step 2: "F estimate" | 🔧 placeholder |
+| `VELOCITY_P` | `10.0` | Pushes harder the further the speed is below the target: brings it back after a shot | Step 3 | 🔧 placeholder (hub default) |
+| `VELOCITY_I` | `3.0` | Fixes a small error that never goes away. Usually 0 or tiny for a flywheel | Step 3 | 🔧 placeholder (hub default) |
+| `VELOCITY_D` | `0.0` | Damps wobble. Usually 0 for a flywheel | Step 3 | 🔧 placeholder (hub default) |
+
+In Launcher Test (right bumper = VELOCITY mode, R2 / L2 change the target, dpad left / right picks a gain, dpad up / down changes it, Y = step size; gamepad 2 can change the gains too) (worksheet steps 7 to 11):
+1. **Target:** POWER mode starts at `DEFAULT_SPIN_POWER`. A to spin, wait until "Launcher Speed" is steady, write it down: that's the shooting speed. **Dpad RIGHT** copies it to the VELOCITY target
+2. **F:** at that same power read "F estimate" (= 32767 × power / speed). Right bumper to VELOCITY, set F to it and P = I = D = 0. "Speed error" should be small; settles low = raise F a little, high = lower it
+3. **P:** feed balls (hold left bumper). Raise P until "Last shot VELOCITY" says the speed comes back quickly, without the speed shaking around the target (too much P). Only if it settles a bit below the target, a tiny I. D stays 0
+   - **Compare with POWER:** the screen keeps "Last shot POWER" and "Last shot VELOCITY" side by side. VELOCITY should drop less and get back faster (worksheet table "POWER vs VELOCITY")
+4. **Write the numbers down** (the test doesn't save them), put them in the rows above, set `READY_RPM` to about 95% of `TARGET_RPM`, then `USE_VELOCITY_CONTROL = true`. Hit-rate test in Main TeleOp
 
 ## Turret and hood: `subsystems/Turret.java`
 Worksheet: `turret-test.pdf`. Test with **Turret Test**, **in this order** (steps 1 to 5). Issue #31.

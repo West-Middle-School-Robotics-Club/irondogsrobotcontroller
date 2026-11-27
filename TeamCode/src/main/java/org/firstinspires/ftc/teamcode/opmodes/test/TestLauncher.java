@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes.test;
 
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -64,9 +63,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
  *   3. Write the P, I, D, F and target speed on the worksheet. Hit-rate test at that target
  * The gains are NOT saved: they reset to the hub's own values every time this test starts. Write them down!
  *
- * Speed stuck at 0? During INIT the screen shows an ENCODER CHECK: every motor's encoder. Turn the flywheel by
- * hand and see which line changes (see addEncoderCheck()). Don't use VELOCITY mode until the speed reads right:
- * with no encoder, the hub thinks the flywheel is stopped and pushes it at FULL power.
+ * Speed stuck at 0? Check the flywheel's encoder cable (11/25: the cables' pinout was wrong). Don't use VELOCITY
+ * mode until the speed reads right: with no encoder, the hub thinks the flywheel is stopped and pushes it at FULL power.
  *
  * Hardware config name in Driver Station: "launcherMotor" (goBILDA 5203 Series, exact type, see decision 008)
  *
@@ -141,8 +139,6 @@ public class TestLauncher extends LinearOpMode {
                 telemetry.addData("Hardware Status", "⚠️ NOT FOUND ('%s' missing in DS config)", Launcher.FLYWHEEL_NAME);
                 telemetry.addLine("Check Driver Station configuration: name must be 'launcherMotor'");
             }
-            telemetry.addLine();
-            addEncoderCheck();
             telemetry.addLine();
             telemetry.addLine("Press START. Nobody in front of the launcher!");
             telemetry.update();
@@ -365,38 +361,6 @@ public class TestLauncher extends LinearOpMode {
         usePowerMode();
         launcher.stop();
         intake.stop();
-    }
-
-    /**
-     * ENCODER CHECK (INIT only, nothing moves): every motor in the Driver Station config, with its hub, port and
-     * encoder position. Turn the flywheel BY HAND and watch which line changes:
-     *   - the launcherMotor line changes          the encoder works (speed 0 is then a code problem)
-     *   - ANOTHER motor's line changes            the flywheel's encoder is in THAT motor's encoder port
-     *   - nothing changes                         no pulses reach the hub: the motor's encoder, its plug or the cable
-     * Also shows the raw speed and any error, because Launcher.getRpm() shows 0 when reading fails.
-     */
-    private void addEncoderCheck() {
-        telemetry.addLine("--- ENCODER CHECK: turn the flywheel BY HAND, watch which line changes ---");
-        for (DcMotor motor : hardwareMap.getAll(DcMotor.class)) {
-            String name = hardwareMap.getNamesOf(motor).toString();  // e.g. "[launcherMotor]"
-            try {
-                telemetry.addData(name, "%s port %d: %d ticks", motor.getController().getConnectionInfo(),
-                        motor.getPortNumber(), motor.getCurrentPosition());
-            } catch (Exception e) {
-                telemetry.addData(name, "can't read: %s", e.getMessage());
-            }
-        }
-        // MANUAL bulk caching without clearing the cache freezes EVERY encoder reading. We never set it; should be OFF
-        for (LynxModule hub : hardwareMap.getAll(LynxModule.class)) {
-            telemetry.addData("Hub " + hub.getModuleAddress() + " bulk caching", hub.getBulkCachingMode());
-        }
-        if (directMotor != null) {
-            try {
-                telemetry.addData("launcherMotor raw speed", "%.0f ticks/s", directMotor.getVelocity());
-            } catch (Exception e) {
-                telemetry.addData("launcherMotor raw speed", "ERROR: %s", e);
-            }
-        }
     }
 
     /** VELOCITY mode: the hub holds this speed (RPM) with our gains. */
