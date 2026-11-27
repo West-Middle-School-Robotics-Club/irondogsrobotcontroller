@@ -137,10 +137,15 @@ public class Drivetrain {
         drive(0, 0, 0);
     }
 
-    /** Show this subsystem's status on the Driver Station. */
+    /** Show this subsystem's status on the Driver Station (tests, autons): the motor mode + the match lines. */
     public void addTelemetry(Telemetry telemetry) {
         telemetry.addData("Drive mode", encoderSpeedControl ? "RUN_USING_ENCODER" : "RUN_WITHOUT_ENCODER");
         telemetry.addData("Stop mode", brakeOnStop ? "BRAKE" : "FLOAT");
+        addMatchTelemetry(telemetry);
+    }
+
+    /** The short version for Main TeleOp's match screen: just the four motor powers. */
+    public void addMatchTelemetry(Telemetry telemetry) {
         telemetry.addData("Drivetrain front L/R", "%.2f  %.2f", frontLeftDrive.getPower(), frontRightDrive.getPower());
         telemetry.addData("Drivetrain back  L/R", "%.2f  %.2f", backLeftDrive.getPower(), backRightDrive.getPower());
     }

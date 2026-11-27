@@ -74,6 +74,7 @@ Test with **Main TeleOp**. Decision 041.
 | Setting | Now | What it does | How to find it | Status |
 |---|---|---|---|---|
 | `TURRET_FIND_HOME_AT_START` | `false` | At START the turret turns to forward by itself if it is already homed. `true` = it also turns LEFT to find the magnet first | Keep `false` until the turret's hard stops are moved (the left stop is before the magnet, so searching drives into it) | 🔧 |
+| `CAMERA_ENABLED` | `false` | Is the Limelight used in Main TeleOp? `false` = not started and not shown, so Main TeleOp runs without a camera. `true` = needs `limelight` in the Driver Station config, or Main TeleOp crashes | 11/26: no camera on the robot. Set `true` if we find a use for it (maybe with Pedro) | ✅ |
 
 ## Drive motors: `subsystems/Drivetrain.java`
 | Setting | Now | What it does | How to find it | Status |

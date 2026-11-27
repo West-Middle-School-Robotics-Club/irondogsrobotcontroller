@@ -155,14 +155,18 @@ public class OperatorControls {
         }
     }
 
-    /** Show what the operator has switched on. */
+    /**
+     * Show what the operator has switched on. "NECTAR auto-launch" only shows while the nectar detectors are on
+     * (Intake.NECTAR_DETECTOR_ENABLED, decision 065), so it comes back by itself if they're switched on again.
+     */
     public void addTelemetry(Telemetry telemetry) {
         telemetry.addData("Operator", ejecting ? "EJECTING"
                 : String.format("intake %s, water wheel %s (A), direction %s",
                 INTAKE_ALWAYS_ON || waterWheelOn ? "ON" : "off", waterWheelOn ? "ON" : "off",
                 directionOut ? "OUT (balls leave)" : "IN"));
-        telemetry.addData("NECTAR auto-launch", !Intake.NECTAR_DETECTOR_ENABLED ? "OFF (nectar detector off)"
-                : !AUTO_FIRE_NECTAR ? "OFF (AUTO_FIRE_NECTAR = false)"
-                : autoFiring ? "FIRING (trigger open)" : "on, waiting for a NECTAR");
+        if (Intake.NECTAR_DETECTOR_ENABLED) {
+            telemetry.addData("NECTAR auto-launch", !AUTO_FIRE_NECTAR ? "OFF (AUTO_FIRE_NECTAR = false)"
+                    : autoFiring ? "FIRING (trigger open)" : "on, waiting for a NECTAR");
+        }
     }
 }

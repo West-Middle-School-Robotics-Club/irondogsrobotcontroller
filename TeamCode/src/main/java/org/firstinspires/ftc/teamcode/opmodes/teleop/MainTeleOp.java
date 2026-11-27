@@ -28,7 +28,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Power;
  * Launcher.DEFAULT_SPIN_POWER, the INTAKE starts and runs the whole match (OperatorControls.INTAKE_ALWAYS_ON,
  * decision 067), the water wheel stays OFF until the operator presses A (WATER_WHEEL_ON_AT_START = false), and the turret
  * turns to its rest spot, the home magnet (if it is homed). The lights turn GREEN while the turret is homed and turning there.
- * Camera, Light and Power are created here, not in Robot.java, until they're configured on every robot
+ * Camera (only if CAMERA_ENABLED), Light and Power are created here, not in Robot.java, until they're configured on every robot
  * (see code-structure.md).
  */
 public abstract class MainTeleOp extends LinearOpMode {
@@ -44,6 +44,11 @@ public abstract class MainTeleOp extends LinearOpMode {
     // turret's hard stops are moved: today the left stop is before the magnet, so searching drives into the stop.
     public static final boolean TURRET_FIND_HOME_AT_START = false;
 
+    // Is the Limelight camera used? false = Main TeleOp doesn't start it or show it, so it runs without a camera
+    // (11/26: no camera on the robot; we haven't found a good use for AprilTags yet. Maybe later, with Pedro).
+    // true = start it and show its lines; then 'limelight' must be in the Driver Station config, or Main TeleOp crashes.
+    public static final boolean CAMERA_ENABLED = false;
+
     /** Which alliance this OpMode is for. */
     protected abstract Alliance alliance();
 
@@ -54,7 +59,7 @@ public abstract class MainTeleOp extends LinearOpMode {
         Robot robot = new Robot(hardwareMap);
         Light leftLight = new Light(hardwareMap, Light.LEFT_LIGHT_NAME);
         Light rightLight = new Light(hardwareMap, Light.RIGHT_LIGHT_NAME);
-        Camera camera = new Camera(hardwareMap, alliance);
+        Camera camera = CAMERA_ENABLED ? new Camera(hardwareMap, alliance) : null;   // null = no camera
         Power power = new Power(hardwareMap);
         DriverControls driver = new DriverControls();
         OperatorControls operator = new OperatorControls();
@@ -73,12 +78,16 @@ public abstract class MainTeleOp extends LinearOpMode {
             telemetry.addLine("Wrong color? Stop and pick the other Main TeleOp.");
             telemetry.addLine();
             power.addTelemetry(telemetry);
-            camera.addTelemetry(telemetry);
+            if (camera != null) {
+                camera.addTelemetry(telemetry);
+            }
             telemetry.update();
         }
 
         if (isStopRequested()) {
-            camera.stop();
+            if (camera != null) {
+                camera.stop();
+            }
             leftLight.off();
             rightLight.off();
             return;
@@ -118,15 +127,27 @@ public abstract class MainTeleOp extends LinearOpMode {
             driver.addTelemetry(telemetry, speed);
             operator.addTelemetry(telemetry);
             power.addTelemetry(telemetry);
-            robot.addTelemetry(telemetry);
-            camera.addTelemetry(telemetry);
+            // The short match screen (11/26): no drive / stop mode, NECTAR lines only while the detectors are on,
+            // no launcher cable warning. The tests still show everything (each subsystem's addTelemetry()).
+            robot.drivetrain.addMatchTelemetry(telemetry);
+            robot.intake.addMatchTelemetry(telemetry);
+            robot.launcher.addMatchTelemetry(telemetry);
+            if (OperatorControls.TURRET_ENABLED) {
+                robot.turret.addTelemetry(telemetry);   // only while the turret is used (decision 050)
+            }
+            // Flower flipper: left off the match screen (on hold, may not be on the build).
+            if (camera != null) {
+                camera.addTelemetry(telemetry);
+            }
             leftLight.addTelemetry(telemetry);
             rightLight.addTelemetry(telemetry);
             telemetry.update();
         }
 
         robot.stop();
-        camera.stop();
+        if (camera != null) {
+            camera.stop();
+        }
         leftLight.off();
         rightLight.off();
     }

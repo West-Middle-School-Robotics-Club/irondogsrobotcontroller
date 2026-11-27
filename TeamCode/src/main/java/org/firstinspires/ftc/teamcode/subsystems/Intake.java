@@ -193,18 +193,29 @@ public class Intake {
         }
     }
 
-    /** Show this subsystem's status on the Driver Station. */
+    /** Show this subsystem's status on the Driver Station (tests): the match lines + the NECTAR detector details. */
     public void addTelemetry(Telemetry telemetry) {
-        telemetry.addData("Intake", intakeServo != null ? String.format("%.2f", intakeSpeed)
-                : "OFFLINE ('" + INTAKE_SERVO_NAME + "' not in DS config)");
-        telemetry.addData("Water wheel", waterWheelMotor != null ? String.format("%.2f", waterWheelSpeed)
-                : "OFFLINE ('" + WATER_WHEEL_MOTOR_NAME + "' not in DS config)");
+        addMatchTelemetry(telemetry);
         if (!NECTAR_DETECTOR_ENABLED) {
             telemetry.addData("NECTAR detector", "OFF (NECTAR_DETECTOR_ENABLED = false)");
             return;
         }
-        telemetry.addData("NECTAR detected", isNectarDetected() ? "YES (next ball is a NECTAR)" : "no");
         telemetry.addData("  Nectar left switch", switchStatus(nectarDetectorLeftSwitch, NECTAR_LEFT_SWITCH_NAME));
         telemetry.addData("  Nectar right switch", switchStatus(nectarDetectorRightSwitch, NECTAR_RIGHT_SWITCH_NAME));
+    }
+
+    /**
+     * The short version for Main TeleOp's match screen: intake and water wheel speeds. "NECTAR detected" only shows
+     * while the detectors are on (NECTAR_DETECTOR_ENABLED, decision 065), so it comes back by itself if they're
+     * switched on again.
+     */
+    public void addMatchTelemetry(Telemetry telemetry) {
+        telemetry.addData("Intake", intakeServo != null ? String.format("%.2f", intakeSpeed)
+                : "OFFLINE ('" + INTAKE_SERVO_NAME + "' not in DS config)");
+        telemetry.addData("Water wheel", waterWheelMotor != null ? String.format("%.2f", waterWheelSpeed)
+                : "OFFLINE ('" + WATER_WHEEL_MOTOR_NAME + "' not in DS config)");
+        if (NECTAR_DETECTOR_ENABLED) {
+            telemetry.addData("NECTAR detected", isNectarDetected() ? "YES (next ball is a NECTAR)" : "no");
+        }
     }
 }
