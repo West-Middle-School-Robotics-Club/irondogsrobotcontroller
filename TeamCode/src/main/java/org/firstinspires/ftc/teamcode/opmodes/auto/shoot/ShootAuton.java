@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.opmodes.auto.main.MainAuton;
+import org.firstinspires.ftc.teamcode.opmodes.teleop.MainTeleOp;
 import org.firstinspires.ftc.teamcode.subsystems.Odometry;
 
 /**
@@ -17,7 +18,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Odometry;
  *
  *   1. SHOOT_SPOT: 22.5 in RIGHT (RED B1 -> C1, BLUE E6 -> D6). The front still faces the far wall / audience
  *   2. Shoot: flywheel + intake + water wheel ON, wait FLYWHEEL_SPIN_UP_S, then HOLD the gate open (trigger at FIRE)
- *      for SHOOT_TIME_S so the water wheel feeds the balls through. Then everything OFF and the gate closed
+ *      for SHOOT_TIME_S so the water wheel feeds the balls through (lights PURPLE, like Main TeleOp). Then everything
+ *      OFF, the gate closed and the lights back to the alliance color
  *   3. Back to the start (0, 0), 22.5 in left
  *   4. Main Auton FAR EDGE's route (MAIN_FAR_EDGE_PATH in MainAuton.java): forward, then left = PARK
  *
@@ -63,7 +65,7 @@ public abstract class ShootAuton extends MainAuton {
         if (index != SHOOT_WAYPOINT) {
             return;
         }
-        robot.launcher.spinUp();        // DEFAULT_SPIN_POWER, same as TeleOp
+        robot.launcher.spinUp();        // same as TeleOp: holds Launcher.TARGET_RPM (decision 071)
         robot.intake.in();
         robot.intake.waterWheelUp();    // balls wait at the closed gate until it opens
 
@@ -75,7 +77,9 @@ public abstract class ShootAuton extends MainAuton {
             showStatus("Flywheel spinning up (gate closed)", autoTimer, odometry, null);
         }
 
-        // Step 2: gate HELD OPEN for SHOOT_TIME_S (fire() every loop, so it stays at FIRE the whole time)
+        // Step 2: gate HELD OPEN for SHOOT_TIME_S (fire() every loop, so it stays at FIRE the whole time).
+        // Lights PURPLE while shooting, the same color as Main TeleOp (decision 072).
+        setLights(MainTeleOp.SHOOTING_COLOR);
         timer.reset();
         while (opModeIsActive() && autoTimer.seconds() < STOP_BY_S && timer.seconds() < SHOOT_TIME_S) {
             robot.launcher.fire();
@@ -86,6 +90,7 @@ public abstract class ShootAuton extends MainAuton {
 
         // Done shooting (or out of time): gate closed, everything OFF, then drive back to the start
         robot.launcher.resetTrigger();
+        setAllianceLights();             // done shooting: back to the alliance color for the drive
         robot.intake.stop();
         robot.launcher.stop();
     }

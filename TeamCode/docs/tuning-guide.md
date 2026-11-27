@@ -270,6 +270,8 @@ Test with **Camera Test** / **Red/Blue Camera Test**. Issue #7 (the other mentor
 ## Lights
 | Setting | File | Now | What it does | Status |
 |---|---|---|---|---|
+| `SHOOTING_COLOR` | `opmodes/teleop/MainTeleOp.java` | `Light.Color.VIOLET` | Both lights while the launcher gate is open (operator holds Y): "purple" = shooting. Wins over every other color. Shoot Auton uses it too, while its gate is open (072) | 🔧 |
+| `EJECTING_COLOR` | `opmodes/teleop/MainTeleOp.java` | `Light.Color.GREEN` | Both lights while balls are pushed out (operator holds the left trigger). Shooting purple wins if both (073) | 🔧 |
 | `NECTAR_COLOR` | `opmodes/teleop/MainTeleOp.java` | `Light.Color.VIOLET` | Both lights while the next ball is a NECTAR ("purple"). Never while the nectar detectors are off (065) | ✅ |
 | `TURRET_MOVING_COLOR` | `opmodes/teleop/MainTeleOp.java` | `Light.Color.GREEN` | Both lights while the turret is homed and turning to forward (NECTAR purple wins) | 🔧 |
 | `RED_ALLIANCE_COLOR` | `opmodes/teleop/MainTeleOp.java` | `Light.Color.RED` | Lights for RED (INIT, and when no NECTAR) | ✅ |
