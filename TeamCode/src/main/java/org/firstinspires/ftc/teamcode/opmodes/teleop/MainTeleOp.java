@@ -38,6 +38,13 @@ public abstract class MainTeleOp extends LinearOpMode {
     public static final Light.Color BLUE_ALLIANCE_COLOR = Light.Color.BLUE;
     public static final Light.Color NECTAR_COLOR = Light.Color.VIOLET; // "purple": the next ball to launch is a NECTAR
     public static final Light.Color TURRET_MOVING_COLOR = Light.Color.GREEN; // the turret is homed and turning to its rest spot (the magnet)
+    // "purple": SHOOTING, the launcher gate is open (the operator holds Y) (decision 072). Same purple as NECTAR_COLOR,
+    // which never shows while the nectar detectors are off; give one of them another color if they come back.
+    public static final Light.Color SHOOTING_COLOR = Light.Color.VIOLET;
+    // EJECTING: balls are being pushed out (operator holds the left trigger: water wheel DOWN + intake OUT) (decision 073).
+    // Same green as TURRET_MOVING_COLOR, which never shows while the turret is off (OperatorControls.TURRET_ENABLED);
+    // give one of them another color if the turret comes back.
+    public static final Light.Color EJECTING_COLOR = Light.Color.GREEN;
 
     // At START the turret turns to its rest spot (the home magnet) by itself. That is only safe if it is already HOMED (we pointed it at the
     // magnet in INIT). Set this to true to let it also FIND the magnet by turning LEFT. Keep it false until the
@@ -110,15 +117,25 @@ public abstract class MainTeleOp extends LinearOpMode {
             operator.update(robot, gamepad2);
             robot.turret.update(); // every loop: turns the turret and keeps it inside its limits
 
-            // Lights: PURPLE = the next ball to launch is a NECTAR (it matters most, so it wins). Never while the
-            // nectar detectors are off (Intake.NECTAR_DETECTOR_ENABLED, decision 065).
-            // GREEN = the turret is homed and turning to its rest spot. Otherwise our alliance color.
+            // Lights, the LAST match wins:
+            //   our alliance color          normally
+            //   GREEN  (TURRET_MOVING_COLOR) the turret is homed and turning to its rest spot
+            //   PURPLE (NECTAR_COLOR)        the next ball to launch is a NECTAR. Never while the nectar detectors are
+            //                                off (Intake.NECTAR_DETECTOR_ENABLED, decision 065)
+            //   GREEN  (EJECTING_COLOR)      EJECTING: balls are being pushed out (left trigger held) (073)
+            //   PURPLE (SHOOTING_COLOR)      SHOOTING: the launcher gate is open (Y held), so everyone can see it (072)
             Light.Color lightColor = allianceColor(alliance);
             if (robot.turret.isHomed() && robot.turret.isAutoMoving() && !robot.turret.isAtTarget()) {
                 lightColor = TURRET_MOVING_COLOR;
             }
             if (robot.intake.isNectarDetected()) {
                 lightColor = NECTAR_COLOR;
+            }
+            if (operator.isEjecting()) {
+                lightColor = EJECTING_COLOR;
+            }
+            if (robot.launcher.isTriggerFired()) {
+                lightColor = SHOOTING_COLOR;
             }
             leftLight.setColor(lightColor);
             rightLight.setColor(lightColor);

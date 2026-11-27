@@ -694,3 +694,17 @@ Context: Decision 032 runs the flywheel at a fixed power, because velocity contr
 Decision: `Launcher` gets a switch, `USE_VELOCITY_CONTROL`. When `true`, `spinUp()` holds `TARGET_RPM` with the hub's PIDF controller (`RUN_USING_ENCODER`, gains `VELOCITY_P` / `I` / `D` / `F`); Main TeleOp and Shoot Auton use it without other changes. `stop()` goes back to plain power 0, so the flywheel coasts down instead of being braked. It stays `false` (fixed power, 032) until the gains and target are tuned in Launcher Test. Then `READY_RPM` is set to about 95% of `TARGET_RPM`. Changes 032 once switched on. (070 is the Pedro setup, on the `pedro-pathing` branch.)
 Tuned 11/26 in Launcher Test (4 balls per test): `TARGET_RPM` 3200 (about what 70% power gave), F 15.5, P 20, I 0, D 0, `READY_RPM` 3040. Lowest speed during the 4 balls: 2914 on fixed power, 3130 with velocity control. First the flywheel encoder cable needed its A and B wires swapped: the encoder counted backwards, so P pushed the speed above the target. Landings consistent by eye; the target gets a hit-rate test on the field.
 Who: Mentor (11/26)
+
+## 072 – Main TeleOp lights: purple while shooting  (2026-11-26)
+Status: Accepted
+Issue: #5
+Context: The lights show the alliance color, GREEN while the turret turns to its rest spot, and purple for a NECTAR (decision 028). The nectar detectors are off (065), so purple never shows. The team wants everyone (drivers, coach) to see when the robot is shooting.
+Decision: New `MainTeleOp.SHOOTING_COLOR = Light.Color.VIOLET` ("purple"). Both lights are purple while the launcher gate is open (`Launcher.isTriggerFired()`), which is while the operator holds Y (and during a NECTAR auto-launch, if the detectors are switched back on). It wins over every other light color. It shares purple with `NECTAR_COLOR`; if the nectar detectors come back, one of the two gets a new color. Shoot Auton uses the same purple while its gate is held open, then goes back to the alliance color for the drive (`BasicAuton.setLights()`). The other autons keep their own lights. (070 is the Pedro setup, on the `pedro-pathing` branch.)
+Who: Mentor (11/26)
+
+## 073 – Main TeleOp lights: green while ejecting  (2026-11-26)
+Status: Accepted
+Issue: #4
+Context: Decision 072 made the lights purple while shooting. The team also wants to see when balls are being pushed OUT (the operator holds the left trigger: water wheel DOWN + intake OUT, decision 067). GREEN meant "the turret is turning to its rest spot", but the turret is off (decision 050), so green never shows.
+Decision: New `MainTeleOp.EJECTING_COLOR = Light.Color.GREEN`. Both lights are green while `OperatorControls.isEjecting()` is true: the left trigger is held (or the B direction toggle is set to OUT, which is switched off for now). Shooting purple (072) wins if both happen at once. It shares green with `TURRET_MOVING_COLOR`; if the turret comes back, one of the two gets a new color.
+Who: Mentor (11/26)

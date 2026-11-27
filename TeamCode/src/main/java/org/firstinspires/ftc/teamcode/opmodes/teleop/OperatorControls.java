@@ -156,6 +156,14 @@ public class OperatorControls {
     }
 
     /**
+     * True while balls are being pushed OUT: the left trigger is held (EJECT: water wheel DOWN + intake OUT), or the
+     * B direction toggle is set to OUT (off for now, DIRECTION_TOGGLE_ENABLED = false). Main TeleOp shows it on the lights.
+     */
+    public boolean isEjecting() {
+        return ejecting || directionOut;
+    }
+
+    /**
      * Show what the operator has switched on. "NECTAR auto-launch" only shows while the nectar detectors are on
      * (Intake.NECTAR_DETECTOR_ENABLED, decision 065), so it comes back by itself if they're switched on again.
      */

@@ -48,6 +48,9 @@ public abstract class BasicAuton extends LinearOpMode {
 
     /** The robot, kept here so every status screen can show the four wheel powers. Set at the start of runOpMode(). */
     private Robot robot;
+    private Light leftLight;
+    private Light rightLight;
+    private Light.Color allianceColor;   // RED_ALLIANCE_COLOR or BLUE_ALLIANCE_COLOR, picked in runOpMode()
 
     /** Which starting spot. NEAR = against our alliance wall, next to the LOADING ZONE. FAR = against the audience wall. */
     public enum Route { NEAR, FAR }
@@ -165,8 +168,8 @@ public abstract class BasicAuton extends LinearOpMode {
 
         robot = new Robot(hardwareMap);
         Odometry odometry = new Odometry(hardwareMap);   // resets the Pinpoint: robot must be STILL in INIT
-        Light leftLight = new Light(hardwareMap, Light.LEFT_LIGHT_NAME);
-        Light rightLight = new Light(hardwareMap, Light.RIGHT_LIGHT_NAME);
+        leftLight = new Light(hardwareMap, Light.LEFT_LIGHT_NAME);
+        rightLight = new Light(hardwareMap, Light.RIGHT_LIGHT_NAME);
         Power power = new Power(hardwareMap);
 
         robot.drivetrain.setBrakeOnStop(true);           // autonomous stops precisely (decision 023)
@@ -176,7 +179,7 @@ public abstract class BasicAuton extends LinearOpMode {
         Pose2D[] path = path();
 
         // ---------- INIT: show the alliance, choose a delay. Nothing moves. ----------
-        Light.Color allianceColor = alliance == Alliance.RED ? RED_ALLIANCE_COLOR : BLUE_ALLIANCE_COLOR;
+        allianceColor = alliance == Alliance.RED ? RED_ALLIANCE_COLOR : BLUE_ALLIANCE_COLOR;
         leftLight.setColor(allianceColor);
         rightLight.setColor(allianceColor);
         int delaySeconds = 0;
@@ -376,6 +379,17 @@ public abstract class BasicAuton extends LinearOpMode {
      */
     protected double waypointPauseSeconds() {
         return WAYPOINT_PAUSE_S;
+    }
+
+    /** Set both lights to one color. For atWaypoint() overrides, e.g. Shoot Auton's purple while shooting. */
+    protected void setLights(Light.Color color) {
+        leftLight.setColor(color);
+        rightLight.setColor(color);
+    }
+
+    /** Both lights back to our alliance color (what they show while driving). */
+    protected void setAllianceLights() {
+        setLights(allianceColor);
     }
 
     protected void showStatus(String step, ElapsedTime autoTimer, Odometry odometry, Pose2D target) {
